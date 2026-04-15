@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEW本製作</title>
+  <style>
+    :root{
+      --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
+      --blue:#1d4ed8; --blue-soft:#d9e8ff; --green:#166534; --green-soft:#dff7e6;
+      --teal:#0f766e; --teal-soft:#d7f4ef; --amber:#b45309; --amber-soft:#ffe8c7;
+      --rose:#be185d; --rose-soft:#ffd9e7; --red:#dc2626; --red-soft:#ffd9d9;
+      --shadow:0 12px 30px rgba(15,23,42,.08); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:"Microsoft JhengHei","PingFang TC",sans-serif; color:var(--text);
+      background:
+        radial-gradient(circle at top left,#bfd9ff 0,#dfe8f7 32%),
+        linear-gradient(180deg,#c7dcff 0,#dfe8f7 240px);
+    }
+    .wrap{max-width:1360px; margin:0 auto; padding:18px; display:grid; gap:16px;}
+    .card{background:linear-gradient(180deg,#ffffff 0,#f6f9ff 100%); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);}
+    .header{padding:16px 18px; background:linear-gradient(135deg,#d3e4ff 0,#f4f8ff 52%,#ffffff 100%);}
+    .title-row,.toolbar,.top-actions,.chips,.legend{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+    h1{margin:0; font-size:26px; line-height:1.2}
+    .sub{color:var(--muted); font-size:13px; line-height:1.7; margin-top:4px}
+    button,input,select,textarea{font:inherit}
+    button{border:none; cursor:pointer; border-radius:12px; padding:9px 13px; transition:.15s ease}
+    button:hover{transform:translateY(-1px)}
+    .primary{background:var(--blue); color:#fff}
+    .soft{background:#eef2ff; color:#3730a3}
+    .ghost{background:#f8fafc; color:var(--text); border:1px solid var(--line)}
+    .danger{background:var(--red-soft); color:var(--red)}
+    .top-strong{background:linear-gradient(135deg,#2563eb 0,#1d4ed8 100%); color:#fff; box-shadow:0 8px 18px rgba(37,99,235,.26)}
+    .top-strong:hover{box-shadow:0 10px 22px rgba(37,99,235,.32)}
+    .archive-soft{background:#f3f4f6; color:#475569; border:1px solid #d8dee8}
+    .field-input,.field-select{
+      width:100%; border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+      background:#fff; color:var(--text);
+    }
+    .field-input:focus,.field-select:focus{outline:none; border-color:#93c5fd; box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+    .field-input:disabled,.field-select:disabled{background:#f1f5f9; color:#94a3b8; cursor:not-allowed}
+    button:disabled{opacity:.55; cursor:not-allowed; transform:none !important}
+    .summary-list-select{min-height:190px; padding:6px 8px; overflow-y:auto}
+    .summary-list-select option{padding:8px 10px; border-radius:8px}
+    .stats{padding:16px; background:linear-gradient(135deg,#d8e6ff 0,#eef5ff 55%,#ffffff 100%)}
+    .stats-grid{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px}
+    .stat{border:1px solid var(--line); border-radius:16px; padding:13px; background:#fff}
+    .stat:nth-child(1){background:var(--blue-soft)} .stat:nth-child(2){background:var(--green-soft)}
+    .stat:nth-child(3){background:var(--rose-soft)} .stat:nth-child(4){background:var(--teal-soft)}
+    .stat:nth-child(5){background:var(--amber-soft)}
+    .label{font-size:12px; color:var(--muted); margin-bottom:6px}
+    .value{font-size:22px; font-weight:800; line-height:1.2}
+    .save-status{display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px; background:var(--green-soft); border:1px solid #bbf7d0; color:var(--green); font-size:12px; font-weight:800}
+    .save-status.pending{background:var(--amber-soft); border-color:#fed7aa; color:var(--amber)}
+    #lastSyncTimeTopText{color:#334155; font-size:13px; white-space:nowrap;}
+    .section{padding:16px}
+    .section-title{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 12px; font-size:18px; font-weight:800}
+    .section-amber{background:linear-gradient(135deg,#ffe3b5 0,#fff1da 50%,#ffffff 100%)}
+    .section-teal{background:linear-gradient(135deg,#cdeee8 0,#e8faf7 52%,#ffffff 100%)}
+    .section-blue{background:linear-gradient(135deg,#eef2f7 0,#f7f9fc 55%,#ffffff 100%)}
+    .pill{display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#d3e4ff 0,#eef4ff 100%); color:#1d4ed8; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid #b9d2ff}
+    .tiny{font-size:12px; color:var(--muted); line-height:1.6}
+    .filter-grid{display:grid; grid-template-columns:minmax(420px,560px) 1fr; gap:12px; align-items:center}
+    .table-wrap,.action-table{overflow:auto; border:1px solid var(--line); border-radius:16px; background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
+    table{width:100%; min-width:1000px; border-collapse:collapse}
+    th,td{padding:10px 10px; border-bottom:1px solid #edf2f7; text-align:left; vertical-align:middle; line-height:1.45}
+    th{position:sticky; top:0; z-index:1; background:linear-gradient(180deg,#dce9ff 0,#edf4ff 100%); font-size:13px; color:#23324d}
+    tbody tr:hover td{background:#edf4ff}
+    .clickable-row{cursor:pointer}
+    .progress{width:100%; max-width:130px; height:8px; border-radius:999px; background:#e5e7eb; overflow:hidden; margin-top:5px}
+    .progress > span{display:block; height:100%; background:linear-gradient(90deg,#60a5fa,#2563eb); width:0}
+    .status-btn{padding:7px 12px; border-radius:999px; border:1px solid transparent; font-weight:800; font-size:12px}
+    .status-btn.s0{background:var(--red-soft); color:var(--red); border-color:#fecaca}
+    .status-btn.s1{background:var(--amber-soft); color:var(--amber); border-color:#fed7aa}
+    .status-btn.s2{background:var(--green-soft); color:var(--green); border-color:#bbf7d0}
+    .status-btn.s3{background:var(--teal-soft); color:var(--teal); border-color:#99f6e4}
+    .chip-btn{padding:6px 11px; border-radius:999px; border:1px solid #b7c6e0; background:linear-gradient(180deg,#ffffff 0,#eef4ff 100%); color:#2a3852; font-size:13px}
+    .chip-btn.active{background:linear-gradient(135deg,#bfd8ff 0,#e7f0ff 100%); border-color:#5d93ef; color:#1541b1; font-weight:800}
+    .chip-btn.inactive-locked{background:#eef2f7; border-color:#cbd5e1; color:#64748b}
+    .group-row td{background:#f6f9ff !important; color:#1d4ed8; font-weight:800; font-size:13px; border-bottom:1px solid #dbeafe}
+    .empty{text-align:center; color:var(--muted); padding:18px; border:1px dashed var(--line); border-radius:16px; background:#fff}
+    .blank-cell{color:#cbd5e1; font-size:12px}
+    .inline-checklist{display:flex; flex-wrap:wrap; gap:6px 6px; align-items:center}
+    .archive-merged-cell{background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
+    .archive-merged-cell .inline-checklist{justify-content:flex-start}
+    .tri-btn{padding:5px 9px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px; text-align:left}
+    .tri-btn .s{display:inline-flex; min-width:18px; justify-content:center; margin-right:4px; font-weight:800}
+    .tri-btn.v{background:var(--green-soft); border-color:#bbf7d0}
+    .tri-btn.x{background:var(--red-soft); border-color:#fecaca}
+    .split-2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .sync-panel{padding:14px 16px; background:linear-gradient(135deg,#d7f0ec 0,#eefcf9 50%,#ffffff 100%)}
+    .sync-grid{display:grid; grid-template-columns:1.2fr 1.6fr auto auto auto; gap:8px; align-items:center}
+    .sync-status{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px}
+    .sync-badge{display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px; font-size:12px; font-weight:800; border:1px solid transparent}
+    .sync-badge.ok{background:var(--green-soft); color:var(--green); border-color:#bbf7d0}
+    .sync-badge.warn{background:var(--amber-soft); color:var(--amber); border-color:#fed7aa}
+    .sync-badge.off{background:#eef2f7; color:#475569; border-color:#cbd5e1}
+    .sync-note{font-size:12px; color:var(--muted)}
+    .sync-linklike{font-size:12px; color:#1d4ed8}
+    .sync-debug{display:none; margin-top:10px; padding:10px 12px; border-radius:14px; border:1px solid #fecaca; background:#fff1f2; color:#991b1b; white-space:pre-wrap; font-size:12px; line-height:1.55}
+
+    details.assist-panel{padding:0}
+    details.assist-panel > summary{list-style:none; cursor:pointer; padding:14px 16px; font-weight:800}
+    details.assist-panel > summary::-webkit-details-marker{display:none}
+    details.assist-panel .assist-body{padding:0 16px 16px}
+    .assist-list{display:grid; gap:10px; margin-top:12px}
+    .assist-pill{display:inline-flex; align-items:center; gap:8px; padding:7px 10px; border-radius:999px; background:#f8fafc; border:1px solid var(--line); font-size:13px}
+    .assist-pill.inactive{background:#f1f5f9; border-color:#cbd5e1; color:#64748b}
+    .assist-pill .assist-name{font-weight:800}
+    .assist-flag{display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:800; background:#dff7e6; color:#166534; border:1px solid #bbf7d0}
+    .assist-pill.inactive .assist-flag{background:#e2e8f0; color:#475569; border-color:#cbd5e1}
+    .assist-pill button{padding:3px 9px; border-radius:999px; background:#fecaca; color:#991b1b; font-size:12px; font-weight:800; border:1px solid #fca5a5}
+    .assist-pill.inactive button{background:#dbeafe; color:#1d4ed8; border-color:#bfdbfe}
+    #assistantList{display:flex; gap:8px; flex-wrap:nowrap; overflow-x:auto; align-items:center; margin-top:12px; padding-bottom:4px}
+    #assistantList .assist-pill{flex:0 0 auto}
+    .config-toolbar-sticky{position:static; top:auto; z-index:auto; padding:10px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d9e8ff 0,#eef4ff 55%,#ffffff 100%); box-shadow:none}
+    .config-floating-tools{position:fixed; right:18px; bottom:18px; z-index:60; display:none}
+    .config-floating-tools.show{display:block}
+    .config-floating-btn{padding:10px 14px; border-radius:999px; box-shadow:0 16px 30px rgba(15,23,42,.16)}
+    .setting-card{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
+    .setting-card-head{display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:10px}
+    .setting-grid{display:grid; grid-template-columns:1.2fr 220px 1.3fr auto auto; gap:8px; align-items:center}
+    .setting-tag{display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700; background:#eef4ff; color:#1d4ed8; border:1px solid #c7dbff}
+    .setting-tag.fixed{background:#f1f5f9; color:#475569; border-color:#cbd5e1}
+    .archive-month{margin-top:10px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(180deg,#ffffff 0,#f7faff 100%); overflow:hidden}
+    .archive-month summary{cursor:pointer; list-style:none; padding:12px 14px; font-weight:800; background:linear-gradient(135deg,#eef3f8 0,#f8fbff 100%); color:#475569}
+    .archive-month summary::-webkit-details-marker{display:none}
+    .archive-month .archive-body{padding:10px 12px 12px}
+    .archive-card{display:grid; grid-template-columns:1.6fr 1fr 1fr auto; gap:10px; align-items:center; padding:10px 12px; border:1px solid #dbe3ef; border-radius:14px; background:linear-gradient(180deg,#ffffff 0,#fbfdff 100%); margin-top:8px}
+    .archive-meta{font-size:12px; color:var(--muted)}
+    .month-count-wrap{display:grid; gap:8px; margin-bottom:12px}
+    .month-count-top{display:flex; justify-content:flex-start; align-items:center; gap:10px; flex-wrap:wrap}
+    .month-count-total{display:none}
+    .month-count-list{overflow:auto}
+    .month-count-table{width:100%; min-width:640px; border-collapse:collapse; background:#fff; border:1px solid var(--line)}
+    .month-count-table th,.month-count-table td{border:1px solid var(--line); padding:8px 10px; text-align:center; white-space:nowrap; font-weight:800}
+    .month-count-table th{background:linear-gradient(180deg,#edf4ff 0,#e2ecff 100%); color:#23324d}
+    .month-count-table td{background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
+    .month-count-table .stub-cell{min-width:86px}
+    .month-count-table .name-cell{min-width:68px}
+    .month-count-table .total-cell{min-width:72px}
+    .month-count-table th.total-cell{background:linear-gradient(180deg,#ffe3b5 0,#fff0d3 100%); color:#92400e}
+    .month-count-table td.total-cell{background:linear-gradient(180deg,#fff3df 0,#fff8ee 100%); color:#92400e}
+    .month-count-empty{padding:12px; border:1px dashed var(--line); border-radius:14px; background:#fff; color:var(--muted); text-align:center}
+    .modal{position:fixed; inset:0; background:linear-gradient(180deg,rgba(15,23,42,.62) 0,rgba(30,41,59,.72) 100%); display:none; align-items:center; justify-content:center; padding:18px; z-index:1000}
+    .modal.show{display:flex}
+    .modal-card{width:min(1220px,100%); max-height:calc(100vh - 36px); overflow:auto; background:linear-gradient(180deg,#f8fbff 0,#eef5ff 42%,#ffffff 100%); border-radius:24px; box-shadow:0 30px 70px rgba(2,6,23,.34); border:1px solid rgba(112,139,187,.42)}
+    .modal-head{position:sticky; top:0; z-index:6; background:linear-gradient(135deg,#8fc2ff 0,#cfe5ff 42%,#f7fbff 100%); padding:16px 18px; border-bottom:2px solid #8ebdff; box-shadow:0 8px 20px rgba(59,130,246,.16); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+    .modal-title{font-size:24px; font-weight:900; line-height:1.2}
+    .modal-body{padding:16px 18px 18px; display:grid; gap:16px; background:linear-gradient(180deg,rgba(221,235,255,.62) 0,rgba(255,255,255,.94) 26%,#ffffff 100%)}
+    .top-summary{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px}
+    .summary-mini{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f4f8ff 100%)}
+    .summary-mini:nth-child(1){background:linear-gradient(135deg,#cfe0ff 0,#e8f1ff 100%)} .summary-mini:nth-child(2){background:linear-gradient(135deg,#ffdca8 0,#fff0d3 100%)}
+    .summary-mini:nth-child(3){background:linear-gradient(135deg,#c8eee6 0,#ebfaf7 100%)} .summary-mini:nth-child(4){background:linear-gradient(135deg,#d8f1dd 0,#f1fbf3 100%)}
+    .summary-mini:nth-child(5){background:linear-gradient(135deg,#ffd0df 0,#fff0f5 100%)}
+    .summary-mini .k{font-size:12px; color:var(--muted); margin-bottom:6px}
+    .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
+    .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
+    .case-note-row{display:grid; gap:6px}
+    .case-note-label{font-size:13px; font-weight:800; color:#334155}
+    @media (max-width:1180px){
+      .stats-grid,.top-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .filter-grid,.setting-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .wrap{padding:12px}
+      .stats-grid,.top-summary{grid-template-columns:1fr}
+      h1{font-size:22px}
+      .modal{padding:10px}
+      .modal-head,.modal-body{padding:14px}
+      .split-2{grid-template-columns:1fr}
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card header">
+      <div class="title-row" style="justify-content:space-between;">
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">NEW本製作</div>
+        <div class="toolbar" style="justify-content:flex-end; gap:12px;">
+          <button class="primary" id="newCaseBtn">＋ 新增物件</button>
+          <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
+          <span class="save-status" id="globalSaveStatus">已自動存檔</span>
+          <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">最後同步時間：—</span>
+        </div>
+      </div>
+    </section>
+
+    <details class="card assist-panel">
+      <summary>雲端同步設定（設定隱藏）</summary>
+      <div class="assist-body">
+        <div class="tiny" style="margin-bottom:10px;">這版以 V14 為基底，改成兩台可共用同一份資料。</div>
+        <div class="sync-grid">
+          <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
+          <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
+          <button class="primary" id="syncConnectBtn" onclick="connectSupabase()">連線</button>
+          <button class="ghost" id="syncNowBtn" onclick="remoteSaveNow().then(()=>fetchAndApplyRemote(true)).catch(showSyncError)">立即同步</button>
+          <button class="danger" id="syncDisconnectBtn" onclick="disconnectSupabase()">中斷</button>
+        </div>
+        <div class="sync-status">
+          <span id="syncStatusBadge" class="sync-badge off">尚未連線</span>
+          <span id="syncStatusText" class="sync-note">先貼上 Supabase URL 與 Publishable / anon key，再按「連線」。</span>
+        </div>
+        <div id="syncDebugBox" class="sync-debug"></div>
+      </div>
+    </details>
+
+    <section class="card stats" style="display:none; white-space:pre-wrap;">
+      <div class="section-title"><span>總覽</span><span class="tiny">直接從下方 NEW本列表 操作</span></div>
+      <div class="stats-grid">
+        <div class="stat"><div class="label">案件總數</div><div class="value" id="sumCases">0</div></div>
+        <div class="stat"><div class="label">完成案件</div><div class="value" id="sumDoneCases">0</div></div>
+        <div class="stat"><div class="label">未完成案件</div><div class="value" id="sumUndoneCases">0</div></div>
+        <div class="stat"><div class="label">平均完成率</div><div class="value" id="sumAvgProgress">0%</div></div>
+        <div class="stat"><div class="label">尚未完成動作數</div><div class="value" id="sumPendingItems">0</div></div>
+      </div>
+    </section>
+
+    <section class="card section section-amber">
+      <div class="section-title">
+        <span>製作中</span>
+        <span class="tiny">選一個動作後，只列出還沒完成的物件，點一下就可直接操作</span>
+      </div>
+      <div class="filter-grid">
+        <div style="display:grid; gap:10px; grid-template-columns:auto 220px 1fr 1fr auto; align-items:center;">
+          <button type="button" class="ghost" id="clearPendingFilterBtn">清除篩選</button>
+          <select id="pendingActionFilter" class="field-select"></select>
+          <input id="caseNameFilterInput" class="field-input" type="text" placeholder="案名搜尋，例如：大同路 / 國寶 / 東區">
+          <input id="developerFilterInput" class="field-input" type="text" placeholder="開發篩選，例如：余沛臻 / 沛臻">
+          <button type="button" class="ghost" id="clearPendingTextBtn">清除文字</button>
+        </div>
+        <div class="tiny" id="pendingFilterHint">目前列出所有尚未完成的物件。</div>
+      </div>
+      <div class="table-wrap" style="margin-top:12px;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:48px">夾子</th>
+              <th style="width:72px">進案日期</th>
+              <th style="width:130px">主約編號</th>
+              <th style="width:220px">案名</th>
+              <th style="width:120px">開發</th>
+              <th style="width:200px">目前缺少動作</th>
+              <th style="width:120px">完成率</th>
+              <th style="width:90px">操作</th>
+              <th style="width:240px">記事欄</th>
+            </tr>
+          </thead>
+          <tbody id="pendingTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card section section-teal">
+      <div class="section-title">
+        <span>NEW本列表</span>
+        <span class="tiny">選擇月份＋選擇日期（下拉式選單）</span>
+      </div>
+      <div class="filter-grid" style="margin-bottom:12px;">
+        <div style="display:grid; gap:10px; grid-template-columns:220px 220px auto; align-items:start;">
+          <div>
+            <div class="tiny" style="margin-bottom:6px; font-weight:800;">選擇月份</div>
+            <select id="summaryMonthFilterSelect" class="field-select">
+              <option value="">選擇月份</option>
+            </select>
+          </div>
+          <div>
+            <div class="tiny" style="margin-bottom:6px; font-weight:800;">選擇日期</div>
+            <select id="summaryDateFilterSelect" class="field-select">
+              <option value="">選擇日期</option>
+            </select>
+          </div>
+          <button type="button" class="ghost" id="clearSummaryDateFilterBtn" style="margin-top:22px;">清除日期</button>
+        </div>
+        <div class="tiny" id="summaryFilterHint">目前列出所有製作中案件。</div>
+      </div>
+      <div class="month-count-wrap">
+        <div class="month-count-top">
+          <div class="section-title" style="margin:0; font-size:16px;">
+            <span id="summaryMonthCountTitle">本月份計數</span>
+            <span class="tiny">依業務欄位拆算</span>
+          </div>
+          <span id="summaryMonthCountTotal" class="month-count-total">總計：0件</span>
+        </div>
+        <div id="summaryMonthCountList" class="month-count-list"></div>
+      </div>
+      <div class="table-wrap" style="max-height:420px; overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:240px">案名</th>
+              <th style="width:120px">進案日期</th>
+              <th style="width:140px">業務</th>
+              <th style="width:140px">主約編號</th>
+              <th style="width:180px">委託時間</th>
+              <th style="width:160px">物件本位置</th>
+              <th style="width:90px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card section section-blue">
+      <div class="section-title">
+        <span>封存區</span>
+        <span class="tiny">已封存案件會依進案月份收合顯示，平常不干擾 NEW本列表</span>
+      </div>
+      <div id="archiveSections"></div>
+    </section>
+
+    <details class="card assist-panel">
+      <summary>助理名單（隱藏）</summary>
+      <div class="assist-body">
+        <div class="toolbar">
+          <input id="assistantNameInput" class="field-input" style="width:180px" placeholder="新增助理，例如：小雅" />
+          <button class="soft" id="addAssistantBtn">新增</button>
+        </div>
+        <div id="assistantList" class="assist-list"></div>
+      </div>
+    </details>
+
+    <details class="card assist-panel" id="itemSettingsPanel">
+      <summary>項目設定（隱藏）</summary>
+      <div class="assist-body">
+        <div class="toolbar config-toolbar-sticky" style="margin-bottom:10px;" id="itemSettingsToolbar">
+          <input id="customActionNameInput" class="field-input" style="width:220px" placeholder="新增項目名稱，例如：社群貼文" />
+          <select id="customActionTypeInput" class="field-select" style="width:170px">
+            <option value="assistant">助理點選</option>
+            <option value="text">文字輸入</option>
+            <option value="textOption">文字輸入+選項</option>
+            <option value="textAssistant">文字輸入+助理</option>
+            <option value="dateText">日期欄位</option>
+            <option value="dateAssistant">日期+助理</option>
+            <option value="dateTextNote">日期+文字輸入</option>
+            <option value="dateTextNoteAssistant">日期+文字輸入+助理</option>
+            <option value="dateOption">日期+選項</option>
+            <option value="dateTextNoteOption">日期+文字輸入+選項</option>
+            <option value="assistantOrOption">助理或選項</option>
+            <option value="optionOnly">純選項</option>
+            <option value="select">下拉選單</option>
+          </select>
+          <input id="customActionOptionsInput" class="field-input" style="width:300px" placeholder="選項用逗號分隔，例如：無,進案附,免做" />
+          <button class="soft" id="addCustomActionBtn">新增項目</button>
+        </div>
+        <div class="tiny" style="margin-bottom:10px;">這裡可改每個項目的名稱、輸入模式、選項內容。按套用後會保留原本案件資料，不會整筆清空。像「契據掃描」也可以改成有選項的模式。</div>
+        <div id="customActionList" class="assist-list"></div>
+      </div>
+    </details>
+
+    <div id="configFloatingTools" class="config-floating-tools" aria-hidden="true">
+      <button type="button" class="primary config-floating-btn" id="configScrollTopBtn">回頂端</button>
+    </div>
+
+    <details class="card assist-panel">
+      <summary>公司物件存檔設定（隱藏）</summary>
+      <div class="assist-body">
+        <div class="tiny" style="margin-bottom:8px;">一行一個項目。改完按「套用設定」。同名項目會保留原本勾選，改名後視為新項目。</div>
+        <textarea id="archiveConfigInput" class="field-input" style="min-height:170px; resize:vertical;"></textarea>
+        <div class="toolbar" style="margin-top:10px;">
+          <button class="soft" id="saveArchiveConfigBtn">套用設定</button>
+        </div>
+      </div>
+    </details>
+
+  </div>
+
+  <div id="caseModal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="modalTitle">案件操作</div>
+          <div class="tiny" id="modalSub">點選欄位即可編修</div>
+        </div>
+        <div class="top-actions">
+          <span class="save-status" id="modalSaveStatus">已自動存檔</span>
+          <button class="top-strong" id="modalScrollTopBtn">頂端</button>
+          <button class="archive-soft" id="modalArchiveBtn">封存</button>
+          <button class="danger" id="modalDeleteBtn">刪除案件</button>
+          <button class="ghost" id="modalCloseBtn">關閉</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="case-note-row">
+          <div class="case-note-label">記事欄</div>
+          <input id="modalCaseNoteInput" class="field-input" type="text" placeholder="這筆案件的記事...">
+        </div>
+        
+
+        <div class="action-toolbar">
+          <div class="chips" id="statusFilterChips"></div>
+          <div class="tiny">篩選保留：全部 / 未做 / 已做 / 完成</div>
+        </div>
+
+        <div class="action-table">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:180px">項目</th>
+                <th style="width:270px">輸入內容 / 特殊選項</th>
+                <th style="width:270px">經手助理 / 補充欄位</th>
+                <th style="width:120px">狀態</th>
+                <th style="width:150px">最後更新</th>
+              </tr>
+            </thead>
+            <tbody id="modalActionsBody"></tbody>
+          </table>
+        </div>
+
+        <div class="top-actions" style="justify-content:flex-end;">
+          <button class="ghost" id="modalCloseBtnBottom">關閉</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'newbook_v14_sync_cache';
+    const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
+    const SYNC_APP_ID = 'newbook_v14';
+    const ROC_YEAR = new Date().getFullYear() - 1911;
+    const STATUS_TEXT = ['未做','已做','完成','完全完成'];
+    const EDITABLE_TYPE_OPTIONS = [
+      ['assistant','助理點選'],
+      ['text','文字輸入'],
+      ['textOption','文字輸入+選項'],
+      ['textAssistant','文字輸入+助理'],
+      ['dateText','日期欄位'],
+      ['dateAssistant','日期+助理'],
+      ['dateTextNote','日期+文字輸入'],
+      ['dateTextNoteAssistant','日期+文字輸入+助理'],
+      ['dateOption','日期+選項'],
+      ['dateTextNoteOption','日期+文字輸入+選項'],
+      ['assistantOrOption','助理或選項'],
+      ['optionOnly','純選項'],
+      ['select','下拉選單']
+    ];
+    const FIELD_DEFS = [{"group": "基本資料", "key": "clipNo", "label": "夾子", "type": "text", "placeholder": "例如：夾 12 號 / 夾子編號"}, {"group": "基本資料", "key": "entryDate", "label": "進案日期", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "基本資料", "key": "developer", "label": "開發", "type": "text", "placeholder": "業務名字"}, {"group": "基本資料", "key": "caseName", "label": "案名", "type": "text", "placeholder": "案件名稱"}, {"group": "基本資料", "key": "wangReview", "label": "王總審核", "type": "assistant"}, {"group": "基本資料", "key": "listPrice", "label": "開價", "type": "text", "placeholder": "例如：988萬"}, {"group": "基本資料", "key": "basePrice", "label": "底價", "type": "text", "placeholder": "例如：938萬"}, {"group": "基本資料", "key": "mainContractNo", "label": "主約編號", "type": "text", "placeholder": "契約編號"}, {"group": "基本資料", "key": "changeContractNo", "label": "契變編號", "type": "text", "placeholder": "契約編號 / 無"}, {"group": "基本資料", "key": "contractType", "label": "契種", "type": "select", "options": ["", "一般約", "專約"]}, {"group": "基本資料", "key": "percent", "label": "%數", "type": "text", "placeholder": "例如：4%"}, {"group": "基本資料", "key": "entrustStart", "label": "委託開始", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "基本資料", "key": "entrustEnd", "label": "委託結束", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "影像 / 圖資 / 謄本", "key": "photoNas", "label": "照片存檔Nas原檔", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "photoAnimation", "label": "照片動畫", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "mosaicBrightness", "label": "馬賽克&亮度", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "naming1234", "label": "命名1234", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "watermark", "label": "浮水印", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "aiFloorplan", "label": "繪AI格局圖", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "convertImages", "label": "轉存圖片", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "cadastralMap", "label": "地籍圖", "type": "assistantOrOption", "specialOptions": ["進案附", "大樓", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "buildingResult", "label": "建物成果圖", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "buildingTranscript", "label": "建物謄本", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "landTranscript", "label": "土地謄本", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "內容整理 / 上傳", "key": "notebookFilenameEdit", "label": "記事本檔名編輯", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "currentA4", "label": "現況縮A4", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "contractContent", "label": "契約書內容", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "clientAdd", "label": "客戶新增", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "ckBuilding", "label": "CK建坪", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "ckLand", "label": "CK地坪", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "buildingUse", "label": "建物主要登記用途", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "keyPropertyData", "label": "Key物件資料", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "keyPropertyFeatures", "label": "Key物件特色", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "uploadPhotos", "label": "上傳照片", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "uploadFloorplan", "label": "上傳格局圖", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "websitePublic", "label": "官網上網", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "websiteInternal", "label": "內網上網", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "deedScan", "label": "契據掃描", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "contractNaming", "label": "契約命名", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "deedUpload", "label": "契據上傳", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "edManage", "label": "ED房管", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "內容整理 / 上傳", "key": "edUpload", "label": "ED上傳", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "printOwnership", "label": "列印產權", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printOwnershipNote", "label": "列印產權相關注意事項", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printLandTax", "label": "列印土增", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printNearby", "label": "列印周遭設施", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printDealPrice", "label": "列印成交行情", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printCurrentSurvey", "label": "列印現詢調", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "goldExposure", "label": "黃金曝光", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "lineBossConfirm", "label": "LINE王總確認", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "goStrong", "label": "上強打", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "goHousefun", "label": "上好房", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "po591", "label": "PO591", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "printColor", "label": "印彩色", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "addMasterList", "label": "新增總表", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "copyAdd", "label": "複製新增", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "summarySheet", "label": "統整表", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "newCover", "label": "新進封面", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "middlemanAmount", "label": "中人金額", "type": "text", "placeholder": "例如：1%、10萬、無"}, {"group": "列印 / 曝光 / 後續", "key": "middlemanNote", "label": "中人總表備註", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "companyNo", "label": "公司＃", "type": "text", "placeholder": "例如：公司#53、無"}, {"group": "列印 / 曝光 / 後續", "key": "labelPrint", "label": "標籤列印", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "pptMake", "label": "PPT製作", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "pptLayout", "label": "PPT格局圖", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "pptAnimation", "label": "PPT動畫", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "applyZone", "label": "申請分區", "type": "optionOnly", "specialOptions": ["需申請", "土地標", "房屋"]}, {"group": "列印 / 曝光 / 後續", "key": "applyDate", "label": "申請日期", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "列印 / 曝光 / 後續", "key": "companyArchive", "label": "公司物件存檔", "type": "triChecklist", "subitems": ["新進封面/草稿", "正", "反", "彩色", "A4簽名", "分區", "地籍圖", "建物成果圖", "謄本", "土增", "產權", "實價", "周遭設施", "現詢調", "權狀", "授權書"]}, {"group": "列印 / 曝光 / 後續", "key": "paperMainContract", "label": "紙本主約", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "paperChangeContract", "label": "紙本契變", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "bookShelfLocation", "label": "物件本位置架上", "type": "locationInfo"}, {"group": "列印 / 曝光 / 後續", "key": "bookSide5Location", "label": "物件本位置旁5", "type": "locationInfo"}, {"group": "列印 / 曝光 / 後續", "key": "backCover", "label": "封背", "type": "assistant"}];
+
+    const BASE_FIELD_COUNT = FIELD_DEFS.length;
+    let state = loadState();
+    mergeCustomActions();
+
+    let currentCaseId = state.cases[0]?.id || null;
+    let activeModalCaseId = null;
+    let saveTimer = null;
+    let mainRefreshTimer = null;
+    let modalStatusFilter = 'all';
+    let syncClient = null;
+    let syncConfig = loadSyncConfig();
+    let remotePollTimer = null;
+    let remoteSaveTimer = null;
+    let remoteRevision = 0;
+    let remoteUpdatedAt = '';
+    let pendingRemoteRow = null;
+    let lastLocalEditAt = 0;
+    let currentConfigFocusKey = '';
+
+
+    function updateConfigFloatingTools(){
+      const panel = document.getElementById('itemSettingsPanel');
+      const tools = document.getElementById('configFloatingTools');
+      if(!panel || !tools) return;
+      if(!panel.open){
+        tools.classList.remove('show');
+        tools.setAttribute('aria-hidden','true');
+        return;
+      }
+      tools.classList.add('show');
+      tools.setAttribute('aria-hidden','false');
+    }
+
+    function bindConfigFloatingTools(){
+      const panel = document.getElementById('itemSettingsPanel');
+      const btn = document.getElementById('configScrollTopBtn');
+      if(btn){
+        btn.onclick = () => {
+          window.scrollTo({ top: 0, behavior:'smooth' });
+        };
+      }
+      if(panel){
+        panel.addEventListener('toggle', updateConfigFloatingTools);
+      }
+      window.addEventListener('scroll', updateConfigFloatingTools, { passive:true });
+      window.addEventListener('resize', updateConfigFloatingTools);
+      updateConfigFloatingTools();
+    }
+
+    function loadSyncConfig(){
+      const raw = localStorage.getItem(SYNC_CONFIG_KEY);
+      if(!raw) return { url:'', key:'' };
+      try {
+        const parsed = JSON.parse(raw);
+        return { url: parsed?.url || '', key: parsed?.key || '' };
+      } catch(err) {
+        return { url:'', key:'' };
+      }
+    }
+
+    function saveSyncConfig(){
+      localStorage.setItem(SYNC_CONFIG_KEY, JSON.stringify(syncConfig));
+    }
+
+    function setSyncStatus(kind, text){
+      const badge = document.getElementById('syncStatusBadge');
+      const line = document.getElementById('syncStatusText');
+      if(!badge || !line) return;
+      badge.className = `sync-badge ${kind}`;
+      badge.textContent = kind === 'ok' ? '已連線' : kind === 'warn' ? '注意' : '未連線';
+      line.textContent = text;
+    }
+
+    function showSyncError(err){
+      const box = document.getElementById('syncDebugBox');
+      let msg = '';
+      if(err){
+        if(typeof err === 'string') msg = err;
+        else if(err.message) msg = err.message;
+        else msg = JSON.stringify(err, null, 2);
+        const extras = [];
+        if(err.code) extras.push('code: ' + err.code);
+        if(err.details) extras.push('details: ' + err.details);
+        if(err.hint) extras.push('hint: ' + err.hint);
+        if(err.stack) extras.push('stack: ' + err.stack);
+        if(extras.length) msg += '\n' + extras.join('\n');
+      } else {
+        msg = '未知錯誤';
+      }
+      if(box){
+        box.style.display = 'block';
+        box.textContent = '同步錯誤：\n' + msg;
+      }
+      console.error(err);
+      setSyncStatus('warn', '發生錯誤，請看下方紅色訊息。');
+    }
+    window.addEventListener('error', (e) => {
+      const box = document.getElementById('syncDebugBox');
+      if(box){
+        box.style.display = 'block';
+        box.textContent = 'JS 錯誤：\n' + (e.message || '未知錯誤');
+      }
+      setSyncStatus('warn', '發生錯誤，請看下方紅色訊息。');
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      showSyncError(e.reason || 'Promise rejection');
+    });
+
+    function initSyncUI(){
+      const urlEl = document.getElementById('syncUrlInput');
+      const keyEl = document.getElementById('syncKeyInput');
+      if(urlEl) urlEl.value = syncConfig.url || '';
+      if(keyEl) keyEl.value = syncConfig.key || '';
+      document.getElementById('syncConnectBtn').onclick = connectSupabase;
+      document.getElementById('syncDisconnectBtn').onclick = disconnectSupabase;
+      document.getElementById('syncNowBtn').onclick = async () => {
+        const box = document.getElementById('syncDebugBox');
+        if(box){
+          box.style.display = 'block';
+          box.textContent = '診斷：手動同步中…';
+        }
+        await remoteSaveNow();
+        if(box){
+          box.textContent = '診斷：已送出本機資料，開始重新抓取雲端狀態…';
+        }
+        await fetchAndApplyRemote(true);
+        if(box){
+          box.textContent = '診斷：手動同步完成。';
+        }
+      };
+      if(syncConfig.url && syncConfig.key){
+        connectSupabase(true);
+      } else {
+        setSyncStatus('off', '先貼上 Supabase URL 與 Publishable / anon key，再按「連線」。');
+      }
+    }
+
+    async function connectSupabase(isAuto=false){
+      const box = document.getElementById('syncDebugBox');
+      if(box){ box.style.display = 'none'; box.textContent = ''; }
+      setSyncStatus('warn', '連線中…');
+      const urlEl = document.getElementById('syncUrlInput');
+      const keyEl = document.getElementById('syncKeyInput');
+      const url = (urlEl?.value || '').trim();
+      const key = (keyEl?.value || '').trim();
+      if(!url || !key){
+        setSyncStatus('warn', '請先填 Supabase URL 與 Publishable / anon key。');
+        return;
+      }
+      if(!window.supabase || !window.supabase.createClient){
+        const err = new Error('Supabase 套件尚未載入完成，可能是網路或瀏覽器阻擋 CDN。');
+        showSyncError(err);
+        return;
+      }
+      try {
+        syncClient = window.supabase.createClient(url, key);
+        syncConfig = { url, key };
+        saveSyncConfig();
+        setSyncStatus('warn', '連線中…');
+        await fetchAndApplyRemote(true);
+        if(!remotePollTimer){
+          remotePollTimer = setInterval(() => { fetchAndApplyRemote(false); }, 4000);
+        }
+        setSyncStatus('ok', isAuto ? '已自動連上 Supabase，同步監看中。' : '已連上 Supabase，同步監看中。');
+      } catch(err){
+        syncClient = null;
+        showSyncError(err);
+      }
+    }
+
+    function disconnectSupabase(){
+      syncClient = null;
+      clearInterval(remotePollTimer);
+      clearTimeout(remoteSaveTimer);
+      remotePollTimer = null;
+      remoteSaveTimer = null;
+      remoteRevision = 0;
+      remoteUpdatedAt = '';
+      pendingRemoteRow = null;
+      setSyncStatus('off', '已中斷雲端同步，目前只保留本機快取。');
+    }
+
+    async function ensureRemoteRow(){
+      const { data, error } = await syncClient.from('app_state').select('app_id,data,revision,updated_at').eq('app_id', SYNC_APP_ID).maybeSingle();
+      if(error) throw error;
+      if(data){
+        applyRemoteRow(data, true);
+        return data;
+      }
+      const payload = { app_id: SYNC_APP_ID, data: state, revision: 1, updated_at: new Date().toISOString() };
+      const inserted = await syncClient.from('app_state').upsert(payload, { onConflict: 'app_id' }).select('app_id,data,revision,updated_at').single();
+      if(inserted.error) throw inserted.error;
+      applyRemoteRow(inserted.data, true);
+      return inserted.data;
+    }
+
+    function applyRemoteRow(row, silent=false){
+      if(!row || !row.data) return;
+      const incoming = row.data;
+      if(!incoming.assistants) incoming.assistants = defaultAssistants();
+      if(!incoming.customActions) incoming.customActions = [];
+      if(!incoming.fieldSettings) incoming.fieldSettings = {};
+      if(!incoming.cases || !Array.isArray(incoming.cases)) incoming.cases = [createEmptyCase()];
+      state = incoming;
+      ensureAssistantsState();
+      mergeCustomActions();
+      currentCaseId = state.cases[0]?.id || null;
+      remoteRevision = Number(row.revision || 0);
+      remoteUpdatedAt = row.updated_at || '';
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        if(c){
+          renderModalSummary(c);
+          renderModalActions(c);
+        } else {
+          closeModal();
+        }
+      }
+      if(!silent) setSyncStatus('ok', '已收到另一台電腦的最新更新。');
+    }
+
+    async function fetchAndApplyRemote(forceApply){
+      if(!syncClient) return;
+      try {
+        const rowRes = await syncClient.from('app_state').select('app_id,data,revision,updated_at').eq('app_id', SYNC_APP_ID).maybeSingle();
+        if(rowRes.error) throw rowRes.error;
+        if(!rowRes.data){
+          await ensureRemoteRow();
+          return;
+        }
+        const row = rowRes.data;
+        const changed = String(row.updated_at || '') !== String(remoteUpdatedAt || '') || Number(row.revision || 0) !== Number(remoteRevision || 0);
+        if(!changed){
+          if(pendingRemoteRow && Date.now() - lastLocalEditAt > 2500){
+            applyRemoteRow(pendingRemoteRow);
+            pendingRemoteRow = null;
+          }
+          return;
+        }
+        if(forceApply || Date.now() - lastLocalEditAt > 2500){
+          applyRemoteRow(row);
+          pendingRemoteRow = null;
+        } else {
+          pendingRemoteRow = row;
+          setSyncStatus('warn', '另一台有更新，等你這邊停下後會自動套用。');
+        }
+      } catch(err){
+        console.error(err);
+        setSyncStatus('warn', '同步讀取失敗，請確認資料表與 RLS 設定。');
+      }
+    }
+
+    async function remoteSaveNow(){
+      if(!syncClient) return;
+      clearTimeout(remoteSaveTimer);
+      try {
+        const payload = {
+          app_id: SYNC_APP_ID,
+          data: state,
+          revision: Number(remoteRevision || 0) + 1,
+          updated_at: new Date().toISOString()
+        };
+        const res = await syncClient.from('app_state').upsert(payload, { onConflict: 'app_id' }).select('revision,updated_at').single();
+        if(res.error) throw res.error;
+        remoteRevision = Number(res.data?.revision || payload.revision);
+        remoteUpdatedAt = res.data?.updated_at || payload.updated_at;
+        setLastSyncTimeText(fmtTime(remoteUpdatedAt));
+        setSyncStatus('ok', '已同步到雲端。');
+      } catch(err){
+        console.error(err);
+        setSyncStatus('warn', '同步寫入失敗，資料仍保留在本機快取。');
+      }
+    }
+
+    function scheduleRemoteSave(){
+      if(!syncClient) return;
+      clearTimeout(remoteSaveTimer);
+      remoteSaveTimer = setTimeout(() => { remoteSaveNow(); }, 500);
+    }
+
+    function loadState(){
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if(saved){
+        try {
+          const parsed = JSON.parse(saved);
+          if(parsed && Array.isArray(parsed.cases) && Array.isArray(parsed.assistants)) {
+            if(!Array.isArray(parsed.customActions)) parsed.customActions = [];
+            if(!Array.isArray(parsed.companyArchiveItems)) parsed.companyArchiveItems = [];
+            if(!parsed.fieldSettings || typeof parsed.fieldSettings !== 'object') parsed.fieldSettings = {};
+            parsed.assistants = normalizeAssistants(parsed.assistants);
+            if(!parsed.assistants.length) parsed.assistants = defaultAssistants();
+            return parsed;
+          }
+        } catch(err) {}
+      }
+      return { assistants:defaultAssistants(), customActions:[], fieldSettings:{}, companyArchiveItems:[], cases:[createEmptyCase()] };
+    }
+
+    function mergeCustomActions(){
+      ensureAssistantsState();
+      if(!Array.isArray(state.customActions)) state.customActions = [];
+      if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
+      if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
+      state.customActions.forEach(def => {
+        if(def && def.key && !FIELD_DEFS.some(x => x.key === def.key)){
+          FIELD_DEFS.push(def);
+        }
+      });
+      applySavedFieldSettings();
+      const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
+      if(archiveDef && state.companyArchiveItems.length){
+        archiveDef.subitems = [...state.companyArchiveItems];
+      }
+      state.cases.forEach(ensureCaseShape);
+    }
+
+    function getFieldDefByKey(key){
+      return FIELD_DEFS.find(x => x.key === key) || null;
+    }
+
+    function isCustomField(key){
+      return !!state.customActions.find(x => x.key === key);
+    }
+
+    function isFixedField(def){
+      return def.type === 'triChecklist' || def.type === 'locationInfo' || def.key === 'companyArchive' || def.key === 'bookShelfLocation' || def.key === 'bookSide5Location';
+    }
+
+    function typeNeedsOptions(type){
+      return ['assistantOrOption','optionOnly','textOption','dateOption','dateTextNoteOption','select'].includes(type);
+    }
+
+    function parseOptionsText(raw){
+      return String(raw || '').split(/[,，\n]/).map(s => s.trim()).filter(Boolean);
+    }
+
+    function defaultAssistants(){
+      return [{ name:'紹薇', active:true }, { name:'麗卉', active:true }];
+    }
+
+    function normalizeAssistantEntry(entry){
+      if(typeof entry === 'string'){
+        const name = entry.trim();
+        return name ? { name, active:true } : null;
+      }
+      if(!entry || typeof entry !== 'object') return null;
+      const name = String(entry.name || '').trim();
+      if(!name) return null;
+      return { name, active: entry.active !== false };
+    }
+
+    function normalizeAssistants(list){
+      const map = new Map();
+      (Array.isArray(list) ? list : []).forEach(entry => {
+        const normalized = normalizeAssistantEntry(entry);
+        if(!normalized) return;
+        if(map.has(normalized.name)){
+          const prev = map.get(normalized.name);
+          map.set(normalized.name, { name: normalized.name, active: prev.active || normalized.active });
+        } else {
+          map.set(normalized.name, normalized);
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function ensureAssistantsState(){
+      state.assistants = normalizeAssistants(state.assistants);
+      if(!state.assistants.length) state.assistants = defaultAssistants();
+    }
+
+    function findAssistantEntry(name){
+      const target = String(name || '').trim();
+      if(!target) return null;
+      return (state.assistants || []).find(entry => entry.name === target) || null;
+    }
+
+    function activeAssistantEntries(){
+      return (state.assistants || []).filter(entry => entry.active !== false);
+    }
+
+    function assistantDisplayName(name){
+      const entry = findAssistantEntry(name);
+      if(!entry) return name ? `${name}（舊資料）` : '';
+      return entry.active === false ? `${entry.name}（停用）` : entry.name;
+    }
+
+    function getAssistantChoicesForItem(item){
+      const choices = activeAssistantEntries().map(entry => ({ ...entry }));
+      const currentName = String(item?.assistant || '').trim();
+      if(currentName && !choices.some(entry => entry.name === currentName)){
+        const currentEntry = findAssistantEntry(currentName);
+        choices.push(currentEntry ? { ...currentEntry } : { name: currentName, active:false });
+      }
+      return choices;
+    }
+
+    function getOptionsText(def){
+      if(def.type === 'select') return (def.options || []).filter(Boolean).join(',');
+      return (def.specialOptions || []).join(',');
+    }
+
+    function applyDefType(def, nextType, optionList, preserveTextPlaceholder=true){
+      def.type = nextType;
+      delete def.options;
+      delete def.specialOptions;
+      if(nextType === 'dateText'){
+        def.dateAuto = true;
+        def.placeholder = '例如：115/3/17';
+      } else {
+        delete def.dateAuto;
+        if(!preserveTextPlaceholder || nextType !== 'text'){
+          if(def.placeholder === '例如：115/3/17') delete def.placeholder;
+        }
+      }
+      if(nextType === 'assistantOrOption' || nextType === 'optionOnly' || nextType === 'textOption' || nextType === 'dateOption' || nextType === 'dateTextNoteOption'){
+        def.specialOptions = [...optionList];
+      }
+      if(nextType === 'select'){
+        def.options = [''].concat(optionList);
+      }
+    }
+
+    function applySavedFieldSettings(){
+      Object.entries(state.fieldSettings || {}).forEach(([key, saved]) => {
+        const def = getFieldDefByKey(key);
+        if(!def || !saved) return;
+        if(saved.label) def.label = saved.label;
+        if(saved.type && !isFixedField(def)){
+          const optionList = Array.isArray(saved.optionList) ? saved.optionList : parseOptionsText(saved.optionsText || '');
+          applyDefType(def, saved.type, optionList, true);
+        }
+      });
+    }
+
+    function saveFieldSettingSnapshot(def){
+      state.fieldSettings[def.key] = {
+        label: def.label,
+        type: def.type,
+        optionList: def.type === 'select' ? (def.options || []).filter(Boolean) : [...(def.specialOptions || [])]
+      };
+    }
+
+    function ensureCaseShape(c){
+      if(!c.items) c.items = {};
+      FIELD_DEFS.forEach(def => {
+        if(!c.items[def.key]) c.items[def.key] = defaultItem(def);
+        const item = c.items[def.key];
+        if(typeof item.status !== 'number') item.status = 0;
+        if(item.value == null) item.value = '';
+        if(item.assistant == null) item.assistant = '';
+        if(item.option == null) item.option = '';
+        if(!item.updatedAt) item.updatedAt = '';
+        if(def.type === 'triChecklist') {
+          if(!item.subitems || typeof item.subitems !== 'object') item.subitems = {};
+          (def.subitems || []).forEach(name => { if(!item.subitems[name]) item.subitems[name] = ''; });
+        }
+        if(def.type === 'locationInfo') {
+          if(!item.extra || typeof item.extra !== 'object') item.extra = { date:'', note:'', none:false };
+          if(typeof item.extra.date !== 'string') item.extra.date = '';
+          if(typeof item.extra.note !== 'string') item.extra.note = '';
+          if(typeof item.extra.none !== 'boolean') item.extra.none = false;
+        }
+        if(def.type === 'dateOption' || def.type === 'dateAssistant') {
+          if(!item.extra || typeof item.extra !== 'object') item.extra = { date:'' };
+          if(typeof item.extra.date !== 'string') item.extra.date = '';
+        }
+        if(def.type === 'dateTextNote' || def.type === 'dateTextNoteOption' || def.type === 'dateTextNoteAssistant') {
+          if(!item.extra || typeof item.extra !== 'object') item.extra = { date:'', note:'' };
+          if(typeof item.extra.date !== 'string') item.extra.date = '';
+          if(typeof item.extra.note !== 'string') item.extra.note = '';
+        }
+      });
+      if(typeof c.archived !== 'boolean') c.archived = false;
+      if(typeof c.archivedAt !== 'string') c.archivedAt = '';
+    }
+
+    function defaultItem(def){
+      const base = { value:'', assistant:'', option:'', updatedAt:'', status:0 };
+      if(def.type === 'triChecklist') {
+        const subs = {};
+        (def.subitems || []).forEach(name => subs[name] = '');
+        base.subitems = subs;
+      }
+      if(def.type === 'locationInfo') {
+        base.extra = { date:'', note:'', none:false };
+      }
+      if(def.type === 'dateOption' || def.type === 'dateAssistant') {
+        base.extra = { date:'' };
+      }
+      if(def.type === 'dateTextNote' || def.type === 'dateTextNoteOption' || def.type === 'dateTextNoteAssistant') {
+        base.extra = { date:'', note:'' };
+      }
+      return base;
+    }
+
+    function createEmptyCase(){
+      const items = {};
+      FIELD_DEFS.forEach(def => items[def.key] = defaultItem(def));
+      return {
+        id:'case_' + Math.random().toString(36).slice(2,10),
+        createdAt:new Date().toISOString(),
+        archived:false,
+        archivedAt:'',
+        items,
+        caseNote:''
+      };
+    }
+
+    function getCaseById(id){ return state.cases.find(c => c.id === id) || null; }
+    function touch(item){ item.updatedAt = new Date().toISOString(); }
+    function caseNameOf(c){ return c?.items?.caseName?.value?.trim() || '未命名案件'; }
+    function fieldText(c, key){
+      const raw = c?.items?.[key];
+      if(raw == null) return '';
+      if(typeof raw === 'string') return raw.trim();
+      if(typeof raw?.value === 'string' && raw.value.trim() !== '') return raw.value.trim();
+      if(typeof raw?.option === 'string' && raw.option.trim() !== '') return raw.option.trim();
+      if(typeof raw?.assistant === 'string' && raw.assistant.trim() !== '') return raw.assistant.trim();
+      return '';
+    }
+
+
+    function changeContractDisplay(c){
+      const item = c?.items?.changeContractNo || {};
+      const raw = [item.value, item.option, item.assistant, item.extra?.note, item.extra?.date]
+        .map(v => String(v || '').trim())
+        .find(Boolean) || '';
+      if(!raw) return '';
+      if(raw === '無ED') return '無';
+      return raw;
+    }
+
+    function triChecklistState(def, item){
+      const vals = (def.subitems || []).map(name => item.subitems?.[name] || '');
+      const all = vals.every(v => v === 'V' || v === 'X');
+      const any = vals.some(v => v === 'V' || v === 'X');
+      return { any, all };
+    }
+
+    function contentPresent(def, item){
+      if(def.type === 'text' || def.type === 'dateText' || def.type === 'select' || def.type === 'optionOnly') return String(item.value || '').trim() !== '';
+      if(def.type === 'textOption') return String(item.value || '').trim() !== '' || String(item.option || '').trim() !== '';
+      if(def.type === 'textAssistant') return String(item.value || '').trim() !== '' || String(item.assistant || '').trim() !== '';
+      if(def.type === 'dateTextNote') return String(item.extra?.date || '').trim() !== '' || String(item.extra?.note || '').trim() !== '';
+      if(def.type === 'dateAssistant') return String(item.extra?.date || '').trim() !== '' || String(item.assistant || '').trim() !== '';
+      if(def.type === 'dateOption') return String(item.extra?.date || '').trim() !== '' || String(item.option || '').trim() !== '';
+      if(def.type === 'dateTextNoteAssistant') return String(item.extra?.date || '').trim() !== '' || String(item.extra?.note || '').trim() !== '' || String(item.assistant || '').trim() !== '';
+      if(def.type === 'dateTextNoteOption') return String(item.extra?.date || '').trim() !== '' || String(item.extra?.note || '').trim() !== '' || String(item.option || '').trim() !== '';
+      if(def.type === 'assistant') return String(item.assistant || '').trim() !== '';
+      if(def.type === 'assistantOrOption') return String(item.assistant || '').trim() !== '' || String(item.option || '').trim() !== '';
+      if(def.type === 'triChecklist') return triChecklistState(def, item).any;
+      if(def.type === 'locationInfo') return String(item.extra?.date || '').trim() !== '' || String(item.extra?.note || '').trim() !== '' || !!item.extra?.none;
+      return false;
+    }
+
+    function effectiveStatus(def, item){
+      if(def.type === 'triChecklist'){
+        const t = triChecklistState(def, item);
+        if(!t.any) return 0;
+        if(!t.all) return 1;
+        if((item.status || 0) < 2) return 2;
+        return item.status || 2;
+      }
+      const has = contentPresent(def, item);
+      if(!has) return 0;
+      if((item.status || 0) === 0) return 2;
+      return item.status || 2;
+    }
+
+    function isCompleted(def, item){
+      return effectiveStatus(def, item) >= 2;
+    }
+
+    function getPendingLabels(c){
+      return FIELD_DEFS.filter(def => !isCompleted(def, c.items[def.key])).map(def => def.label);
+    }
+
+    function getCaseStats(c){
+      const total = FIELD_DEFS.length;
+      let pending = 0, done = 0;
+      FIELD_DEFS.forEach(def => {
+        const s = effectiveStatus(def, c.items[def.key]);
+        if(s >= 2) done++; else pending++;
+      });
+      return { total, done, pending, progress: total ? Math.round(done/total*100) : 0 };
+    }
+
+    function setLastSyncTimeText(value){
+      const el = document.getElementById('lastSyncTimeTopText');
+      if(el) el.textContent = `最後同步時間：${value || '—'}`;
+    }
+
+    function fmtTime(iso){
+      if(!iso) return '—';
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return '—';
+      const pad = n => String(n).padStart(2,'0');
+      return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function normalizeRocDate(raw){
+      let v = String(raw || '').trim();
+      if(!v) return '';
+      v = v.replace(/[-.]/g,'/').replace(/\s+/g,'');
+      if(/^\d{1,2}\/\d{1,2}$/.test(v)){
+        const [m,d] = v.split('/').map(n => String(Number(n)));
+        return `${ROC_YEAR}/${m}/${d}`;
+      }
+      if(/^\d{2,3}\/\d{1,2}\/\d{1,2}$/.test(v)){
+        const [y,m,d] = v.split('/').map(n => String(Number(n)));
+        return `${y}/${m}/${d}`;
+      }
+      if(/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(v)){
+        const [y,m,d] = v.split('/').map(n => Number(n));
+        if(y >= 1912) return `${y - 1911}/${m}/${d}`;
+      }
+      return v;
+    }
+
+    function parseRocDateParts(raw){
+      const v = normalizeRocDate(raw);
+      const m = String(v || '').match(/^(\d{2,3})\/(\d{1,2})\/(\d{1,2})$/);
+      if(!m) return null;
+      return { rocYear:Number(m[1]), month:Number(m[2]), day:Number(m[3]) };
+    }
+
+    function rocPartsToDate(parts){
+      if(!parts) return null;
+      const y = parts.rocYear + 1911;
+      const d = new Date(y, parts.month - 1, parts.day);
+      if(d.getFullYear() !== y || d.getMonth() !== parts.month - 1 || d.getDate() !== parts.day) return null;
+      return d;
+    }
+
+    function getEntrustDurationText(c){
+      const startParts = parseRocDateParts(fieldText(c,'entrustStart'));
+      const endParts = parseRocDateParts(fieldText(c,'entrustEnd'));
+      if(!startParts || !endParts) return '—';
+      const start = rocPartsToDate(startParts);
+      const end = rocPartsToDate(endParts);
+      if(!start || !end) return '—';
+      if(end < start) return '—';
+      let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+      let anchor = new Date(start.getFullYear(), start.getMonth() + months, start.getDate());
+      if(anchor > end){
+        months -= 1;
+        anchor = new Date(start.getFullYear(), start.getMonth() + months, start.getDate());
+      }
+      const days = Math.floor((end - anchor) / 86400000);
+      return `${months}個月${days}天`;
+    }
+
+    function shortMd(raw){
+      const parts = parseRocDateParts(raw);
+      if(!parts) return '';
+      return `${parts.month}/${parts.day}`;
+    }
+
+    function getLocationSummary(c){
+      const shelf = c?.items?.bookShelfLocation?.extra || {};
+      const side5 = c?.items?.bookSide5Location?.extra || {};
+      const shelfDate = shortMd(shelf.date);
+      const side5Date = shortMd(side5.date);
+      if(shelfDate) return `架上 ${shelfDate}`;
+      if(side5Date) return `旁5 ${side5Date}`;
+      if(shelf.none) return '架上 無';
+      if(side5.none) return '旁5 無';
+      if(String(shelf.note || '').trim()) return `架上 ${String(shelf.note).trim()}`;
+      if(String(side5.note || '').trim()) return `旁5 ${String(side5.note).trim()}`;
+      return '—';
+    }
+
+    function escapeHtml(str=''){
+      return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+    }
+    function escapeAttr(str=''){ return escapeHtml(str); }
+
+    function hasTextValue(v){
+      return String(v || '').trim() !== '';
+    }
+
+    function normalizeExclusiveItem(def, item){
+      if(!def || !item) return;
+      if(def.type === 'textOption' && hasTextValue(item.value) && hasTextValue(item.option)) {
+        item.option = '';
+      }
+    }
+
+    function setSaveStatus(text, pending=false){
+      ['globalSaveStatus','modalSaveStatus'].forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.textContent = text;
+        el.classList.toggle('pending', pending);
+      });
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function autoSaveNow(){
+      clearTimeout(saveTimer);
+      lastLocalEditAt = Date.now();
+      saveState();
+      scheduleRemoteSave();
+      if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
+      renderSummaryTable();
+      renderSummaryMonthCounts();
+      setSaveStatus('已自動存檔', false);
+    }
+
+    function scheduleAutoSave(){
+      lastLocalEditAt = Date.now();
+      setSaveStatus('自動存檔中…', true);
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => autoSaveNow(), 280);
+    }
+
+    function scheduleMainRefresh(){
+      clearTimeout(mainRefreshTimer);
+      mainRefreshTimer = setTimeout(() => {
+        renderStats();
+        renderPendingFilterOptions();
+        renderPendingTable();
+        if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
+        renderSummaryTable();
+        renderSummaryMonthCounts();
+        const current = getCaseById(activeModalCaseId);
+        if(current) renderModalSummary(current);
+      }, 180);
+    }
+
+    function syncStatusWithContent(def, item){
+      if(def.type === 'triChecklist'){
+        const t = triChecklistState(def, item);
+        if(!t.any) item.status = 0;
+        else if(!t.all) item.status = Math.min(Math.max(item.status || 0, 1), 1);
+        else if((item.status || 0) < 2) item.status = 2;
+        return;
+      }
+      const has = contentPresent(def, item);
+      if(!has) item.status = 0;
+      else if((item.status || 0) === 0) item.status = 2;
+    }
+
+    function activeCases(){ return state.cases.filter(c => !c.archived); }
+    function allCases(){ return state.cases; }
+    function archivedCases(){ return state.cases.filter(c => !!c.archived); }
+
+    function getArchiveMonthLabel(c){
+      const raw = fieldText(c,'entryDate');
+      if(!raw) return '未填進案日期';
+      const m = raw.match(/^(\d{2,3})\/(\d{1,2})/);
+      if(!m) return '未分類月份';
+      return `${m[1]}/${String(m[2]).padStart(2,'0')}`;
+    }
+
+    function renderStats(){
+      const totalCases = state.cases.length;
+      const statsList = state.cases.map(getCaseStats);
+      const doneCases = statsList.filter(s => s.pending === 0).length;
+      const undoneCases = totalCases - doneCases;
+      const avgProgress = totalCases ? Math.round(statsList.reduce((sum,s) => sum + s.progress, 0) / totalCases) : 0;
+      const totalPending = statsList.reduce((sum,s) => sum + s.pending, 0);
+      document.getElementById('sumCases').textContent = totalCases;
+      document.getElementById('sumDoneCases').textContent = doneCases;
+      document.getElementById('sumUndoneCases').textContent = undoneCases;
+      document.getElementById('sumAvgProgress').textContent = `${avgProgress}%`;
+      document.getElementById('sumPendingItems').textContent = totalPending;
+    }
+
+    const DEVELOPER_MASTER_NAMES = [
+      '王啟山','柯育婷',
+      '林玉環','楊巧甄',
+      '王若芸','田庭宇',
+      '王妤宸','陳帝元',
+      '王俞云','買淑玲',
+      '余沛臻','林俊嘉',
+      '林顯昌','黃文成',
+      '林姿岑','劉勝仁',
+      '張小曼','陳信良',
+      '李安安','宋喜輝',
+      '謝馨儀','吳佩玲',
+      '郭建佑','葉翊緁',
+      '蔡宇育',
+      '陳珮菁',
+      '阮金水'
+    ];
+
+    const DEVELOPER_SPECIAL_ALIAS_MAP = {
+      '和小曼':'張小曼'
+    };
+
+    const DEVELOPER_ALIAS_GROUPS = (() => {
+      const groups = DEVELOPER_MASTER_NAMES.map(full => {
+        const alias = full.length > 2 ? full.slice(-2) : full;
+        return alias !== full ? [full, alias] : [full];
+      });
+      Object.entries(DEVELOPER_SPECIAL_ALIAS_MAP).forEach(([alias, full]) => {
+        const group = groups.find(arr => arr.includes(full));
+        if(group && !group.includes(alias)) group.push(alias);
+      });
+      return groups;
+    })();
+
+    const DEVELOPER_CANONICAL_MAP = (() => {
+      const map = {};
+      DEVELOPER_MASTER_NAMES.forEach(full => {
+        map[full] = full;
+        const alias = full.length > 2 ? full.slice(-2) : full;
+        map[alias] = full;
+      });
+      Object.entries(DEVELOPER_SPECIAL_ALIAS_MAP).forEach(([alias, full]) => {
+        map[alias] = full;
+      });
+      return map;
+    })();
+
+    const DEVELOPER_DISPLAY_ORDER = [...new Set(
+      DEVELOPER_MASTER_NAMES.map(name => name.length > 2 ? name.slice(-2) : name)
+    )];
+
+    const DEVELOPER_COUNT_RULES = {
+      '余沛臻|阮金水': { '余沛臻': 0.5, '阮金水': 0.5 },
+      '阮金水|陳信良': { '阮金水': 1, '陳信良': 0.5 }
+    };
+
+    const DEVELOPER_RAW_COMBO_RULES = {};
+
+
+    function normalizePersonName(v){
+      return String(v || '').trim().replace(/\s+/g,'');
+    }
+
+    function getDeveloperAliasSet(name){
+      const normalized = normalizePersonName(name);
+      const set = new Set();
+      if(!normalized) return set;
+      set.add(normalized);
+      DEVELOPER_ALIAS_GROUPS.forEach(group => {
+        const normalizedGroup = group.map(normalizePersonName);
+        if(normalizedGroup.some(n => normalized.includes(n) || n.includes(normalized))){
+          normalizedGroup.forEach(n => set.add(n));
+        }
+      });
+      return set;
+    }
+
+    function matchDeveloperFilter(devName, filterText){
+      const raw = String(filterText || '').trim();
+      if(!raw) return true;
+      const developerSet = getDeveloperAliasSet(devName);
+      const developerNormalized = normalizePersonName(devName);
+      const tokens = raw.split(/[、，,\s]+/).map(normalizePersonName).filter(Boolean);
+      if(!tokens.length) return true;
+      return tokens.some(token => {
+        const tokenSet = getDeveloperAliasSet(token);
+        if(developerNormalized.includes(token) || token.includes(developerNormalized)) return true;
+        for(const a of developerSet){
+          if(a.includes(token) || token.includes(a)) return true;
+        }
+        for(const a of developerSet){
+          if(tokenSet.has(a)) return true;
+        }
+        return false;
+      });
+    }
+
+    function canonicalDeveloperName(name){
+      const normalized = normalizePersonName(name);
+      if(!normalized) return '';
+      if(DEVELOPER_CANONICAL_MAP[normalized]) return DEVELOPER_CANONICAL_MAP[normalized];
+      for(const group of DEVELOPER_ALIAS_GROUPS){
+        const normalizedGroup = group.map(normalizePersonName);
+        if(normalizedGroup.includes(normalized)) return normalizedGroup[0];
+      }
+      return normalized;
+    }
+
+    function getDeveloperDisplayName(name){
+      const canonical = canonicalDeveloperName(name);
+      if(!canonical) return '';
+      if(canonical === '張小曼') return '小曼';
+      if(canonical.length <= 2) return canonical;
+      return canonical.slice(-2);
+    }
+
+    function getKnownDeveloperNames(){
+      const set = new Set();
+      DEVELOPER_ALIAS_GROUPS.forEach(group => group.forEach(name => set.add(normalizePersonName(name))));
+      Object.keys(DEVELOPER_COUNT_RULES).forEach(key => key.split('|').forEach(name => set.add(normalizePersonName(name))));
+      activeCases().forEach(c => {
+        const raw = normalizePersonName(fieldText(c,'developer'));
+        if(raw && raw.length <= 3) set.add(raw);
+      });
+      return [...set].filter(Boolean).sort((a,b) => b.length - a.length);
+    }
+
+
+    const COMMON_SINGLE_SURNAMES = new Set('王李張劉陳楊黃趙吳周徐孫馬朱胡郭何高林羅鄭梁謝宋唐許韓馮鄧曹彭曾蕭田董潘袁於余葉蔣杜蘇魏程呂丁任沈姚盧姜崔鍾譚陸汪范金石廖賈夏韋傅方白鄒孟熊秦邱江尹薛閻段雷侯龍史陶黎賀顧毛郝龔邵萬錢嚴賴武戴莫孔向湯'.split(''));
+    const COMMON_DOUBLE_SURNAMES = ['歐陽','司馬','上官','夏侯','諸葛','東方','皇甫','尉遲','公孫','慕容','司徒','司空','令狐','鍾離','長孫','宇文','鮮于','閭丘','子車','軒轅','令狐','端木'];
+
+    function startsWithCommonSurname(name){
+      const normalized = normalizePersonName(name);
+      if(!normalized) return false;
+      if(COMMON_DOUBLE_SURNAMES.some(s => normalized.startsWith(s))) return true;
+      return COMMON_SINGLE_SURNAMES.has(normalized.charAt(0));
+    }
+
+    function getNamePlausibilityScore(name){
+      const normalized = normalizePersonName(name);
+      if(!normalized) return 999;
+      let score = 0;
+      if(!startsWithCommonSurname(normalized)) score += 20;
+      if(normalized.length === 2) score += 3;
+      if(normalized.length === 4) score += 1;
+      if(normalized.length < 2 || normalized.length > 4) score += 50;
+      return score;
+    }
+
+    function splitIntoTwoCharNames(raw){
+      const normalized = normalizePersonName(raw);
+      if(!normalized) return [];
+      if(normalized.length < 2 || normalized.length % 2 !== 0) return [];
+      const parts = [];
+      for(let i = 0; i < normalized.length; i += 2){
+        parts.push(normalized.slice(i, i + 2));
+      }
+      return parts.filter(Boolean);
+    }
+
+    function splitUnknownDeveloperString(raw){
+      const normalized = normalizePersonName(raw);
+      if(!normalized) return [];
+      if(normalized.length === 5){
+        const first2 = normalized.slice(0,2);
+        const last3 = normalized.slice(2);
+        const first3 = normalized.slice(0,3);
+        const last2 = normalized.slice(3);
+        const score23 = getNamePlausibilityScore(first2) + getNamePlausibilityScore(last3);
+        const score32 = getNamePlausibilityScore(first3) + getNamePlausibilityScore(last2);
+        if(score23 <= score32) return [first2, last3];
+        return [first3, last2];
+      }
+      const memo = new Map();
+      function solve(start){
+        if(start === normalized.length) return { parts: [], score: 0 };
+        if(memo.has(start)) return memo.get(start);
+        let best = null;
+        [4,3,2].forEach(len => {
+          if(start + len > normalized.length) return;
+          const head = normalized.slice(start, start + len);
+          const tail = solve(start + len);
+          if(!tail) return;
+          const score = tail.score + getNamePlausibilityScore(head) + (10 - len);
+          const candidate = { parts: [head].concat(tail.parts), score };
+          if(!best || candidate.score < best.score || (candidate.score === best.score && candidate.parts.length < best.parts.length)){
+            best = candidate;
+          }
+        });
+        memo.set(start, best);
+        return best;
+      }
+      const result = solve(0);
+      return result?.parts || [normalized];
+    }
+
+    function splitDeveloperNames(raw){
+      const normalized = normalizePersonName(raw);
+      if(!normalized) return [];
+      const separated = normalized.split(/[、，,+\/&與和]/).map(normalizePersonName).filter(Boolean);
+      if(separated.length > 1) return separated;
+      const known = getKnownDeveloperNames();
+      let remaining = normalized;
+      const matched = [];
+      while(remaining){
+        const hit = known.find(name => remaining.startsWith(name));
+        if(hit){
+          matched.push(hit);
+          remaining = remaining.slice(hit.length);
+          continue;
+        }
+        const unknownParts = splitUnknownDeveloperString(remaining);
+        if(unknownParts.length){
+          matched.push(...unknownParts);
+          remaining = '';
+        }
+        break;
+      }
+      if(matched.length && !remaining) return matched;
+      const fallback = splitUnknownDeveloperString(normalized);
+      if(fallback.length) return fallback;
+      const byTwoChars = splitIntoTwoCharNames(normalized);
+      if(byTwoChars.length) return byTwoChars;
+      return [normalized];
+    }
+
+    function getDeveloperCountEntries(raw){
+      const rawNormalized = normalizePersonName(raw);
+      if(rawNormalized && DEVELOPER_RAW_COMBO_RULES[rawNormalized]){
+        return Object.entries(DEVELOPER_RAW_COMBO_RULES[rawNormalized]).map(([name,count]) => ({ name, count }));
+      }
+      const parts = splitDeveloperNames(raw).map(canonicalDeveloperName).filter(Boolean);
+      if(!parts.length) return [];
+      const unique = [...new Set(parts)];
+      const ruleKey = [...unique].sort().join('|');
+      if(DEVELOPER_COUNT_RULES[ruleKey]){
+        return Object.entries(DEVELOPER_COUNT_RULES[ruleKey]).map(([name,count]) => ({ name, count }));
+      }
+      if(unique.length === 1) return [{ name: unique[0], count: 1 }];
+      if(unique.length === 2) return unique.map(name => ({ name, count: 0.5 }));
+      const avg = Number((1 / unique.length).toFixed(2));
+      return unique.map(name => ({ name, count: avg }));
+    }
+
+    function getDefaultSummaryCountMonth(){
+      const now = new Date();
+      return `${now.getFullYear() - 1911}/${now.getMonth() + 1}`;
+    }
+
+    function getSummaryCountMonth(){
+      return getSummaryMonthFilterValue() || getDefaultSummaryCountMonth();
+    }
+
+    function getAllActiveDeveloperDisplayNames(){
+      const set = new Set();
+      allCases().forEach(c => {
+        getDeveloperCountEntries(fieldText(c,'developer')).forEach(({ name }) => {
+          const displayName = getDeveloperDisplayName(name);
+          if(displayName) set.add(displayName);
+        });
+      });
+      return [...set];
+    }
+
+    function formatCountValue(value){
+      const fixed = Math.round((Number(value) || 0) * 100) / 100;
+      return Number.isInteger(fixed) ? String(fixed) : fixed.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+    }
+
+    function renderSummaryMonthCounts(){
+      const titleEl = document.getElementById('summaryMonthCountTitle');
+      const totalEl = document.getElementById('summaryMonthCountTotal');
+      const listEl = document.getElementById('summaryMonthCountList');
+      if(!titleEl || !totalEl || !listEl) return;
+      const month = getSummaryCountMonth();
+      titleEl.textContent = `${month || '本月份'}計數`;
+      const totals = new Map();
+      allCases().forEach(c => {
+        const entryDate = fieldText(c,'entryDate');
+        if(!matchEntryMonth(entryDate, month)) return;
+        getDeveloperCountEntries(fieldText(c,'developer')).forEach(({ name, count }) => {
+          const displayName = getDeveloperDisplayName(name);
+          if(!displayName) return;
+          totals.set(displayName, (totals.get(displayName) || 0) + Number(count || 0));
+        });
+      });
+      const displayNames = [...totals.keys()].sort((a,b) => String(a).localeCompare(String(b), 'zh-Hant'));
+      const grandTotal = [...totals.values()].reduce((sum, count) => sum + Number(count || 0), 0);
+      totalEl.textContent = `總計：${formatCountValue(grandTotal)}件`;
+      if(!displayNames.length){
+        listEl.innerHTML = `<div class="month-count-empty">${escapeHtml(month || '本月份')}目前沒有可計數的案件</div>`;
+        return;
+      }
+      listEl.innerHTML = `
+        <table class="month-count-table">
+          <tbody>
+            <tr>
+              <th class="stub-cell">業務</th>
+              ${displayNames.map(name => `<th class="name-cell">${escapeHtml(name)}</th>`).join('')}
+              <th class="total-cell">總計</th>
+            </tr>
+            <tr>
+              <th class="stub-cell">本月進案</th>
+              ${displayNames.map(name => `<td class="name-cell">${escapeHtml(formatCountValue(totals.get(name) || 0))}</td>`).join('')}
+              <td class="total-cell">${escapeHtml(formatCountValue(grandTotal))}</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderPendingFilterOptions(){
+      const sel = document.getElementById('pendingActionFilter');
+      const prev = sel.value || '__ALL__';
+      sel.innerHTML = ['<option value="__ALL__">全部尚未完成動作</option>']
+        .concat(FIELD_DEFS.map(def => `<option value="${escapeAttr(def.key)}">${escapeHtml(def.label)}</option>`))
+        .join('');
+      if(Array.from(sel.options).some(o => o.value === prev)) sel.value = prev;
+      else sel.value = '__ALL__';
+    }
+
+    function renderPendingTable(){
+      const key = document.getElementById('pendingActionFilter').value || '__ALL__';
+      const tbody = document.getElementById('pendingTableBody');
+      const hint = document.getElementById('pendingFilterHint');
+      const developerKeyword = document.getElementById('developerFilterInput')?.value || '';
+      const caseNameKeyword = document.getElementById('caseNameFilterInput')?.value || '';
+      const developerKeywordTrimmed = developerKeyword.trim();
+      const caseNameKeywordTrimmed = caseNameKeyword.trim();
+      const caseNameKeywordNormalized = caseNameKeywordTrimmed.toLowerCase().replace(/\s+/g,'');
+      const cases = activeCases().filter(c => {
+        if(!matchDeveloperFilter(fieldText(c,'developer'), developerKeyword)) return false;
+        if(caseNameKeywordNormalized){
+          const caseNameNormalized = caseNameOf(c).toLowerCase().replace(/\s+/g,'');
+          if(!caseNameNormalized.includes(caseNameKeywordNormalized)) return false;
+        }
+        return true;
+      });
+      let rows = [];
+      if(key === '__ALL__') {
+        rows = cases.map(c => ({ c, missing:getPendingLabels(c) })).filter(x => x.missing.length > 0);
+      } else {
+        const def = FIELD_DEFS.find(d => d.key === key);
+        rows = cases.filter(c => !isCompleted(def, c.items[key])).map(c => ({ c, missing:[def.label] }));
+      }
+
+      const filters = [];
+      if(developerKeywordTrimmed) filters.push(`開發符合「${developerKeywordTrimmed}」`);
+      if(caseNameKeywordTrimmed) filters.push(`案名包含「${caseNameKeywordTrimmed}」`);
+      if(key === '__ALL__') {
+        hint.textContent = filters.length
+          ? `目前列出${filters.join('、')}的所有尚未完成物件。`
+          : '目前列出所有尚未完成的物件。';
+      } else {
+        const def = FIELD_DEFS.find(d => d.key === key);
+        const prefix = filters.length ? `${filters.join('、')}，且` : '';
+        hint.textContent = `目前列出${prefix}「${def ? def.label : ''}」還沒完成的物件。`;
+      }
+
+      tbody.innerHTML = '';
+      if(!rows.length){
+        tbody.innerHTML = '<tr><td colspan="9"><div class="empty">目前沒有符合的未完成物件</div></td></tr>';
+        return;
+      }
+      rows.forEach(({c, missing}) => {
+        const s = getCaseStats(c);
+        const tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.innerHTML = `
+          <td>${escapeHtml(fieldText(c,'clipNo') || '—')}</td>
+          <td>${escapeHtml(shortMd(fieldText(c,'entryDate')) || '—')}</td>
+          <td>${escapeHtml(fieldText(c,'mainContractNo') || '—')}</td>
+          <td>${escapeHtml(caseNameOf(c))}</td>
+          <td>${escapeHtml(fieldText(c,'developer') || '—')}</td>
+          <td class="tiny">${escapeHtml(missing.slice(0,4).join('、') || '—')}${missing.length > 4 ? ` 等 ${missing.length} 項` : ''}</td>
+          <td><div>${s.progress}%</div><div class="progress"><span style="width:${s.progress}%"></span></div></td>
+          <td><button class="soft open-case-btn" data-id="${escapeAttr(c.id)}">操作</button></td>
+          <td class="tiny">${escapeHtml(String(c.caseNote || '').trim() || '—')}</td>
+        `;
+        tr.onclick = e => { if(e.target.closest('button')) return; openModal(c.id); };
+        tr.querySelector('.open-case-btn').onclick = e => { e.stopPropagation(); openModal(c.id); };
+        tbody.appendChild(tr);
+      });
+    }
+
+    function normalizeRocMonth(raw){
+      let v = String(raw || '').trim();
+      if(!v) return '';
+      v = v.replace(/[-.]/g,'/').replace(/\s+/g,'');
+      if(/^\d{2,3}\/\d{1,2}\/\d{1,2}$/.test(v)){
+        const [y,m] = v.split('/').map(n => String(Number(n)));
+        return `${y}/${m}`;
+      }
+      if(/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(v)){
+        const [y,m] = v.split('/').map(n => Number(n));
+        if(y >= 1912) return `${y - 1911}/${m}`;
+      }
+      if(/^\d{2,3}\/\d{1,2}$/.test(v)){
+        const [y,m] = v.split('/').map(n => String(Number(n)));
+        return `${y}/${m}`;
+      }
+      if(/^\d{4}\/\d{1,2}$/.test(v)){
+        const [y,m] = v.split('/').map(n => Number(n));
+        if(y >= 1912) return `${y - 1911}/${m}`;
+      }
+      return v;
+    }
+
+
+    function rocDateToIso(raw){
+      const parts = parseRocDateParts(raw);
+      if(!parts) return '';
+      const yyyy = String(parts.rocYear + 1911).padStart(4,'0');
+      const mm = String(parts.month).padStart(2,'0');
+      const dd = String(parts.day).padStart(2,'0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function isoDateToRoc(raw){
+      const v = String(raw || '').trim();
+      const m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if(!m) return '';
+      return `${Number(m[1]) - 1911}/${Number(m[2])}/${Number(m[3])}`;
+    }
+
+    function compareRocDateDesc(a, b){
+      const da = rocPartsToDate(parseRocDateParts(a));
+      const db = rocPartsToDate(parseRocDateParts(b));
+      const ta = da ? da.getTime() : 0;
+      const tb = db ? db.getTime() : 0;
+      return tb - ta;
+    }
+
+    function compareRocMonthDesc(a, b){
+      const pa = String(a || '').split('/').map(n => Number(n));
+      const pb = String(b || '').split('/').map(n => Number(n));
+      const [ya, ma] = pa.length >= 2 ? pa : [0,0];
+      const [yb, mb] = pb.length >= 2 ? pb : [0,0];
+      if(yb !== ya) return yb - ya;
+      return mb - ma;
+    }
+
+    function getActiveEntryDates(){
+      const list = [...new Set(activeCases().map(c => normalizeRocDate(fieldText(c,'entryDate'))).filter(Boolean))];
+      list.sort(compareRocDateDesc);
+      return list;
+    }
+
+    function getActiveEntryMonths(){
+      const list = [...new Set(getActiveEntryDates().map(v => normalizeRocMonth(v)).filter(Boolean))];
+      list.sort(compareRocMonthDesc);
+      return list;
+    }
+
+    function getSummaryMonthFilterValue(){
+      const el = document.getElementById('summaryMonthFilterSelect') || document.getElementById('summaryMonthFilterInput');
+      return el ? normalizeRocMonth(el.value) : '';
+    }
+
+    function getSummaryDateFilterValue(){
+      const calendarEl = document.getElementById('summaryDateFilterCalendar');
+      if(calendarEl) return isoDateToRoc(calendarEl.value);
+      const selectEl = document.getElementById('summaryDateFilterSelect');
+      if(selectEl) return normalizeRocDate(selectEl.value);
+      const textEl = document.getElementById('summaryDateFilterInput');
+      return textEl ? normalizeRocDate(textEl.value) : '';
+    }
+
+    function matchEntryMonth(entryDate, monthFilter){
+      const entry = normalizeRocDate(entryDate);
+      const month = normalizeRocMonth(monthFilter);
+      if(!month) return true;
+      if(!entry) return false;
+      if(/^\d{1,2}$/.test(month)){
+        const parts = parseRocDateParts(entry);
+        return !!parts && String(parts.month) === String(Number(month));
+      }
+      return entry.startsWith(month + '/');
+    }
+
+    function renderSummaryTable(){
+      const tbody = document.getElementById('summaryTableBody');
+      const hint = document.getElementById('summaryFilterHint');
+      const monthNormalized = getSummaryMonthFilterValue();
+      const dateNormalized = getSummaryDateFilterValue();
+      const list = activeCases().filter(c => {
+        const entryDate = fieldText(c,'entryDate');
+        if(monthNormalized && !matchEntryMonth(entryDate, monthNormalized)) return false;
+        if(dateNormalized && normalizeRocDate(entryDate) !== dateNormalized) return false;
+        return true;
+      });
+      const filters = [];
+      if(monthNormalized) filters.push(`月份符合「${monthNormalized}」`);
+      if(dateNormalized) filters.push(`日期為「${dateNormalized}」`);
+      if(hint) hint.textContent = filters.length ? `目前列出${filters.join('、')}的製作中案件。` : '目前列出所有製作中案件。';
+      tbody.innerHTML = '';
+      if(!list.length){
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty">沒有符合的案件</div></td></tr>';
+        return;
+      }
+      list.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.className = 'clickable-row';
+        tr.innerHTML = `
+          <td>${escapeHtml(caseNameOf(c))}</td>
+          <td>${escapeHtml(fieldText(c,'entryDate') || '—')}</td>
+          <td>${escapeHtml(fieldText(c,'developer') || '—')}</td>
+          <td>${escapeHtml(fieldText(c,'mainContractNo') || '—')}</td>
+          <td>${escapeHtml(getEntrustDurationText(c))}</td>
+          <td>${escapeHtml(getLocationSummary(c))}</td>
+          <td><button class="primary open-case-btn" data-id="${escapeAttr(c.id)}">操作</button></td>
+        `;
+        tr.onclick = e => { if(e.target.closest('button')) return; openModal(c.id); };
+        tr.querySelector('.open-case-btn').onclick = e => { e.stopPropagation(); openModal(c.id); };
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderArchiveSection(){
+      const wrap = document.getElementById('archiveSections');
+      if(!wrap) return;
+      const list = archivedCases();
+      wrap.innerHTML = '';
+      if(!list.length){
+        wrap.innerHTML = '<div class="empty">目前沒有封存案件</div>';
+        return;
+      }
+      const groups = {};
+      list.forEach(c => {
+        const label = getArchiveMonthLabel(c);
+        if(!groups[label]) groups[label] = [];
+        groups[label].push(c);
+      });
+      Object.keys(groups).sort().reverse().forEach(label => {
+        const details = document.createElement('details');
+        details.className = 'archive-month';
+        details.open = false;
+        details.innerHTML = `<summary>${escapeHtml(label)}（${groups[label].length}）</summary><div class="archive-body"></div>`;
+        const body = details.querySelector('.archive-body');
+        groups[label].forEach(c => {
+          const row = document.createElement('div');
+          row.className = 'archive-card';
+          row.innerHTML = `
+            <div><strong>${escapeHtml(caseNameOf(c))}</strong><div class="archive-meta">${escapeHtml(fieldText(c,'developer') || '未填業務')}｜${escapeHtml(fieldText(c,'mainContractNo') || '未填主約編號')}</div></div>
+            <div class="archive-meta">進案：${escapeHtml(fieldText(c,'entryDate') || '—')}</div>
+            <div class="archive-meta">封存：${escapeHtml(c.archivedAt ? fmtTime(c.archivedAt).split(' ')[0] : '—')}</div>
+            <div class="toolbar"><button class="soft archive-open-btn" data-id="${escapeAttr(c.id)}">開啟</button><button class="ghost archive-toggle-btn" data-id="${escapeAttr(c.id)}">解除封存</button></div>
+          `;
+          row.querySelector('.archive-open-btn').onclick = () => openModal(c.id);
+          row.querySelector('.archive-toggle-btn').onclick = () => toggleArchiveCase(c.id, false);
+          body.appendChild(row);
+        });
+        wrap.appendChild(details);
+      });
+    }
+
+    function renderAssistantList(){
+      const wrap = document.getElementById('assistantList');
+      wrap.innerHTML = '';
+      state.assistants.forEach(entry => {
+        const span = document.createElement('span');
+        span.className = `assist-pill ${entry.active === false ? 'inactive' : ''}`;
+        span.innerHTML = `<span class="assist-name">${escapeHtml(entry.name)}</span><span class="assist-flag">${entry.active === false ? '停用' : '在職'}</span><button type="button">${entry.active === false ? '啟用' : '停用'}</button>`;
+        span.querySelector('button').onclick = () => {
+          entry.active = !(entry.active !== false);
+          autoSaveNow();
+          renderAll();
+          if(activeModalCaseId){
+            const c = getCaseById(activeModalCaseId);
+            if(c) renderModalActions(c);
+          }
+        };
+        wrap.appendChild(span);
+      });
+    }
+
+    function typeOptionsHtml(selected){
+      return EDITABLE_TYPE_OPTIONS.map(([value,label]) => `<option value="${value}" ${selected===value?'selected':''}>${label}</option>`).join('');
+    }
+
+    function renderCustomActionList(){
+      const wrap = document.getElementById('customActionList');
+      if(!wrap) return;
+      wrap.innerHTML = '';
+      FIELD_DEFS.forEach(def => {
+        const fixed = isFixedField(def);
+        const custom = isCustomField(def.key);
+        const card = document.createElement('div');
+        card.className = 'setting-card';
+        card.dataset.key = def.key;
+        const optionsText = getOptionsText(def);
+        card.innerHTML = `
+          <div class="setting-card-head">
+            <div>
+              <strong>${escapeHtml(def.label)}</strong>
+              <div class="tiny">${escapeHtml(def.group)}｜key：${escapeHtml(def.key)}</div>
+            </div>
+            <span class="setting-tag ${fixed ? 'fixed' : ''}">${fixed ? '固定模式' : custom ? '自訂項目' : '內建項目'}</span>
+          </div>
+          <div class="setting-grid">
+            <input class="field-input config-label-input" type="text" value="${escapeAttr(def.label)}" placeholder="項目名稱">
+            <select class="field-select config-type-input" ${fixed ? 'disabled' : ''}>${typeOptionsHtml(def.type)}</select>
+            <input class="field-input config-options-input" type="text" value="${escapeAttr(optionsText)}" placeholder="需要選項時再填，例如：無,業務上傳" ${typeNeedsOptions(def.type) && !fixed ? '' : 'disabled'}>
+            <button class="soft config-apply-btn">套用</button>
+            ${custom ? '<button class="danger config-remove-btn">刪除</button>' : '<span></span>'}
+          </div>
+        `;
+        wrap.appendChild(card);
+      });
+
+      wrap.querySelectorAll('.config-label-input, .config-type-input, .config-options-input').forEach(el => {
+        const syncFocus = e => {
+          const card = e.target.closest('.setting-card');
+          currentConfigFocusKey = card?.dataset.key || '';
+          updateConfigFloatingTools();
+        };
+        el.addEventListener('focus', syncFocus);
+        el.addEventListener('input', syncFocus);
+        el.addEventListener('change', syncFocus);
+      });
+
+      wrap.querySelectorAll('.config-type-input').forEach(el => {
+        el.addEventListener('change', e => {
+          const card = e.target.closest('.setting-card');
+          const optionsEl = card.querySelector('.config-options-input');
+          if(!optionsEl) return;
+          const need = typeNeedsOptions(e.target.value);
+          optionsEl.disabled = !need;
+          if(!need) optionsEl.value = '';
+        });
+      });
+
+      wrap.querySelectorAll('.config-apply-btn').forEach(btn => {
+        btn.onclick = () => {
+          const card = btn.closest('.setting-card');
+          applyFieldSetting(card?.dataset.key || '');
+        };
+      });
+
+      wrap.querySelectorAll('.config-remove-btn').forEach(btn => {
+        btn.onclick = () => {
+          const card = btn.closest('.setting-card');
+          removeCustomField(card?.dataset.key || '');
+        };
+      });
+    }
+
+    function applyFieldSetting(key){
+      const def = getFieldDefByKey(key);
+      const card = document.querySelector(`.setting-card[data-key="${CSS.escape(key)}"]`);
+      if(!def || !card) return;
+      currentConfigFocusKey = key;
+      updateConfigFloatingTools();
+      const label = card.querySelector('.config-label-input')?.value.trim() || '';
+      const type = card.querySelector('.config-type-input')?.value || def.type;
+      const optionsText = card.querySelector('.config-options-input')?.value || '';
+      const optionList = parseOptionsText(optionsText);
+      if(!label){
+        alert('請先輸入項目名稱。');
+        return;
+      }
+      if(!isFixedField(def) && typeNeedsOptions(type) && !optionList.length){
+        alert('這個輸入模式需要至少 1 個選項。');
+        return;
+      }
+
+      def.label = label;
+      if(!isFixedField(def)){
+        applyDefType(def, type, optionList, def.type === 'text');
+      }
+      saveFieldSettingSnapshot(def);
+
+      if(isCustomField(key)){
+        const target = state.customActions.find(x => x.key === key);
+        if(target){
+          target.label = def.label;
+          applyDefType(target, def.type, def.type === 'select' ? (def.options || []).filter(Boolean) : (def.specialOptions || []), true);
+          target.group = '自訂動作';
+        }
+      }
+
+      state.cases.forEach(c => {
+        ensureCaseShape(c);
+        const item = c.items[key];
+        if(item){
+          syncStatusWithContent(def, item);
+          touch(item);
+        }
+      });
+
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        if(c) renderModalActions(c);
+      }
+    }
+
+    function removeCustomField(key){
+      const def = getFieldDefByKey(key);
+      if(!def || !isCustomField(key)) return;
+      if(!confirm(`確定刪除項目「${def.label}」嗎？`)) return;
+      state.customActions = state.customActions.filter(x => x.key !== key);
+      delete state.fieldSettings[key];
+      const idx = FIELD_DEFS.findIndex(x => x.key === key);
+      if(idx >= 0) FIELD_DEFS.splice(idx, 1);
+      state.cases.forEach(c => { delete c.items[key]; });
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        if(c) renderModalActions(c);
+      }
+    }
+
+    function renderStatusFilters(){
+      const wrap = document.getElementById('statusFilterChips');
+      const items = [
+        ['all','全部'],
+        ['0','未做'],
+        ['1','已做'],
+        ['done','完成']
+      ];
+      wrap.innerHTML = items.map(([v,t]) => `<button type="button" class="chip-btn ${modalStatusFilter===v?'active':''}" data-filter="${v}">${t}</button>`).join('');
+      wrap.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.onclick = () => {
+          modalStatusFilter = btn.dataset.filter;
+          const current = getCaseById(activeModalCaseId);
+          if(current) renderModalActions(current);
+        };
+      });
+    }
+
+    function renderModalSummary(c){
+      document.getElementById('modalTitle').textContent = caseNameOf(c);
+      document.getElementById('modalSub').textContent = `開發:${fieldText(c,'developer')} | 主約編號:${fieldText(c,'mainContractNo')} | 契變編號:${changeContractDisplay(c)}`;
+      document.getElementById('modalCaseNoteInput').value = c.caseNote || '';
+      const archiveBtn = document.getElementById('modalArchiveBtn');
+      if(archiveBtn) archiveBtn.textContent = c.archived ? '解除封存' : '封存';
+    }
+
+    function renderInputCell(def, item){
+      if(def.type === 'text' || def.type === 'dateText') {
+        const isDate = def.type === 'dateText' || def.dateAuto;
+        const ph = def.placeholder || (isDate ? '例如：115/3/17' : '');
+        return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${isDate ? 'data-date-auto="1"' : ''}>`;
+      }
+      if(def.type === 'textOption' || def.type === 'textAssistant') {
+        const ph = def.placeholder || '文字內容';
+        const disabled = def.type === 'textOption' && hasTextValue(item.option);
+        return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${disabled ? 'disabled title="已選擇選項，若要輸入文字請先取消選項"' : ''}>`;
+      }
+      if(def.type === 'dateTextNote' || def.type === 'dateTextNoteAssistant') {
+        return `<div class="split-2"><input class="field-input modal-date-note-date" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.date || '')}" placeholder="例如：115/3/17" data-date-auto="1"><input class="field-input modal-date-note-text" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字內容"></div>`;
+      }
+      if(def.type === 'dateOption' || def.type === 'dateAssistant') {
+        return `<input class="field-input modal-date-option-date" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.date || '')}" placeholder="例如：115/3/17" data-date-auto="1">`;
+      }
+      if(def.type === 'dateTextNoteOption') {
+        return `<div class="split-2" style="width:100%;"><input class="field-input modal-date-note-date" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.date || '')}" placeholder="例如：115/3/17" data-date-auto="1"><input class="field-input modal-date-note-text" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字內容"></div>`;
+      }
+      if(def.type === 'select') {
+        return `<select class="field-select modal-select-input" data-key="${def.key}">${
+          (def.options || []).map(opt => `<option value="${escapeAttr(opt)}" ${item.value === opt ? 'selected' : ''}>${escapeHtml(opt || '請選擇')}</option>`).join('')
+        }</select>`;
+      }
+      if(def.type === 'optionOnly') {
+        return `<div class="chips">${
+          (def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-value-option-btn ${item.value === opt ? 'active' : ''}" data-key="${def.key}" data-value="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
+        }</div>`;
+      }
+      if(def.type === 'assistant') {
+        return `<span class="blank-cell">　</span>`;
+      }
+      if(def.type === 'assistantOrOption') {
+        return `<div class="chips">${
+          (def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
+        }</div>`;
+      }
+      if(def.type === 'triChecklist') {
+        return `<div class="inline-checklist">${
+          (def.subitems || []).map(name => {
+            const st = item.subitems?.[name] || '';
+            const cls = st === 'V' ? 'v' : st === 'X' ? 'x' : '';
+            const mark = st || '□';
+            return `<button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}"><span class="s">${mark}</span>${escapeHtml(name)}</button>`;
+          }).join('')
+        }</div>`;
+      }
+      if(def.type === 'locationInfo') {
+        return `<div class="split-2">
+          <input class="field-input modal-loc-date" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.date || '')}" placeholder="日期，例如：115/3/17" data-date-auto="1">
+          <input class="field-input modal-loc-note" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="其他資訊">
+        </div>`;
+      }
+      return '—';
+    }
+
+    function renderAssistCell(def, item){
+      if(def.type === 'assistant' || def.type === 'assistantOrOption' || def.type === 'textAssistant' || def.type === 'dateAssistant' || def.type === 'dateTextNoteAssistant') {
+        return `<div class="chips">${
+          getAssistantChoicesForItem(item).map(entry => `<button type="button" class="chip-btn modal-assistant-btn ${item.assistant === entry.name ? 'active' : ''} ${entry.active === false ? 'inactive-locked' : ''}" data-key="${def.key}" data-name="${escapeAttr(entry.name)}">${escapeHtml(entry.active === false ? `${entry.name}（停用）` : entry.name)}</button>`).join('')
+        }</div>`;
+      }
+      if(def.type === 'textOption' || def.type === 'dateOption' || def.type === 'dateTextNoteOption') {
+        return `<div class="chips">${
+          (def.specialOptions || []).map(opt => {
+            const active = item.option === opt;
+            const disabled = def.type === 'textOption' && hasTextValue(item.value) && !active;
+            const title = disabled ? '已有文字內容，若要選項請先清空文字' : '';
+            return `<button type="button" class="chip-btn modal-option-btn ${active ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}" ${disabled ? 'disabled' : ''} ${title ? `title="${escapeAttr(title)}"` : ''}>${escapeHtml(opt)}</button>`;
+          }).join('')
+        }</div>`;
+      }
+      if(def.type === 'locationInfo') {
+        return `<div class="chips"><button type="button" class="chip-btn modal-loc-none ${item.extra?.none ? 'active' : ''}" data-key="${def.key}">無</button></div>`;
+      }
+      return `<span class="tiny">—</span>`;
+    }
+
+    function rowMatchesFilter(s){
+      if(modalStatusFilter === 'all') return true;
+      if(modalStatusFilter === '0') return s === 0 || s === 1;
+      if(modalStatusFilter === '1') return s === 1;
+      if(modalStatusFilter === 'done') return s >= 2;
+      return true;
+    }
+
+    function renderModalActions(c){
+      renderStatusFilters();
+      const tbody = document.getElementById('modalActionsBody');
+      tbody.innerHTML = '';
+      let lastGroup = '';
+      FIELD_DEFS.forEach(def => {
+        const item = c.items[def.key];
+        normalizeExclusiveItem(def, item);
+        const s = effectiveStatus(def, item);
+        if(!rowMatchesFilter(s)) return;
+
+        if(def.group !== lastGroup){
+          const g = document.createElement('tr');
+          g.className = 'group-row';
+          g.innerHTML = `<td colspan="5">${escapeHtml(def.group)}</td>`;
+          tbody.appendChild(g);
+          lastGroup = def.group;
+        }
+
+        const tr = document.createElement('tr');
+        tr.dataset.key = def.key;
+        if(def.key === 'companyArchive'){
+          tr.innerHTML = `
+            <td><strong>${escapeHtml(def.label)}</strong></td>
+            <td colspan="2" class="archive-merged-cell">
+              ${renderInputCell(def, item)}
+            </td>
+            <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
+            <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td><strong>${escapeHtml(def.label)}</strong></td>
+            <td>${renderInputCell(def, item)}</td>
+            <td>${renderAssistCell(def, item)}</td>
+            <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
+            <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
+          `;
+        }
+        tbody.appendChild(tr);
+      });
+
+      bindModalEvents(c);
+
+      if(!tbody.children.length){
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty">目前此篩選下沒有項目</div></td></tr>';
+      }
+    }
+
+    function refreshExclusiveRowUI(key){
+      const current = getCaseById(activeModalCaseId);
+      if(!current) return;
+      const def = FIELD_DEFS.find(x => x.key === key);
+      if(!def || def.type !== 'textOption') return;
+      const item = current.items[key];
+      normalizeExclusiveItem(def, item);
+      const tr = document.querySelector(`tr[data-key="${key}"]`);
+      if(!tr) return;
+      const input = tr.querySelector(`.modal-value-input[data-key="${key}"]`);
+      const hasText = hasTextValue(item.value);
+      const hasOption = hasTextValue(item.option);
+      if(input){
+        input.disabled = hasOption;
+        input.title = hasOption ? '已選擇選項，若要輸入文字請先取消選項' : '';
+      }
+      tr.querySelectorAll(`.modal-option-btn[data-key="${key}"]`).forEach(btn => {
+        const active = btn.dataset.option === item.option;
+        btn.disabled = hasText && !active;
+        btn.title = btn.disabled ? '已有文字內容，若要選項請先清空文字' : '';
+      });
+    }
+
+
+    function normalizeCaseNameCompare(raw){
+      return String(raw || '')
+        .trim()
+        .replace(/[\s\-－—_＋+、，,。．\/\()（）\[\]【】「」『』：:；;｜|]/g,'')
+        .toLowerCase();
+    }
+
+    function getCaseNameOverlapMatches(inputValue, currentId){
+      const normalizedInput = normalizeCaseNameCompare(inputValue);
+      if(normalizedInput.length < 6) return [];
+      return allCases().filter(c => c.id !== currentId).map(c => {
+        const existingName = caseNameOf(c);
+        const normalizedExisting = normalizeCaseNameCompare(existingName);
+        if(!normalizedExisting) return null;
+        const hit = normalizedExisting.includes(normalizedInput) || normalizedInput.includes(normalizedExisting);
+        if(!hit) return null;
+        const overlapLen = Math.min(normalizedInput.length, normalizedExisting.length);
+        if(overlapLen < 6) return null;
+        return existingName;
+      }).filter(Boolean).slice(0,3);
+    }
+
+    function ensureCaseNameWarningBox(inputEl){
+      if(!inputEl) return null;
+      let box = inputEl.parentElement.querySelector('.case-name-warning-box');
+      if(box) return box;
+      box = document.createElement('div');
+      box.className = 'case-name-warning-box tiny';
+      box.style.marginTop = '6px';
+      box.style.color = '#b45309';
+      box.style.fontWeight = '700';
+      inputEl.insertAdjacentElement('afterend', box);
+      return box;
+    }
+
+    function updateCaseNameWarning(caseId, inputEl, showAlert){
+      if(!inputEl) return;
+      const raw = inputEl.value || '';
+      const matches = getCaseNameOverlapMatches(raw, caseId);
+      const box = ensureCaseNameWarningBox(inputEl);
+      if(!matches.length){
+        if(box) box.textContent = '';
+        inputEl.style.borderColor = '';
+        inputEl.dataset.caseNameWarned = '';
+        return;
+      }
+      const msg = `提醒：案名可能與現有案件相似：${matches.join('／')}`;
+      if(box) box.textContent = msg;
+      inputEl.style.borderColor = '#f59e0b';
+      if(showAlert && inputEl.dataset.caseNameWarned !== raw){
+        inputEl.dataset.caseNameWarned = raw;
+        alert(msg);
+      }
+    }
+
+    function bindModalEvents(c){
+      const tbody = document.getElementById('modalActionsBody');
+
+      tbody.querySelectorAll('.modal-value-input').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.value = e.target.value;
+          if(def?.type === 'textOption' && hasTextValue(item.value)) item.option = '';
+          syncStatusWithContent(def, item);
+          if(def?.type === 'textOption') refreshExclusiveRowUI(key);
+          if(key === 'caseName') updateCaseNameWarning(c.id, e.target, false);
+          touch(item);
+          updateRowState(key);
+          scheduleAutoSave();
+          scheduleMainRefresh();
+        });
+        el.addEventListener('blur', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          if(def?.dateAuto){
+            item.value = normalizeRocDate(item.value);
+            e.target.value = item.value;
+          }
+          if(def?.type === 'textOption' && hasTextValue(item.value)) item.option = '';
+          syncStatusWithContent(def, item);
+          if(def?.type === 'textOption') refreshExclusiveRowUI(key);
+          if(key === 'caseName') updateCaseNameWarning(c.id, e.target, true);
+          touch(item);
+          updateRowState(key);
+          renderModalSummary(c);
+          autoSaveNow();
+          renderStats(); renderPendingTable(); renderSummaryTable();
+        });
+      });
+
+      tbody.querySelectorAll('.modal-select-input').forEach(el => {
+        el.addEventListener('change', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.value = e.target.value;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c);
+        });
+      });
+
+      tbody.querySelectorAll('.modal-value-option-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const val = e.currentTarget.dataset.value;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.value = item.value === val ? '' : val;
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-assistant-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const name = e.currentTarget.dataset.name;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.assistant = item.assistant === name ? '' : name;
+          if(item.assistant) item.option = '';
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-option-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const opt = e.currentTarget.dataset.option;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          if(def?.type === 'textOption' && hasTextValue(item.value)) return;
+          item.option = item.option === opt ? '' : opt;
+          if(item.option) {
+            item.assistant = '';
+            if(def?.type === 'textOption') item.value = '';
+          }
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-tri-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const sub = e.currentTarget.dataset.sub;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          const curr = item.subitems[sub] || '';
+          item.subitems[sub] = curr === '' ? 'V' : curr === 'V' ? 'X' : '';
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-loc-date').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.date = e.target.value;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          scheduleAutoSave(); scheduleMainRefresh();
+        });
+        el.addEventListener('blur', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.date = normalizeRocDate(item.extra.date);
+          e.target.value = item.extra.date;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c);
+        });
+      });
+
+      tbody.querySelectorAll('.modal-loc-note').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.note = e.target.value;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          scheduleAutoSave(); scheduleMainRefresh();
+        });
+      });
+
+      tbody.querySelectorAll('.modal-loc-none').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.none = !item.extra.none;
+          if(item.extra.none) {
+            item.extra.date = '';
+            item.extra.note = '';
+          }
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-date-note-date, .modal-date-option-date').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.date = e.target.value;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          scheduleAutoSave(); scheduleMainRefresh();
+        });
+        el.addEventListener('blur', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.date = normalizeRocDate(item.extra.date);
+          e.target.value = item.extra.date;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c);
+        });
+      });
+
+      tbody.querySelectorAll('.modal-date-note-text').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.extra.note = e.target.value;
+          syncStatusWithContent(def, item);
+          touch(item);
+          updateRowState(key);
+          scheduleAutoSave(); scheduleMainRefresh();
+        });
+      });
+
+      tbody.querySelectorAll('.modal-status-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const def = FIELD_DEFS.find(x => x.key === key);
+          const item = c.items[key];
+          item.status = ((item.status || 0) + 1) % 4;
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+    }
+
+    function updateRowState(key){
+      const c = getCaseById(activeModalCaseId);
+      const def = FIELD_DEFS.find(x => x.key === key);
+      const item = c.items[key];
+      const tr = document.querySelector(`tr[data-key="${key}"]`);
+      if(!tr) return;
+      const s = effectiveStatus(def, item);
+      tr.querySelector('.status-cell').innerHTML = `<button type="button" class="status-btn s${s} modal-status-btn" data-key="${key}">${STATUS_TEXT[s]}</button>`;
+      tr.querySelector('.time-cell').textContent = fmtTime(item.updatedAt);
+      tr.querySelector('.modal-status-btn').onclick = e => {
+        item.status = ((item.status || 0) + 1) % 4;
+        syncStatusWithContent(def, item);
+        touch(item);
+        autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+      };
+      if(def?.type === 'textOption') refreshExclusiveRowUI(key);
+      renderModalSummary(c);
+    }
+
+    const modalCaseNoteInput = document.getElementById('modalCaseNoteInput');
+    if(modalCaseNoteInput){
+      modalCaseNoteInput.addEventListener('input', e => {
+        const c = getCaseById(activeModalCaseId);
+        if(!c) return;
+        c.caseNote = e.target.value;
+        scheduleAutoSave();
+      });
+      modalCaseNoteInput.addEventListener('blur', e => {
+        const c = getCaseById(activeModalCaseId);
+        if(!c) return;
+        c.caseNote = e.target.value;
+        autoSaveNow();
+      });
+    }
+
+    function openModal(caseId){
+      currentCaseId = caseId;
+      activeModalCaseId = caseId;
+      modalStatusFilter = 'all';
+      const c = getCaseById(caseId);
+      if(!c) return;
+      renderModalSummary(c);
+      renderModalActions(c);
+      document.getElementById('caseModal').classList.add('show');
+      const caseNameInput = document.querySelector('.modal-value-input[data-key="caseName"]');
+      if(caseNameInput) updateCaseNameWarning(c.id, caseNameInput, false);
+    }
+
+    function closeModal(){
+      activeModalCaseId = null;
+      document.getElementById('caseModal').classList.remove('show');
+    }
+
+    function xmlEscape(v){
+      return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+    }
+
+    function excelItemValue(def, item){
+      if(!def || !item) return '';
+      if(def.type === 'text' || def.type === 'dateText' || def.type === 'select' || def.type === 'optionOnly'){
+        return String(item.value || '').trim();
+      }
+      if(def.type === 'assistant'){
+        return String(item.assistant || '').trim();
+      }
+      if(def.type === 'assistantOrOption'){
+        return String(item.assistant || item.option || '').trim();
+      }
+      if(def.type === 'textOption'){
+        return [item.value || '', item.option || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'textAssistant'){
+        return [item.value || '', item.assistant || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'dateTextNote'){
+        return [item.extra?.date || '', item.extra?.note || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'dateAssistant'){
+        return [item.extra?.date || '', item.assistant || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'dateOption'){
+        return [item.extra?.date || '', item.option || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'dateTextNoteAssistant'){
+        return [item.extra?.date || '', item.extra?.note || '', item.assistant || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'dateTextNoteOption'){
+        return [item.extra?.date || '', item.extra?.note || '', item.option || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'locationInfo'){
+        if(item.extra?.none) return '無';
+        return [item.extra?.date || '', item.extra?.note || ''].filter(Boolean).join('｜');
+      }
+      if(def.type === 'triChecklist'){
+        return '';
+      }
+      return String(item.value || '').trim();
+    }
+
+    function buildWideExcelColumns(includeArchiveDate=false){
+      const columns = [
+        { header:'案件狀態', get:c => c.archived ? '封存' : '製作中' },
+        { header:'案名', get:c => caseNameOf(c) },
+        { header:'進案日期', get:c => fieldText(c,'entryDate') || '' },
+        { header:'業務', get:c => fieldText(c,'developer') || '' },
+        { header:'主約編號', get:c => fieldText(c,'mainContractNo') || '' },
+        { header:'委託開始', get:c => fieldText(c,'entrustStart') || '' },
+        { header:'委託結束', get:c => fieldText(c,'entrustEnd') || '' },
+        { header:'委託時間', get:c => getEntrustDurationText(c) },
+        { header:'物件本位置', get:c => getLocationSummary(c) },
+        { header:'記事欄', get:c => c.caseNote || '' }
+      ];
+
+      FIELD_DEFS.forEach(def => {
+        if(def.key === 'companyArchive'){
+          (def.subitems || []).forEach(name => {
+            columns.push({
+              header:`公司物件存檔-${name}`,
+              get:c => c.items[def.key]?.subitems?.[name] || ''
+            });
+          });
+        } else {
+          columns.push({
+            header:def.label,
+            get:c => excelItemValue(def, c.items[def.key])
+          });
+        }
+      });
+
+      if(includeArchiveDate){
+        columns.push({
+          header:'封存日期',
+          get:c => c.archivedAt ? fmtTime(c.archivedAt).split(' ')[0] : ''
+        });
+      }
+
+      const seen = new Set();
+      return columns.filter(col => {
+        const h = String(col.header || '').trim();
+        if(!h) return false;
+        if(seen.has(h)) return false;
+        seen.add(h);
+        return true;
+      });
+    }
+
+    function buildExcelRows(list, includeArchiveDate=false){
+      const cols = buildWideExcelColumns(includeArchiveDate);
+      const rows = [cols.map(col => col.header)];
+      list.forEach(c => {
+        rows.push(cols.map(col => {
+          try {
+            return col.get(c);
+          } catch(err) {
+            return '';
+          }
+        }));
+      });
+      return rows;
+    }
+
+    function rowsToWorksheetXml(name, rows){
+      const rowXml = rows.map((row, rowIndex) => {
+        const cells = row.map(v => `<Cell${rowIndex===0?' ss:StyleID="Header"':''}><Data ss:Type="String">${xmlEscape(v)}</Data></Cell>`).join('');
+        return `<Row>${cells}</Row>`;
+      }).join('');
+      return `<Worksheet ss:Name="${xmlEscape(name)}"><Table>${rowXml}</Table></Worksheet>`;
+    }
+
+    function exportExcel(){
+      const activeRows = buildExcelRows(activeCases(), false);
+      const archivedRows = buildExcelRows(archivedCases(), true);
+      const workbook = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+  <Styles>
+    <Style ss:ID="Header"><Font ss:Bold="1"/></Style>
+  </Styles>
+  ${rowsToWorksheetXml('製作中', activeRows)}
+  ${rowsToWorksheetXml('封存', archivedRows)}
+</Workbook>`;
+      const blob = new Blob([workbook], {type:'application/vnd.ms-excel;charset=utf-8;'});
+      const a = document.createElement('a');
+      const dt = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      a.href = URL.createObjectURL(blob);
+      a.download = `NEW本製作_${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}_${pad(dt.getHours())}${pad(dt.getMinutes())}.xls`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 1000);
+    }
+
+    function toggleArchiveCase(caseId, forceState){
+      const c = getCaseById(caseId);
+      if(!c) return;
+      const next = typeof forceState === 'boolean' ? forceState : !c.archived;
+      c.archived = next;
+      c.archivedAt = next ? new Date().toISOString() : '';
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId === caseId){
+        renderModalSummary(c);
+      }
+    }
+
+    function addCase(){
+      const newCase = createEmptyCase();
+      state.cases.unshift(newCase);
+      currentCaseId = newCase.id;
+      autoSaveNow();
+      renderAll();
+      openModal(newCase.id);
+    }
+
+    function deleteCurrentCase(){
+      const targetId = activeModalCaseId || currentCaseId;
+      if(!targetId) return;
+      if(state.cases.length === 1){
+        alert('至少保留一筆案件。');
+        return;
+      }
+      const c = getCaseById(targetId);
+      if(!confirm(`確定刪除「${caseNameOf(c)}」嗎？`)) return;
+      state.cases = state.cases.filter(x => x.id !== targetId);
+      currentCaseId = state.cases[0]?.id || null;
+      autoSaveNow();
+      closeModal();
+      renderAll();
+    }
+
+    function addAssistant(){
+      const input = document.getElementById('assistantNameInput');
+      const name = input.value.trim();
+      if(!name) return;
+      const existing = findAssistantEntry(name);
+      if(existing){
+        if(existing.active === false){
+          existing.active = true;
+        } else {
+          alert('這位助理已存在。');
+          return;
+        }
+      } else {
+        state.assistants.push({ name, active:true });
+      }
+      input.value = '';
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        renderModalActions(c);
+      }
+    }
+
+    function addCustomAction(){
+      const nameEl = document.getElementById('customActionNameInput');
+      const typeEl = document.getElementById('customActionTypeInput');
+      const optionsEl = document.getElementById('customActionOptionsInput');
+      const label = (nameEl?.value || '').trim();
+      const type = typeEl?.value || 'assistant';
+      const optionsRaw = (optionsEl?.value || '').trim();
+      const optionList = parseOptionsText(optionsRaw);
+      if(!label){
+        alert('請先輸入項目名稱。');
+        return;
+      }
+      if(typeNeedsOptions(type) && !optionList.length){
+        alert('這個類型需要填選項內容。');
+        return;
+      }
+      const key = 'custom_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+      const def = { group:'自訂動作', key, label, type };
+      applyDefType(def, type, optionList, true);
+      state.customActions.push(def);
+      FIELD_DEFS.push(def);
+      saveFieldSettingSnapshot(def);
+      state.cases.forEach(c => { c.items[key] = defaultItem(def); });
+      if(nameEl) nameEl.value = '';
+      if(optionsEl) optionsEl.value = '';
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        if(c) renderModalActions(c);
+      }
+    }
+
+    function renderArchiveConfigEditor(){
+      const el = document.getElementById('archiveConfigInput');
+      if(!el) return;
+      const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
+      const items = (state.companyArchiveItems && state.companyArchiveItems.length)
+        ? state.companyArchiveItems
+        : (archiveDef?.subitems || []);
+      el.value = items.join('\n');
+    }
+
+    function saveArchiveConfig(){
+      const el = document.getElementById('archiveConfigInput');
+      if(!el) return;
+      const list = el.value
+        .split(/\n|,|，/)
+        .map(s => s.trim())
+        .filter(Boolean);
+      if(!list.length){
+        alert('請至少保留 1 個項目。');
+        return;
+      }
+      const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
+      const oldItems = archiveDef?.subitems ? [...archiveDef.subitems] : [];
+      state.companyArchiveItems = [...list];
+      if(archiveDef) archiveDef.subitems = [...list];
+
+      state.cases.forEach(c => {
+        const item = c.items['companyArchive'];
+        if(!item) return;
+        if(!item.subitems || typeof item.subitems !== 'object') item.subitems = {};
+        const next = {};
+        list.forEach(name => {
+          next[name] = oldItems.includes(name) ? (item.subitems[name] || '') : '';
+        });
+        item.subitems = next;
+        syncStatusWithContent(archiveDef, item);
+        touch(item);
+      });
+
+      autoSaveNow();
+      renderAll();
+      if(activeModalCaseId){
+        const c = getCaseById(activeModalCaseId);
+        if(c) renderModalActions(c);
+      }
+      alert('公司物件存檔項目已更新。');
+    }
+
+    function renderAll(){
+      renderStats();
+      renderPendingFilterOptions();
+      renderPendingTable();
+      if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
+      renderSummaryTable();
+      renderSummaryMonthCounts();
+      renderArchiveSection();
+      renderAssistantList();
+      renderCustomActionList();
+      renderArchiveConfigEditor();
+      setLastSyncTimeText(remoteUpdatedAt ? fmtTime(remoteUpdatedAt) : '—');
+      setSaveStatus('已自動存檔', false);
+      updateConfigFloatingTools();
+    }
+
+    document.getElementById('newCaseBtn').onclick = addCase;
+    document.getElementById('exportExcelBtn').onclick = exportExcel;
+    document.getElementById('addAssistantBtn').onclick = addAssistant;
+    document.getElementById('addCustomActionBtn').onclick = addCustomAction;
+    const saveArchiveConfigBtn = document.getElementById('saveArchiveConfigBtn');
+    if(saveArchiveConfigBtn) saveArchiveConfigBtn.onclick = saveArchiveConfig;
+    const customTypeEl = document.getElementById('customActionTypeInput');
+    const customOptionsEl = document.getElementById('customActionOptionsInput');
+    function syncCustomOptionsInput(){
+      const needsOptions = customTypeEl && typeNeedsOptions(customTypeEl.value);
+      if(!customOptionsEl) return;
+      customOptionsEl.disabled = !needsOptions;
+      customOptionsEl.style.opacity = needsOptions ? '1' : '.55';
+      if(!needsOptions) customOptionsEl.value = '';
+      customOptionsEl.placeholder = needsOptions ? '選項用逗號分隔，例如：無,進案附,免做' : '這個類型不需要填選項';
+    }
+    if(customTypeEl){
+      customTypeEl.addEventListener('change', syncCustomOptionsInput);
+      syncCustomOptionsInput();
+    }
+    document.getElementById('assistantNameInput').addEventListener('keydown', e => { if(e.key === 'Enter') addAssistant(); });
+    document.getElementById('customActionNameInput').addEventListener('keydown', e => { if(e.key === 'Enter') addCustomAction(); });
+    document.getElementById('pendingActionFilter').addEventListener('change', renderPendingTable);
+    const developerFilterInput = document.getElementById('developerFilterInput');
+    if(developerFilterInput){
+      developerFilterInput.addEventListener('input', renderPendingTable);
+    }
+    const caseNameFilterInput = document.getElementById('caseNameFilterInput');
+    if(caseNameFilterInput){
+      caseNameFilterInput.addEventListener('input', renderPendingTable);
+    }
+    const clearPendingTextBtn = document.getElementById('clearPendingTextBtn');
+    if(clearPendingTextBtn){
+      clearPendingTextBtn.addEventListener('click', () => {
+        if(developerFilterInput) developerFilterInput.value = '';
+        if(caseNameFilterInput) caseNameFilterInput.value = '';
+        renderPendingTable();
+      });
+    }
+    const clearPendingFilterBtn = document.getElementById('clearPendingFilterBtn');
+    if(clearPendingFilterBtn){
+      clearPendingFilterBtn.addEventListener('click', () => {
+        const pendingActionFilter = document.getElementById('pendingActionFilter');
+        if(pendingActionFilter) pendingActionFilter.value = '__ALL__';
+        if(developerFilterInput) developerFilterInput.value = '';
+        if(caseNameFilterInput) caseNameFilterInput.value = '';
+        renderPendingTable();
+      });
+    }
+    function getFilteredEntryDatesByMonth(monthValue){
+      const monthNormalized = normalizeRocMonth(monthValue);
+      const dates = activeCases()
+        .map(c => normalizeRocDate(fieldText(c,'entryDate')))
+        .filter(Boolean)
+        .filter(v => !monthNormalized || matchEntryMonth(v, monthNormalized));
+      return [...new Set(dates)].sort(compareRocDateDesc);
+    }
+
+    function populateSummaryFilterControls(){
+      const months = getActiveEntryMonths();
+      const monthEl = document.getElementById('summaryMonthFilterSelect');
+      const dateEl = document.getElementById('summaryDateFilterSelect');
+      const currentMonth = monthEl ? normalizeRocMonth(monthEl.value) : '';
+      const currentDate = dateEl ? normalizeRocDate(dateEl.value) : '';
+      const dates = getFilteredEntryDatesByMonth(currentMonth);
+
+      if(monthEl){
+        monthEl.innerHTML = '<option value="">選擇月份</option>' + months.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join('');
+        if(currentMonth && months.includes(currentMonth)) monthEl.value = currentMonth;
+        else monthEl.value = '';
+      }
+      if(dateEl){
+        dateEl.innerHTML = '<option value="">選擇日期</option>' + dates.map(v => `<option value="${escapeAttr(v)}">${escapeHtml(v)}</option>`).join('');
+        if(currentDate && dates.includes(currentDate)) dateEl.value = currentDate;
+        else dateEl.value = '';
+        dateEl.disabled = false;
+      }
+    }
+
+    const summaryMonthFilterSelect = document.getElementById('summaryMonthFilterSelect');
+    const summaryDateFilterSelect = document.getElementById('summaryDateFilterSelect');
+    if(summaryMonthFilterSelect){
+      summaryMonthFilterSelect.addEventListener('change', () => {
+        populateSummaryFilterControls();
+        renderSummaryTable();
+        renderSummaryMonthCounts();
+      });
+    }
+    if(summaryDateFilterSelect){
+      summaryDateFilterSelect.addEventListener('change', () => { renderSummaryTable(); renderSummaryMonthCounts(); });
+    }
+    const clearSummaryDateFilterBtn = document.getElementById('clearSummaryDateFilterBtn');
+    if(clearSummaryDateFilterBtn){
+      clearSummaryDateFilterBtn.addEventListener('click', () => {
+        if(summaryMonthFilterSelect) summaryMonthFilterSelect.value = '';
+        if(summaryDateFilterSelect) summaryDateFilterSelect.value = '';
+        populateSummaryFilterControls();
+        renderSummaryTable();
+        renderSummaryMonthCounts();
+      });
+    }
+    document.getElementById('modalArchiveBtn').onclick = () => { if(activeModalCaseId) { const c = getCaseById(activeModalCaseId); toggleArchiveCase(activeModalCaseId, !c.archived); if(c.archived) closeModal(); else renderModalActions(c); } };
+    document.getElementById('modalScrollTopBtn').onclick = () => {
+      const card = document.querySelector('#caseModal .modal-card');
+      if(card) card.scrollTo({ top: 0, behavior: 'smooth' });
+      const noteInput = document.getElementById('modalCaseNoteInput');
+      if(noteInput) noteInput.focus();
+    };
+    document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
+    document.getElementById('modalCloseBtn').onclick = closeModal;
+    document.getElementById('modalCloseBtnBottom').onclick = closeModal;
+    document.getElementById('caseModal').addEventListener('click', e => { if(e.target.id === 'caseModal') closeModal(); });
+    window.addEventListener('beforeunload', () => autoSaveNow());
+
+    renderAll();
+    bindConfigFloatingTools();
+    initSyncUI();
+  </script>
+</body>
+</html>
