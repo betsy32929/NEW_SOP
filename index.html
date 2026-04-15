@@ -292,8 +292,8 @@
           <thead>
             <tr>
               <th style="width:240px">案名</th>
+              <th style="width:140px">開發業務</th>
               <th style="width:120px">進案日期</th>
-              <th style="width:140px">業務</th>
               <th style="width:140px">主約編號</th>
               <th style="width:180px">委託時間</th>
               <th style="width:160px">物件本位置</th>
@@ -1720,8 +1720,8 @@
         tr.className = 'clickable-row';
         tr.innerHTML = `
           <td>${escapeHtml(caseNameOf(c))}</td>
-          <td>${escapeHtml(fieldText(c,'entryDate') || '—')}</td>
           <td>${escapeHtml(fieldText(c,'developer') || '—')}</td>
+          <td>${escapeHtml(fieldText(c,'entryDate') || '—')}</td>
           <td>${escapeHtml(fieldText(c,'mainContractNo') || '—')}</td>
           <td>${escapeHtml(getEntrustDurationText(c))}</td>
           <td>${escapeHtml(getLocationSummary(c))}</td>
