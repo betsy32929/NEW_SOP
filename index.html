@@ -160,13 +160,189 @@
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
     .case-note-label{font-size:13px; font-weight:800; color:#334155}
+    .reward-modal-card{width:min(1480px,calc(100vw - 24px))}
+    .reward-setting-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; align-items:end}
+    .reward-summary-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+    .reward-metric{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f5f9ff 100%)}
+    .reward-metric:nth-child(1){background:linear-gradient(135deg,#d8e8ff 0,#eef5ff 100%)}
+    .reward-metric:nth-child(2){background:linear-gradient(135deg,#ffe3b5 0,#fff1da 100%)}
+    .reward-metric:nth-child(3){background:linear-gradient(135deg,#d9f4e3 0,#eefbf3 100%)}
+    .reward-metric:nth-child(4){background:linear-gradient(135deg,#ffd8e6 0,#fff2f7 100%)}
+    .reward-metric .k{font-size:12px; color:var(--muted); margin-bottom:6px}
+    .reward-metric .v{font-size:24px; font-weight:900; line-height:1.15}
+    .reward-rows{display:grid; gap:16px}
+    .reward-rule-list{margin:8px 0 0; padding-left:18px; color:#475569; font-size:13px; line-height:1.7}
+    .reward-table-wrap{overflow:hidden; border:1px solid var(--line); border-radius:16px; background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
+    .reward-table-wrap table{min-width:0; width:100%; table-layout:fixed}
+    .reward-table-wrap.table-wide table{min-width:0}
+    .reward-rank-badge{display:inline-flex; min-width:34px; justify-content:center; align-items:center; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800; background:#eef4ff; color:#1d4ed8; border:1px solid #c7dbff}
+    .reward-rank-badge.top1{background:#fff3bf; color:#92400e; border-color:#fcd34d}
+    .reward-rank-badge.top2{background:#edf2f7; color:#475569; border-color:#cbd5e1}
+    .reward-rank-badge.top3{background:#ffe4cf; color:#9a3412; border-color:#fdba74}
+    .reward-score{font-weight:900; color:#1d4ed8}
+    .reward-note{font-size:12px; color:var(--muted); line-height:1.7}
+    .reward-export-bar{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .reward-public-box{border:1px dashed #b9c9e3; border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#fbfdff 100%)}
+    .reward-pill-yes,.reward-pill-no{display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800; border:1px solid transparent}
+    .reward-pill-yes{background:#dff7e6; color:#166534; border-color:#bbf7d0}
+    .reward-pill-no{background:#eef2f7; color:#475569; border-color:#cbd5e1}
+    .reward-small{font-size:12px; color:#64748b}
+    .reward-name-stack{display:flex; flex-direction:column; gap:2px}
+    .reward-name-stack .subline{font-size:12px; color:#64748b}
+    .reward-table-wrap th,.reward-table-wrap td{white-space:normal; word-break:break-word}
+    .reward-summary-grid.compact{grid-template-columns:1.2fr 0.8fr}
+    .reward-public-poster{display:grid; gap:14px}
+    .reward-poster-head{padding:18px; border-radius:18px; background:linear-gradient(135deg,#fff4c4 0,#ffe4b8 35%,#ffd6cc 100%); border:1px solid #f7cf97; box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+    .reward-poster-title{font-size:28px; font-weight:900; letter-spacing:1px; color:#7c2d12; text-align:center}
+    .reward-poster-sub{margin-top:6px; text-align:center; color:#7c4a1d; font-size:14px; font-weight:700}
+    .reward-poster-total{display:inline-flex; align-items:center; justify-content:center; gap:8px; margin:12px auto 0; padding:10px 18px; border-radius:999px; background:#fff; border:1px solid #ffd08a; font-weight:900; color:#b45309}
+    .reward-poster-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:14px}
+    .reward-poster-card{border:1px solid #eadfbf; border-radius:18px; padding:14px; background:linear-gradient(180deg,#fffef9 0,#fff9ef 100%)}
+    .reward-poster-card h4{margin:0 0 10px; font-size:16px; color:#92400e}
+    .reward-poster-top3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px}
+    .reward-podium{border-radius:16px; padding:12px 10px; text-align:center; border:1px solid #eadfbf; background:#fff}
+    .reward-podium .r{font-size:12px; font-weight:900; color:#7c3aed}
+    .reward-podium .n{margin-top:6px; font-size:18px; font-weight:900; color:#1f2937}
+    .reward-podium .s{margin-top:4px; font-size:20px; font-weight:900; color:#2563eb}
+    .reward-podium.rank1{background:linear-gradient(180deg,#fff6cc 0,#fff 100%)}
+    .reward-podium.rank2{background:linear-gradient(180deg,#eef2f7 0,#fff 100%)}
+    .reward-podium.rank3{background:linear-gradient(180deg,#ffe5d2 0,#fff 100%)}
+    .reward-poster-list{display:grid; gap:8px}
+    .reward-poster-row{display:grid; grid-template-columns:70px 1fr 80px; gap:8px; align-items:center; padding:9px 10px; border-radius:14px; background:#fff; border:1px solid #f0e7d1}
+    .reward-poster-row .rank{font-weight:900; color:#92400e}
+    .reward-poster-row .name{font-weight:800; color:#1f2937}
+    .reward-poster-row .score{font-weight:900; color:#2563eb; text-align:right}
+    .reward-egg-zone{display:flex; flex-wrap:wrap; gap:8px}
+    .reward-egg-chip{padding:8px 12px; border-radius:999px; border:1px dashed #f6c453; background:#fff; color:#92400e; font-weight:800; font-size:13px}
+    .reward-egg-note{margin-top:8px; font-size:13px; color:#8a5a13; line-height:1.7}
+    .reward-filter-row{display:flex; justify-content:space-between; gap:12px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px}
+    .reward-filter-row label{display:flex; flex-direction:column; gap:6px; min-width:220px}
+    .reward-roster-editor{display:grid; gap:10px; padding:12px; border:1px dashed #bfdbfe; border-radius:16px; background:linear-gradient(180deg,#ffffff 0,#f8fbff 100%)}
+    .reward-roster-add{display:grid; grid-template-columns:220px auto 1fr; gap:8px; align-items:center}
+    .reward-roster-list{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .reward-roster-chip{display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border-radius:999px; border:1px solid #c7dbff; background:linear-gradient(180deg,#ffffff 0,#eff6ff 100%); color:#1e3a8a; font-weight:800; font-size:13px}
+    .reward-roster-chip button{padding:2px 7px; border-radius:999px; background:#ffe4e6; color:#be123c; border:1px solid #fecdd3; font-size:12px; font-weight:900}
+    .reward-roster-count{font-size:12px; color:#64748b; font-weight:800}
+    @media (max-width:760px){.reward-roster-add{grid-template-columns:1fr}.reward-roster-add button{width:100%}}
+    .reward-hidden-panel{padding:0; overflow:hidden; border:1px solid #dbe7ff; background:linear-gradient(180deg,#f8fbff 0,#ffffff 100%)}
+    .reward-hidden-panel summary{list-style:none; cursor:pointer; padding:14px 16px; font-weight:900; color:#334155; display:flex; align-items:center; justify-content:space-between; gap:12px; background:linear-gradient(135deg,#dbeafe 0,#eff6ff 100%)}
+    .reward-hidden-panel summary::-webkit-details-marker{display:none}
+    .reward-hidden-panel summary::after{content:'＋ 展開'; font-size:12px; font-weight:900; color:#1d4ed8; background:#fff; border:1px solid #bfdbfe; padding:4px 10px; border-radius:999px}
+    .reward-hidden-panel[open] summary::after{content:'－ 收合'}
+    .reward-hidden-panel .reward-hidden-inner{padding:16px; display:grid; gap:16px}
+    .reward-public-box{border:none; border-radius:30px; padding:18px; background:linear-gradient(135deg,#fff7ed 0%,#fff1f2 30%,#eef2ff 66%,#ecfeff 100%); box-shadow:0 22px 55px rgba(124,58,237,.18), inset 0 1px 0 rgba(255,255,255,.9)}
+    .reward-public-poster{display:grid; gap:16px; position:relative}
+    .reward-poster-head{position:relative; overflow:hidden; padding:28px 24px; border-radius:28px; background:linear-gradient(135deg,#7c3aed 0%,#db2777 48%,#f97316 100%); border:1px solid rgba(255,255,255,.45); box-shadow:0 20px 52px rgba(219,39,119,.22)}
+    .reward-poster-head::before{content:''; position:absolute; left:-50px; bottom:-70px; width:240px; height:240px; border-radius:999px; background:radial-gradient(circle,rgba(254,240,138,.92) 0%,rgba(254,240,138,0) 68%)}
+    .reward-poster-head::after{content:''; position:absolute; right:-40px; top:-60px; width:220px; height:220px; border-radius:999px; background:radial-gradient(circle,rgba(186,230,253,.72) 0%,rgba(186,230,253,0) 70%)}
+    .reward-poster-title{position:relative; z-index:1; font-size:38px; font-weight:1000; letter-spacing:2px; color:#fff; text-align:center; text-shadow:0 8px 24px rgba(88,28,135,.35)}
+    .reward-poster-sub{position:relative; z-index:1; margin-top:10px; text-align:center; color:#fff7ed; font-size:16px; font-weight:900}
+    .reward-poster-totalline{position:relative; z-index:1; margin:12px auto 0; width:max-content; max-width:100%; padding:10px 20px; border-radius:999px; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3); color:#fef08a; font-size:24px; font-weight:1000; letter-spacing:1px; backdrop-filter:blur(8px)}
+    .reward-poster-slogan{position:relative; z-index:1; margin-top:14px; display:flex; justify-content:center}
+    .reward-poster-slogan span{padding:10px 18px; border-radius:999px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.24); color:#fff; font-size:13px; font-weight:900; backdrop-filter:blur(8px)}
+    .reward-poster-card{border:1px solid rgba(124,58,237,.16); border-radius:24px; padding:16px; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); box-shadow:0 18px 42px rgba(59,130,246,.10)}
+    .reward-poster-card h4{margin:0 0 12px; font-size:19px; color:#4c1d95; font-weight:1000; letter-spacing:.5px}
+    .reward-poster-list{display:grid; gap:10px}
+    .reward-poster-row{display:grid; grid-template-columns:112px 1fr 120px; gap:10px; align-items:center; padding:13px 14px; border-radius:20px; border:1px solid #e5e7eb; background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
+    .reward-poster-row.top1{background:linear-gradient(90deg,#fff2a8 0%,#fffbea 100%); border-color:#facc15; box-shadow:0 12px 28px rgba(250,204,21,.24)}
+    .reward-poster-row.top2{background:linear-gradient(90deg,#eef2f7 0%,#ffffff 100%); border-color:#cbd5e1}
+    .reward-poster-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%); border-color:#fdba74}
+    .reward-poster-row .rank{font-weight:1000; color:#fff; text-align:center; border-radius:999px; padding:8px 12px; background:linear-gradient(135deg,#4338ca 0%,#7c3aed 100%); font-size:13px}
+    .reward-poster-row.top1 .rank{background:linear-gradient(135deg,#d97706 0%,#f59e0b 100%)}
+    .reward-poster-row.top2 .rank{background:linear-gradient(135deg,#64748b 0%,#94a3b8 100%)}
+    .reward-poster-row.top3 .rank{background:linear-gradient(135deg,#c2410c 0%,#fb923c 100%)}
+    .reward-poster-row .name{font-size:19px; font-weight:1000; color:#111827}
+    .reward-poster-row .score{font-size:19px; font-weight:1000; color:#1d4ed8; text-align:right}
+    .reward-egg-zone{display:flex; flex-wrap:wrap; gap:10px}
+    .reward-egg-chip{padding:9px 14px; border-radius:999px; border:1px solid #fbcfe8; background:linear-gradient(135deg,#fff1f2 0%,#ffffff 100%); color:#be185d; font-weight:900; font-size:13px}
+    .reward-egg-note{margin-top:10px; font-size:14px; color:#475569; line-height:1.8; font-weight:700}
+    .reward-public-box .reward-note{color:#475569}
+    @media (max-width: 980px){ .reward-poster-row{grid-template-columns:94px 1fr 96px} .reward-poster-title{font-size:30px} }
+    .reward-hidden-panel{padding:0; overflow:hidden; border:1px solid #dbe7ff; background:linear-gradient(180deg,#f8fbff 0,#ffffff 100%)}
+    .reward-hidden-panel summary{list-style:none; cursor:pointer; padding:14px 16px; font-weight:900; color:#334155; display:flex; align-items:center; justify-content:space-between; gap:12px; background:linear-gradient(135deg,#dbeafe 0,#eff6ff 100%)}
+    .reward-hidden-panel summary::-webkit-details-marker{display:none}
+    .reward-hidden-panel summary::after{content:'＋ 展開'; font-size:12px; font-weight:900; color:#1d4ed8; background:#fff; border:1px solid #bfdbfe; padding:4px 10px; border-radius:999px}
+    .reward-hidden-panel[open] summary::after{content:'－ 收合'}
+    .reward-hidden-panel .reward-hidden-inner{padding:16px; display:grid; gap:16px}
+    .reward-public-box{border:none; border-radius:28px; padding:16px; background:radial-gradient(circle at top left,rgba(255,255,255,.22),transparent 20%), linear-gradient(135deg,#0f172a 0%,#312e81 24%,#7c3aed 58%,#db2777 100%); box-shadow:0 20px 50px rgba(49,46,129,.32)}
+    .reward-public-poster{display:grid; gap:16px}
+    .reward-poster-head{position:relative; overflow:hidden; padding:26px 24px; border-radius:26px; background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,.05) 100%); border:1px solid rgba(255,255,255,.26); box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+    .reward-poster-head::before{content:''; position:absolute; inset:auto auto -40px -30px; width:180px; height:180px; border-radius:999px; background:radial-gradient(circle,rgba(255,230,160,.75) 0%,rgba(255,230,160,0) 70%)}
+    .reward-poster-head::after{content:''; position:absolute; top:-20px; right:-20px; width:160px; height:160px; border-radius:999px; background:radial-gradient(circle,rgba(96,165,250,.48) 0%,rgba(96,165,250,0) 70%)}
+    .reward-poster-title{position:relative; z-index:1; font-size:34px; font-weight:1000; letter-spacing:2px; color:#fff; text-align:center; text-shadow:0 6px 20px rgba(15,23,42,.3)}
+    .reward-poster-sub{position:relative; z-index:1; margin-top:10px; text-align:center; color:#f8fafc; font-size:16px; font-weight:800}
+    .reward-poster-totalline{position:relative; z-index:1; margin-top:8px; text-align:center; color:#fde68a; font-size:22px; font-weight:1000; letter-spacing:1px}
+    .reward-poster-slogan{position:relative; z-index:1; margin-top:14px; display:flex; justify-content:center}
+    .reward-poster-slogan span{padding:10px 18px; border-radius:999px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.2); color:#fff; font-size:13px; font-weight:800; backdrop-filter:blur(8px)}
+    .reward-poster-card{border:1px solid rgba(255,255,255,.18); border-radius:24px; padding:16px; background:linear-gradient(180deg,rgba(255,255,255,.98) 0%,rgba(245,247,255,.98) 100%); box-shadow:0 18px 40px rgba(15,23,42,.16)}
+    .reward-poster-card h4{margin:0 0 12px; font-size:18px; color:#312e81; font-weight:1000; letter-spacing:.5px}
+    .reward-poster-list{display:grid; gap:10px}
+    .reward-poster-row{display:grid; grid-template-columns:92px 1fr 110px; gap:10px; align-items:center; padding:12px 14px; border-radius:18px; border:1px solid #e5e7eb; background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
+    .reward-poster-row.top1{background:linear-gradient(90deg,#fff4b5 0%,#fffbe6 100%); border-color:#facc15; box-shadow:0 10px 24px rgba(250,204,21,.22)}
+    .reward-poster-row.top2{background:linear-gradient(90deg,#edf2f7 0%,#ffffff 100%); border-color:#cbd5e1}
+    .reward-poster-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%); border-color:#fdba74}
+    .reward-poster-row .rank{font-weight:1000; color:#fff; text-align:center; border-radius:999px; padding:8px 12px; background:linear-gradient(135deg,#4338ca 0%,#7c3aed 100%)}
+    .reward-poster-row.top1 .rank{background:linear-gradient(135deg,#d97706 0%,#f59e0b 100%)}
+    .reward-poster-row.top2 .rank{background:linear-gradient(135deg,#64748b 0%,#94a3b8 100%)}
+    .reward-poster-row.top3 .rank{background:linear-gradient(135deg,#c2410c 0%,#fb923c 100%)}
+    .reward-poster-row .name{font-size:18px; font-weight:900; color:#111827}
+    .reward-poster-row .score{font-size:18px; font-weight:1000; color:#1d4ed8; text-align:right}
+    .reward-egg-zone{display:flex; flex-wrap:wrap; gap:10px}
+    .reward-egg-chip{padding:9px 14px; border-radius:999px; border:1px solid #fbcfe8; background:linear-gradient(135deg,#fff1f2 0%,#ffffff 100%); color:#be185d; font-weight:900; font-size:13px}
+    .reward-egg-note{margin-top:10px; font-size:14px; color:#475569; line-height:1.8; font-weight:700}
+    .reward-public-box .reward-note{color:#eef2ff}
+    @media (max-width: 980px){ .reward-summary-grid.compact{grid-template-columns:1fr} .reward-poster-row{grid-template-columns:84px 1fr 90px} .reward-poster-title{font-size:28px} }
+    @media (max-width: 980px){ .reward-poster-grid,.reward-poster-top3{grid-template-columns:1fr} .reward-summary-grid.compact{grid-template-columns:1fr} }
+    .reward-public-box{border:8px solid #f4c542; border-radius:28px; padding:16px; background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%); box-shadow:0 22px 54px rgba(30,64,175,.16)}
+    .reward-public-poster{display:grid; gap:16px}
+    .reward-poster-head{position:relative; overflow:hidden; padding:24px 22px; border-radius:22px; background:linear-gradient(135deg,#ffffff 0%,#fff7ed 46%,#eff6ff 100%); border:3px solid #38bdf8; box-shadow:0 10px 0 rgba(14,165,233,.16)}
+    .reward-poster-head::before{content:'★'; position:absolute; left:18px; top:14px; color:#f59e0b; font-size:24px; transform:rotate(-12deg)}
+    .reward-poster-head::after{content:'★'; position:absolute; right:20px; top:18px; color:#22c55e; font-size:22px; transform:rotate(12deg)}
+    .reward-poster-title{position:relative; z-index:1; font-size:38px; font-weight:1000; letter-spacing:2px; color:#0f172a; text-align:center; text-shadow:2px 2px 0 #fde68a}
+    .reward-poster-sub{position:relative; z-index:1; margin-top:10px; text-align:center; color:#0369a1; font-size:17px; font-weight:900}
+    .reward-poster-totalline{display:none}
+    .reward-poster-slogan{position:relative; z-index:1; margin-top:14px; display:flex; justify-content:center}
+    .reward-poster-slogan span{padding:10px 18px; border-radius:999px; background:#fef3c7; border:2px solid #fbbf24; color:#92400e; font-size:14px; font-weight:900}
+    .reward-poster-card{border:3px solid #93c5fd; border-radius:24px; padding:16px; background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%); box-shadow:0 12px 0 rgba(147,197,253,.18)}
+    .reward-poster-card-head{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px}
+    .reward-poster-card h4{margin:0; font-size:21px; color:#0f172a; font-weight:1000; letter-spacing:.5px}
+    .reward-poster-totalbadge{display:inline-flex; align-items:center; justify-content:center; padding:9px 16px; border-radius:999px; background:linear-gradient(135deg,#facc15 0%,#fb923c 100%); color:#7c2d12; border:2px solid #fff7ed; font-size:17px; font-weight:1000; box-shadow:0 6px 16px rgba(251,146,60,.28)}
+    .reward-poster-list{display:grid; gap:10px}
+    .reward-poster-row{display:grid; grid-template-columns:112px 1fr 116px; gap:10px; align-items:center; padding:13px 14px; border-radius:18px; border:2px solid #dbeafe; background:linear-gradient(90deg,#ffffff 0%,#eff6ff 100%)}
+    .reward-poster-row.top1{background:linear-gradient(90deg,#fff7ad 0%,#fffef1 100%); border-color:#facc15; box-shadow:0 8px 18px rgba(250,204,21,.24)}
+    .reward-poster-row.top2{background:linear-gradient(90deg,#e0f2fe 0%,#ffffff 100%); border-color:#7dd3fc}
+    .reward-poster-row.top3{background:linear-gradient(90deg,#dcfce7 0%,#ffffff 100%); border-color:#86efac}
+    .reward-poster-row .rank{font-weight:1000; color:#0f172a; text-align:center; border-radius:999px; padding:8px 10px; background:#fef3c7; border:2px solid #facc15; font-size:13px}
+    .reward-poster-row.top1 .rank{background:#fde68a; border-color:#f59e0b}
+    .reward-poster-row.top2 .rank{background:#bae6fd; border-color:#0ea5e9}
+    .reward-poster-row.top3 .rank{background:#bbf7d0; border-color:#22c55e}
+    .reward-poster-row .name{font-size:20px; font-weight:1000; color:#111827}
+    .reward-poster-row .score{font-size:20px; font-weight:1000; color:#dc2626; text-align:right}
+    .reward-egg-zone{display:flex; flex-wrap:wrap; gap:10px}
+    .reward-egg-chip{padding:9px 14px; border-radius:999px; border:2px dashed #38bdf8; background:#f0f9ff; color:#0369a1; font-weight:900; font-size:13px}
+    .reward-egg-note{margin-top:10px; font-size:14px; color:#475569; line-height:1.8; font-weight:800}
+    .reward-filter-row input.field-input{max-width:360px; background:#ffffff}
+    .reward-detail-title-row{align-items:center}
+    .reward-inline-filter{display:flex; align-items:center; gap:8px; margin-left:auto; min-width:360px; max-width:460px}
+    .reward-inline-filter span{font-size:13px; font-weight:900; color:#334155; white-space:nowrap}
+    .reward-inline-filter input.field-input{height:38px; padding:8px 10px; background:#fff}
+    .reward-table-wrap.table-wide{max-height:none !important; overflow:visible}
+    @media(max-width:760px){.reward-inline-filter{margin-left:0; width:100%; min-width:0; max-width:none}.reward-detail-title-row{align-items:flex-start}}
+    @media (max-width: 980px){ .reward-poster-title{font-size:30px} .reward-poster-card-head{align-items:flex-start} }
+
+    .reward-chart-wrap{overflow-x:auto; padding-bottom:4px}
+    .reward-column-chart{display:grid; gap:8px; min-width:480px}
+    .reward-chart-svg{display:block; width:100%; height:auto}
+    .reward-chart-legend{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .reward-chart-legend span{display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; background:#f8fafc; border:1px solid #dbeafe; font-size:12px; font-weight:900; color:#475569}
+    .reward-chart-legend i{display:inline-block; width:12px; height:12px; border-radius:999px}
     @media (max-width:1180px){
-      .stats-grid,.top-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .filter-grid,.setting-grid{grid-template-columns:1fr}
+      .stats-grid,.top-summary,.reward-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .filter-grid,.setting-grid,.reward-setting-grid{grid-template-columns:1fr}
     }
     @media (max-width:760px){
       .wrap{padding:12px}
-      .stats-grid,.top-summary{grid-template-columns:1fr}
+      .stats-grid,.top-summary,.reward-summary-grid{grid-template-columns:1fr}
       h1{font-size:22px}
       .modal{padding:10px}
       .modal-head,.modal-body{padding:14px}
@@ -183,9 +359,10 @@
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
-          <button class="ghost" id="exportJsonBtn">匯出JSON</button>
-          <button class="ghost" id="importJsonBtn">匯入JSON</button>
-          <input id="importJsonFileInput" type="file" accept=".json,application/json" style="display:none;" />
+          <button class="soft" id="exportJsonBtn">匯出JSON</button>
+          <button class="soft" id="importJsonBtn">匯入JSON</button>
+          <input id="importJsonInput" type="file" accept=".json,application/json" style="display:none">
+          <button class="soft" id="openRewardBtn" onclick="openRewardModal()">開發月獎勵統計</button>
           <span class="save-status" id="globalSaveStatus">已自動存檔</span>
           <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">最後同步時間：—</span>
         </div>
@@ -421,6 +598,94 @@
     </div>
   </div>
 
+
+  <div id="rewardModal" class="modal">
+    <div class="modal-card reward-modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">開發月獎勵統計</div>
+          <div class="tiny">公開版改成激勵型海報榜單；內部設定與排行榜可收合查看</div>
+        </div>
+        <div class="top-actions">
+          <button class="soft" id="rewardPreviewPublicBtn">預覽公開版</button>
+          <button class="top-strong" id="rewardExportPublicBtn">匯出公開版HTML</button>
+          <button class="ghost" id="rewardCloseBtn">關閉</button>
+        </div>
+      </div>
+      <div class="modal-body reward-rows">
+        <div class="reward-summary-grid compact">
+          <div class="reward-metric"><div class="k">統計期間</div><div class="v" id="rewardPeriodText">—</div></div>
+          <div class="reward-metric"><div class="k">總分</div><div class="v" id="rewardTotalPointsText">0</div></div>
+        </div>
+
+        <details class="setting-card reward-hidden-panel" id="rewardInternalPanel">
+          <summary>內部排行榜設定</summary>
+          <div class="reward-hidden-inner">
+            <div>
+              <div class="section-title" style="margin-bottom:10px;">
+                <span>統計設定</span>
+                <span class="tiny">可自行改期間、前三名獎金、排名門檻</span>
+              </div>
+              <div class="reward-setting-grid">
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">統計開始</div><input id="rewardStartDateInput" class="field-input" type="text" placeholder="例如：115/3/1"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">統計結束</div><input id="rewardEndDateInput" class="field-input" type="text" placeholder="例如：115/6/30"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第一名獎金</div><input id="rewardPrize1Input" class="field-input" type="number" min="0" step="1" placeholder="3000"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第二名獎金</div><input id="rewardPrize2Input" class="field-input" type="number" min="0" step="1" placeholder="2000"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第三名獎金</div><input id="rewardPrize3Input" class="field-input" type="number" min="0" step="1" placeholder="1500"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">可排名門檻</div><input id="rewardThresholdInput" class="field-input" type="number" min="0" step="0.5" placeholder="6"></label>
+              </div>
+              <ul class="reward-rule-list">
+                <li>一般約 1 件 = 1 分；專約 1 件 = 2.5 分。</li>
+                <li>若 2 位以上開發業務，分數平均分配。</li>
+                <li>需同時符合：有進案日期、委託期間至少 3 個月、物件本位置「架上」有日期。</li>
+                <li>一般約：底價需滿 300 萬，且 % 數需滿 3%。</li>
+                <li>專約：底價未滿 300 萬或 % 數未滿 3%，改以半件計算（1.25 分，不重複再對半）。</li>
+                <li>名次獎金固定：第一名 3,000 元、第二名 2,000 元、第三名 1,500 元。</li>
+              </ul>
+            </div>
+            <div class="reward-roster-editor">
+              <div class="section-title" style="margin:0; font-size:16px;">
+                <span>排行榜人員名單</span>
+                <span id="rewardRosterCount" class="reward-roster-count">0人</span>
+              </div>
+              <div class="reward-roster-add">
+                <input id="rewardRosterNameInput" class="field-input" type="text" placeholder="輸入人員姓名，例如：王小明">
+                <button type="button" class="soft" id="rewardAddRosterBtn">＋新增人員</button>
+                <button type="button" class="ghost" id="rewardResetRosterBtn">恢復預設22人</button>
+              </div>
+              <div id="rewardRosterList" class="reward-roster-list"></div>
+              <div class="tiny">刪除只會從獎勵排行榜名單移除，不會刪除 NEW本案件資料。</div>
+            </div>
+            <div>
+              <div class="section-title" style="margin-bottom:10px;"><span>內部排行榜</span><span class="tiny">內部用，公開版不會顯示獎金</span></div>
+              <div class="reward-table-wrap">
+                <table>
+                  <thead><tr><th style="width:82px;">排名</th><th style="width:180px;">業務</th><th style="width:100px;">分數</th><th style="width:120px;">基本獎金</th><th style="width:120px;">名次獎金</th><th style="width:120px;">預估合計</th><th style="width:120px;">是否達門檻</th></tr></thead>
+                  <tbody id="rewardRankingTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <div class="setting-card">
+          <div class="section-title reward-detail-title-row" style="margin-bottom:10px;">
+            <span>計分明細</span>
+            <label class="reward-inline-filter"><span>篩選人員</span><input id="rewardCaseFilterPerson" class="field-input" type="text" list="rewardCaseFilterList" placeholder="輸入人員姓名，空白＝全部"><datalist id="rewardCaseFilterList"></datalist></label>
+          </div>
+          <div class="reward-table-wrap table-wide">
+            <table>
+              <thead><tr><th style="width:20%;">案名</th><th style="width:14%;">開發</th><th style="width:10%;">進案日期</th><th style="width:8%;">契種</th><th style="width:10%;">架上日期</th><th style="width:8%;">分數</th><th style="width:12%;">分配</th><th style="width:18%;">說明</th></tr></thead>
+              <tbody id="rewardCaseTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="top-actions" style="justify-content:flex-end;"><button class="ghost" id="rewardCloseBtnBottom">關閉</button></div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
@@ -462,6 +727,145 @@
     let pendingRemoteRow = null;
     let lastLocalEditAt = 0;
     let currentConfigFocusKey = '';
+
+
+    function buildDefaultRewardConfig(){
+      const startDate = '115/3/1';
+      const endDate = '115/6/30';
+      return {
+        startDate,
+        endDate,
+        prize1: 3000,
+        prize2: 2000,
+        prize3: 1500,
+        rankingThreshold: 6,
+        roster: ['余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'],
+        detailFilterPerson: '全部人員'
+      };
+    }
+
+    function ensureRewardConfig(){
+      const defaults = buildDefaultRewardConfig();
+      if(!state.rewardConfig || typeof state.rewardConfig !== 'object') state.rewardConfig = {};
+      Object.keys(defaults).forEach(key => {
+        const current = state.rewardConfig[key];
+        if(current === undefined || current === null || current === '') state.rewardConfig[key] = defaults[key];
+      });
+    }
+
+    const REWARD_DEFAULT_ROSTER = [
+      '余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'
+    ];
+    const REWARD_AUTO_EXCLUDED_NAMES = ['王啟山','林玉環'];
+
+    function getRewardExplicitRosterNames(){
+      ensureRewardConfig();
+      const source = Array.isArray(state.rewardConfig.roster) && state.rewardConfig.roster.length
+        ? state.rewardConfig.roster
+        : REWARD_DEFAULT_ROSTER;
+      return [...new Set(source.map(name => canonicalDeveloperName(name)).filter(Boolean))];
+    }
+
+    function isRewardAutoExcludedName(name){
+      return REWARD_AUTO_EXCLUDED_NAMES.includes(canonicalDeveloperName(name));
+    }
+
+    function getRewardAutoDeveloperNames(){
+      const explicitSet = new Set(getRewardExplicitRosterNames());
+      const names = [];
+      (state.cases || []).forEach(c => {
+        getRewardDeveloperList(fieldText(c,'developer')).forEach(name => {
+          const clean = canonicalDeveloperName(name);
+          if(!clean) return;
+          if(isRewardAutoExcludedName(clean) && !explicitSet.has(clean)) return;
+          if(!names.includes(clean)) names.push(clean);
+        });
+      });
+      return names;
+    }
+
+    function getRewardRosterNames(){
+      const explicit = getRewardExplicitRosterNames();
+      const explicitSet = new Set(explicit);
+      const auto = getRewardAutoDeveloperNames();
+      return [...new Set([...explicit, ...auto].filter(name => {
+        const clean = canonicalDeveloperName(name);
+        if(!clean) return false;
+        if(isRewardAutoExcludedName(clean) && !explicitSet.has(clean)) return false;
+        return true;
+      }))];
+    }
+
+    function saveRewardRoster(list){
+      ensureRewardConfig();
+      state.rewardConfig.roster = [...new Set((list || []).map(name => canonicalDeveloperName(name)).filter(Boolean))];
+      if(!state.rewardConfig.roster.includes(state.rewardConfig.detailFilterPerson)){
+        state.rewardConfig.detailFilterPerson = '全部人員';
+      }
+      scheduleAutoSave();
+      renderRewardDashboard();
+    }
+
+    function addRewardRosterPerson(){
+      const el = document.getElementById('rewardRosterNameInput');
+      const raw = String(el?.value || '').trim();
+      if(!raw){
+        alert('請先輸入人員姓名。');
+        return;
+      }
+      const name = canonicalDeveloperName(raw);
+      const list = getRewardRosterNames();
+      if(list.includes(name)){
+        alert('這位人員已經在名單內。');
+        if(el) el.value = '';
+        return;
+      }
+      list.push(name);
+      if(el) el.value = '';
+      saveRewardRoster(list);
+    }
+
+    function removeRewardRosterPerson(name){
+      const target = canonicalDeveloperName(name);
+      const list = getRewardRosterNames().filter(item => item !== target);
+      if(!confirm(`確定要從獎勵排行榜名單刪除「${target}」嗎？
+
+只會從排行榜名單移除，不會刪除 NEW本案件資料。`)) return;
+      saveRewardRoster(list);
+    }
+
+    function resetRewardRoster(){
+      if(!confirm('確定要恢復預設 22 位業務人員名單嗎？')) return;
+      saveRewardRoster([...REWARD_DEFAULT_ROSTER]);
+    }
+
+    function renderRewardRosterEditor(){
+      const countEl = document.getElementById('rewardRosterCount');
+      const listEl = document.getElementById('rewardRosterList');
+      const names = getRewardRosterNames();
+      if(countEl) countEl.textContent = `${names.length}人`;
+      if(!listEl) return;
+      if(!names.length){
+        listEl.innerHTML = '<span class="tiny">目前沒有設定人員。</span>';
+        return;
+      }
+      listEl.innerHTML = names.map(name => `
+        <span class="reward-roster-chip">
+          <span>${escapeHtml(name)}</span>
+          <button type="button" data-reward-remove="${escapeAttr(name)}" title="移除 ${escapeAttr(name)}">×</button>
+        </span>
+      `).join('');
+      listEl.querySelectorAll('[data-reward-remove]').forEach(btn => {
+        btn.onclick = () => removeRewardRosterPerson(btn.getAttribute('data-reward-remove') || '');
+      });
+    }
+
+    function getRewardSortIndex(name){
+      const roster = getRewardRosterNames();
+      const clean = canonicalDeveloperName(name);
+      const idx = roster.indexOf(clean);
+      return idx >= 0 ? idx : 999 + roster.length + String(clean).charCodeAt(0);
+    }
 
 
     function updateConfigFloatingTools(){
@@ -745,6 +1149,7 @@
 
     function mergeCustomActions(){
       ensureAssistantsState();
+      ensureRewardConfig();
       if(!Array.isArray(state.customActions)) state.customActions = [];
       if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
       if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
@@ -1176,6 +1581,7 @@
         renderSummaryMonthCounts();
         const current = getCaseById(activeModalCaseId);
         if(current) renderModalSummary(current);
+        renderRewardDashboard();
       }, 180);
     }
 
@@ -1601,6 +2007,480 @@
         tr.querySelector('.open-case-btn').onclick = e => { e.stopPropagation(); openModal(c.id); };
         tbody.appendChild(tr);
       });
+    }
+
+    function parseRewardMoneyToWan(raw){
+      const text = String(raw || '').trim().replace(/,/g,'');
+      if(!text) return 0;
+      const num = parseFloat((text.match(/-?\d+(?:\.\d+)?/) || [])[0] || '0');
+      if(!Number.isFinite(num)) return 0;
+      if(text.includes('億')) return num * 10000;
+      if(text.includes('萬')) return num;
+      if(num >= 10000) return num / 10000;
+      return num;
+    }
+
+    function parseRewardPercent(raw){
+      const text = String(raw || '').trim().replace(/,/g,'');
+      if(!text) return 0;
+      const num = parseFloat((text.match(/-?\d+(?:\.\d+)?/) || [])[0] || '0');
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function formatRewardScore(value){
+      const num = Math.round((Number(value) || 0) * 100) / 100;
+      if(num === 0) return '-';
+      return Number.isInteger(num) ? String(num) : num.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+    }
+
+    function formatRewardCurrency(value){
+      const num = Math.round(Number(value) || 0);
+      return '$' + num.toLocaleString('zh-Hant');
+    }
+
+    function getRewardPeriodLabel(cfg){
+      const start = normalizeRocDate(cfg?.startDate || '');
+      const end = normalizeRocDate(cfg?.endDate || '');
+      if(start && end) return `${start} ～ ${end}`;
+      if(start) return `${start} 起`;
+      if(end) return `至 ${end}`;
+      return '全部期間';
+    }
+
+    function isRocDateBetween(raw, startRaw, endRaw){
+      const date = rocPartsToDate(parseRocDateParts(raw));
+      if(!date) return false;
+      const start = rocPartsToDate(parseRocDateParts(startRaw));
+      const end = rocPartsToDate(parseRocDateParts(endRaw));
+      if(start && date < start) return false;
+      if(end && date > end) return false;
+      return true;
+    }
+
+    function getMinEntrustMonthsQualified(c, months=3){
+      const start = rocPartsToDate(parseRocDateParts(fieldText(c,'entrustStart')));
+      const end = rocPartsToDate(parseRocDateParts(fieldText(c,'entrustEnd')));
+      if(!start || !end || end < start) return false;
+      const anchor = new Date(start.getFullYear(), start.getMonth() + months, start.getDate());
+      return anchor <= end;
+    }
+
+    function inferRewardContractType(c){
+      const raw = String(fieldText(c,'contractType') || '').trim();
+      if(raw) return raw;
+      const no = String(fieldText(c,'mainContractNo') || '').trim().toUpperCase();
+      if(/(^|[^A-Z])(EA|LA)/.test(no) || no.startsWith('EA') || no.startsWith('LA')) return '專約';
+      if(/(^|[^A-Z])(EG|LG)/.test(no) || no.startsWith('EG') || no.startsWith('LG')) return '一般約';
+      return '';
+    }
+
+    function getRewardDeveloperList(raw){
+      const parts = splitDeveloperNames(raw).map(canonicalDeveloperName).filter(Boolean);
+      return [...new Set(parts)];
+    }
+
+    function getRewardCaseResult(c, cfg){
+      const entryDate = normalizeRocDate(fieldText(c,'entryDate'));
+      const developers = getRewardDeveloperList(fieldText(c,'developer'));
+      const contractType = inferRewardContractType(c);
+      const isSpecial = contractType === '專約';
+      const basePriceWan = parseRewardMoneyToWan(fieldText(c,'basePrice'));
+      const percent = parseRewardPercent(fieldText(c,'percent'));
+      const shelfDate = normalizeRocDate(c?.items?.bookShelfLocation?.extra?.date || '');
+      const reasonList = [];
+
+      if(!entryDate) reasonList.push('未填進案日期');
+      if(entryDate && !isRocDateBetween(entryDate, cfg.startDate, cfg.endDate)) reasonList.push('不在統計期間');
+      if(!developers.length) reasonList.push('未填開發業務');
+      if(!contractType) reasonList.push('未判斷契種');
+      if(!getMinEntrustMonthsQualified(c, 3)) reasonList.push('委託未滿3個月');
+      if(!shelfDate) reasonList.push('架上未填日期');
+      if(basePriceWan <= 0) reasonList.push('未填底價');
+      if(percent <= 0) reasonList.push('未填%數');
+
+      let basePoints = 0;
+      let isHalf = false;
+      if(contractType){
+        basePoints = isSpecial ? 2.5 : 1;
+        if(!isSpecial){
+          if(basePriceWan > 0 && basePriceWan < 300) reasonList.push('一般約底價未滿300萬');
+          if(percent > 0 && percent < 3) reasonList.push('一般約%數未滿3%');
+        } else {
+          if((basePriceWan > 0 && basePriceWan < 300) || (percent > 0 && percent < 3)) {
+            isHalf = true;
+          }
+        }
+      }
+
+      const eligible = !reasonList.length;
+      let totalPoints = eligible ? (isHalf ? 1.25 : basePoints) : 0;
+      const splitCount = Math.max(developers.length, 1);
+      const sharePoint = totalPoints > 0 ? totalPoints / splitCount : 0;
+      const allocations = developers.map(name => ({ name, score: sharePoint }));
+      const scoreLabel = totalPoints > 0 ? formatRewardScore(totalPoints) : '-';
+      const detailLabel = allocations.length
+        ? allocations.map(x => `${x.name} ${formatRewardScore(x.score)}分`).join('／')
+        : '—';
+      const note = eligible
+        ? (isHalf ? '專約條件未滿，以半件計算。' : '符合計分條件。')
+        : reasonList.join('、');
+
+      return {
+        id: c.id,
+        caseName: caseNameOf(c),
+        developerText: fieldText(c,'developer') || '—',
+        entryDate: entryDate || '—',
+        contractType: contractType || '—',
+        basePriceText: fieldText(c,'basePrice') || '—',
+        percentText: fieldText(c,'percent') || '—',
+        shelfDate: shelfDate || '—',
+        eligible,
+        isHalf,
+        totalPoints,
+        scoreLabel,
+        note,
+        allocations,
+        detailLabel
+      };
+    }
+
+    function computeRewardStats(){
+      ensureRewardConfig();
+      const cfg = state.rewardConfig;
+      const caseResults = allCases().map(c => getRewardCaseResult(c, cfg));
+      const rankPrizes = {
+        1: Math.max(0, Number(cfg.prize1 || 0)),
+        2: Math.max(0, Number(cfg.prize2 || 0)),
+        3: Math.max(0, Number(cfg.prize3 || 0))
+      };
+      const pool = rankPrizes[1] + rankPrizes[2] + rankPrizes[3];
+      const personMap = new Map();
+      const explicitRosterSet = new Set(getRewardExplicitRosterNames());
+      getRewardRosterNames().forEach(name => personMap.set(name, { name, score:0, cases:0 }));
+      caseResults.forEach(row => {
+        row.allocations.forEach(item => {
+          const cleanName = canonicalDeveloperName(item.name);
+          if(!cleanName) return;
+          if(isRewardAutoExcludedName(cleanName) && !explicitRosterSet.has(cleanName)) return;
+          if(!personMap.has(cleanName)) personMap.set(cleanName, { name:cleanName, score:0, cases:0 });
+          const target = personMap.get(cleanName);
+          target.score += Number(item.score || 0);
+          if(Number(item.score || 0) > 0) target.cases += 1;
+        });
+      });
+      const totalPoints = [...personMap.values()].reduce((sum, item) => sum + Number(item.score || 0), 0);
+      const rankings = [...personMap.values()].map(item => {
+        const score = Math.round((Number(item.score) || 0) * 100) / 100;
+        const baseReward = score * 200;
+        return {
+          name: item.name,
+          score,
+          cases: item.cases,
+          baseReward,
+          bonusReward: 0,
+          totalReward: baseReward,
+          qualified: score >= Number(cfg.rankingThreshold || 0)
+        };
+      }).sort((a,b) => (b.score - a.score) || (getRewardSortIndex(a.name) - getRewardSortIndex(b.name)) || String(a.name).localeCompare(String(b.name), 'zh-Hant'));
+      let displayRank = 0;
+      let previousQualifiedScore = null;
+      rankings.forEach((row) => {
+        if(row.qualified){
+          if(previousQualifiedScore === null || row.score !== previousQualifiedScore) displayRank += 1;
+          row.rank = displayRank;
+          previousQualifiedScore = row.score;
+        } else {
+          row.rank = null;
+        }
+        row.bonusReward = row.qualified && row.rank && row.rank <= 3 ? (rankPrizes[row.rank] || 0) : 0;
+        row.totalReward = row.baseReward + row.bonusReward;
+      });
+      const qualifiedRows = rankings.filter(x => x.qualified);
+      const chasingRows = rankings.filter(x => !x.qualified && x.score > 0);
+      const zeroRows = rankings.filter(x => x.score <= 0);
+      return {
+        cfg,
+        pool,
+        totalPoints,
+        eligibleCases: caseResults.filter(x => x.eligible).length,
+        qualifiedPeople: rankings.filter(x => x.qualified).length,
+        rankings,
+        publicRows: qualifiedRows.map(row => ({ rank: row.rank, name: row.name, score: row.score })),
+        scoreRows: rankings.map(row => ({ rank: row.rank, name: row.name, score: row.score, qualified: row.qualified })),
+        chasingRows,
+        zeroRows,
+        caseResults: caseResults.sort((a,b) => (b.totalPoints - a.totalPoints) || String(a.caseName).localeCompare(String(b.caseName), 'zh-Hant'))
+      };
+    }
+
+
+    function getRewardChartMax(rows, minValue){
+      const scores = (Array.isArray(rows) ? rows : []).map(row => Number(row.score || 0)).filter(v => Number.isFinite(v));
+      const maxScore = Math.max(Number(minValue || 0), ...scores, 0);
+      return Math.max(2, Math.ceil(maxScore / 2) * 2);
+    }
+
+    function getRewardChartColor(index){
+      const palette = ['#e11d48','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6','#84cc16','#f43f5e'];
+      return palette[index % palette.length];
+    }
+
+    function buildRewardColumnChart(rows, emptyText, options = {}){
+      const list = Array.isArray(rows) ? rows : [];
+      if(!list.length) return `<div class="reward-note">${escapeHtml(emptyText)}</div>`;
+      const maxScore = getRewardChartMax(list, options.minValue || 0);
+      const tickStep = 2;
+      const ticks = [];
+      for(let v = 0; v <= maxScore; v += tickStep) ticks.push(v);
+      const chartHeight = 260;
+      const top = 18;
+      const left = 44;
+      const right = 16;
+      const bottom = 56;
+      const slot = Math.max(58, Math.min(84, Math.floor(540 / Math.max(list.length,1))));
+      const plotWidth = Math.max(300, list.length * slot);
+      const width = left + plotWidth + right;
+      const height = top + chartHeight + bottom;
+      const barWidth = Math.min(40, Math.max(22, slot * 0.48));
+      const itemsSvg = list.map((row, idx) => {
+        const score = Number(row.score || 0);
+        const xCenter = left + (idx + 0.5) * (plotWidth / list.length);
+        const x = xCenter - barWidth / 2;
+        const barHeight = maxScore > 0 ? (score / maxScore) * chartHeight : 0;
+        const y = top + chartHeight - barHeight;
+        const name = escapeHtml(String(row.name || ''));
+        const fill = getRewardChartColor(idx);
+        const line1 = options.showStatus ? (row.rank ? `第${row.rank}名` : (score > 0 ? '追分中' : '加油')) : '';
+        return `
+          <g>
+            <rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="${fill}" opacity="0.96"></rect>
+            ${line1 ? `<text x="${xCenter.toFixed(1)}" y="${top + chartHeight + 18}" text-anchor="middle" font-size="11" font-weight="900" fill="#64748b">${escapeHtml(line1)}</text>` : ''}
+            <text x="${xCenter.toFixed(1)}" y="${top + chartHeight + 36}" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">${name}</text>
+          </g>`;
+      }).join('');
+      const gridSvg = ticks.map(v => {
+        const y = top + chartHeight - ((v / maxScore) * chartHeight);
+        return `
+          <g>
+            <line x1="${left}" y1="${y.toFixed(1)}" x2="${left + plotWidth}" y2="${y.toFixed(1)}" stroke="#cbd5e1" stroke-width="1"></line>
+            <text x="${left - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">${v === 0 ? '0' : `${v}分`}</text>
+          </g>`;
+      }).join('');
+      const axisSvg = `<line x1="${left}" y1="${top}" x2="${left}" y2="${top + chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line><line x1="${left}" y1="${top + chartHeight}" x2="${left + plotWidth}" y2="${top + chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line>`;
+      const legendHtml = '';
+      return `
+        <div class="reward-column-chart">
+          ${legendHtml}
+          <div class="reward-chart-wrap">
+            <svg class="reward-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="柱狀圖">
+              ${gridSvg}
+              ${axisSvg}
+              ${itemsSvg}
+            </svg>
+          </div>
+        </div>`;
+    }
+
+    function buildRewardPublicPosterMarkup(data){
+      const rankChartHtml = buildRewardColumnChart(
+        data.publicRows || [],
+        `目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold || 0)}分門檻的排名資料`,
+        { minValue: data.cfg?.rankingThreshold || 0, showStatus: true, legend: false }
+      );
+
+      const scoreChartHtml = buildRewardColumnChart(
+        data.scoreRows || [],
+        '目前尚無人員分數資料',
+        { minValue: data.cfg?.rankingThreshold || 0, showStatus: false, legend: false }
+      );
+
+      const eggRows = data.zeroRows || [];
+      const eggHtml = eggRows.length ? eggRows.map(row => `<span class="reward-egg-chip">${escapeHtml(row.name)}</span>`).join('') : '<span class="reward-egg-chip">目前全員都已破蛋</span>';
+      return `
+        <div class="reward-poster-head">
+          <div class="reward-poster-title">開發月獎勵排行榜</div>
+          <div class="reward-poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div>
+        </div>
+        <div class="reward-poster-card">
+          <div class="reward-poster-card-head">
+            <h4>📌 目前排行</h4>
+            <div class="reward-poster-totalbadge">總分:${escapeHtml(formatRewardScore(data.totalPoints))}分</div>
+          </div>
+          ${rankChartHtml}
+        </div>
+        <div class="reward-poster-card">
+          <div class="reward-poster-card-head"><h4>📊 目前人員排序</h4></div>
+          ${scoreChartHtml}
+        </div>
+        <div class="reward-poster-card">
+          <div class="reward-poster-card-head"><h4>🌱 加油破蛋區</h4></div>
+          <div class="reward-egg-zone">${eggHtml}</div>
+          <div class="reward-egg-note">未滿${escapeHtml(formatRewardScore(data.cfg?.rankingThreshold || 0))}分先在排序圖中追分，一起往上衝！</div>
+        </div>
+      `;
+    }
+
+    function renderRewardDashboard(){
+      ensureRewardConfig();
+      const cfg = state.rewardConfig;
+      const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if(el && document.activeElement !== el) el.value = value;
+      };
+      setVal('rewardStartDateInput', normalizeRocDate(cfg.startDate || ''));
+      setVal('rewardEndDateInput', normalizeRocDate(cfg.endDate || ''));
+      setVal('rewardPrize1Input', cfg.prize1 ?? 3000);
+      setVal('rewardPrize2Input', cfg.prize2 ?? 2000);
+      setVal('rewardPrize3Input', cfg.prize3 ?? 1500);
+      setVal('rewardThresholdInput', cfg.rankingThreshold ?? 0);
+
+      const data = computeRewardStats();
+      if(typeof renderRewardRosterEditor === 'function') renderRewardRosterEditor();
+      const periodEl = document.getElementById('rewardPeriodText');
+      const totalPointsEl = document.getElementById('rewardTotalPointsText');
+      if(periodEl) periodEl.textContent = getRewardPeriodLabel(cfg);
+      if(totalPointsEl) totalPointsEl.textContent = formatRewardScore(data.totalPoints);
+
+      const rankingBody = document.getElementById('rewardRankingTableBody');
+      if(rankingBody){
+        if(!data.rankings.length){
+          rankingBody.innerHTML = '<tr><td colspan="7"><div class="empty">目前沒有可計分的業務</div></td></tr>';
+        } else {
+          rankingBody.innerHTML = data.rankings.map(row => {
+            const badgeClass = row.rank === 1 ? 'top1' : row.rank === 2 ? 'top2' : row.rank === 3 ? 'top3' : '';
+            const rankText = row.rank ? `#${row.rank}` : '—';
+            return `<tr>
+              <td><span class="reward-rank-badge ${badgeClass}">${rankText}</span></td>
+              <td><div class="reward-name-stack"><div>${escapeHtml(row.name)}</div><div class="subline">計分案件 ${escapeHtml(String(row.cases))} 件</div></div></td>
+              <td><span class="reward-score">${escapeHtml(formatRewardScore(row.score))}</span></td>
+              <td>${escapeHtml(formatRewardCurrency(row.baseReward))}</td>
+              <td>${escapeHtml(formatRewardCurrency(row.bonusReward))}</td>
+              <td>${escapeHtml(formatRewardCurrency(row.totalReward))}</td>
+              <td>${row.qualified ? '<span class="reward-pill-yes">可排名</span>' : '<span class="reward-pill-no">未達門檻</span>'}</td>
+            </tr>`;
+          }).join('');
+        }
+      }
+
+      const posterEl = document.getElementById('rewardPublicPosterPreview');
+      if(posterEl) posterEl.innerHTML = buildRewardPublicPosterMarkup(data);
+
+      const caseFilterEl = document.getElementById('rewardCaseFilterPerson');
+      const caseFilterListEl = document.getElementById('rewardCaseFilterList');
+      if(caseFilterListEl){
+        caseFilterListEl.innerHTML = getRewardRosterNames().map(name => `<option value="${escapeHtml(name)}"></option>`).join('');
+      }
+      if(caseFilterEl){
+        const selected = state.rewardConfig.detailFilterPerson || '';
+        if(document.activeElement !== caseFilterEl) caseFilterEl.value = selected === '全部人員' ? '' : selected;
+      }
+      const activeFilter = String(caseFilterEl?.value || state.rewardConfig.detailFilterPerson || '').trim();
+      if(caseFilterEl) state.rewardConfig.detailFilterPerson = activeFilter;
+
+      const caseBody = document.getElementById('rewardCaseTableBody');
+      if(caseBody){
+        const filteredRows = !activeFilter || activeFilter === '全部人員'
+          ? data.caseResults
+          : data.caseResults.filter(row => row.allocations.some(item => matchDeveloperFilter(item.name, activeFilter)) || matchDeveloperFilter(row.developerText, activeFilter));
+        if(!filteredRows.length){
+          caseBody.innerHTML = '<tr><td colspan="8"><div class="empty">目前沒有符合篩選條件的案件</div></td></tr>';
+        } else {
+          caseBody.innerHTML = filteredRows.map(row => `
+            <tr>
+              <td>${escapeHtml(row.caseName)}</td>
+              <td>${escapeHtml(row.developerText)}</td>
+              <td>${escapeHtml(row.entryDate)}</td>
+              <td>${escapeHtml(row.contractType)}</td>
+              <td>${escapeHtml(row.shelfDate)}</td>
+              <td><span class="reward-score">${escapeHtml(row.scoreLabel)}</span></td>
+              <td class="reward-small">${escapeHtml(row.detailLabel)}</td>
+              <td class="reward-small">${escapeHtml(row.note)}</td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    function readRewardConfigFromInputs(){
+      ensureRewardConfig();
+      const startEl = document.getElementById('rewardStartDateInput');
+      const endEl = document.getElementById('rewardEndDateInput');
+      const prize1El = document.getElementById('rewardPrize1Input');
+      const prize2El = document.getElementById('rewardPrize2Input');
+      const prize3El = document.getElementById('rewardPrize3Input');
+      const thresholdEl = document.getElementById('rewardThresholdInput');
+      state.rewardConfig.startDate = normalizeRocDate(startEl?.value || '');
+      state.rewardConfig.endDate = normalizeRocDate(endEl?.value || '');
+      state.rewardConfig.prize1 = Math.max(0, Number(prize1El?.value || 0));
+      state.rewardConfig.prize2 = Math.max(0, Number(prize2El?.value || 0));
+      state.rewardConfig.prize3 = Math.max(0, Number(prize3El?.value || 0));
+      state.rewardConfig.rankingThreshold = Math.max(0, Number(thresholdEl?.value || 0));
+      state.rewardConfig.detailFilterPerson = document.getElementById('rewardCaseFilterPerson')?.value || '';
+      scheduleAutoSave();
+      renderRewardDashboard();
+    }
+
+    function buildRewardPublicHtml(){
+      const data = computeRewardStats();
+      const posterMarkup = buildRewardPublicPosterMarkup(data);
+      return `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>開發月獎勵排行榜</title>
+<style>
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);color:#172033}.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 42px}.poster{display:grid;gap:16px;border:8px solid #f4c542;border-radius:32px;padding:16px;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);box-shadow:0 22px 54px rgba(30,64,175,.16)}.reward-poster-head{position:relative;overflow:hidden;padding:24px 22px;border-radius:22px;background:linear-gradient(135deg,#ffffff 0%,#fff7ed 46%,#eff6ff 100%);border:3px solid #38bdf8;box-shadow:0 10px 0 rgba(14,165,233,.16)}.reward-poster-head:before{content:'★';position:absolute;left:18px;top:14px;color:#f59e0b;font-size:24px;transform:rotate(-12deg)}.reward-poster-head:after{content:'★';position:absolute;right:20px;top:18px;color:#22c55e;font-size:22px;transform:rotate(12deg)}.reward-poster-title{position:relative;z-index:1;font-size:38px;font-weight:1000;letter-spacing:2px;color:#0f172a;text-align:center;text-shadow:2px 2px 0 #fde68a}.reward-poster-sub{position:relative;z-index:1;margin-top:10px;text-align:center;color:#0369a1;font-size:17px;font-weight:900}.reward-poster-card{border:3px solid #93c5fd;border-radius:24px;padding:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);box-shadow:0 12px 0 rgba(147,197,253,.18)}.reward-poster-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.reward-poster-card h4{margin:0;font-size:21px;color:#0f172a;font-weight:1000;letter-spacing:.5px}.reward-poster-totalbadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#facc15 0%,#fb923c 100%);color:#7c2d12;border:2px solid #fff7ed;font-size:17px;font-weight:1000;box-shadow:0 6px 16px rgba(251,146,60,.28)}.reward-chart-wrap{overflow-x:auto;padding-bottom:4px}.reward-column-chart{display:grid;gap:8px;min-width:480px}.reward-chart-svg{display:block;width:100%;height:auto}.reward-chart-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.reward-chart-legend span{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#f8fafc;border:1px solid #dbeafe;font-size:12px;font-weight:900;color:#475569}.reward-chart-legend i{display:inline-block;width:12px;height:12px;border-radius:999px}.reward-egg-zone{display:flex;flex-wrap:wrap;gap:10px}.reward-egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}.reward-note,.reward-egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}@media(max-width:980px){.reward-poster-title{font-size:30px}.reward-poster-card-head{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="poster">${posterMarkup}</div>
+</div>
+</body>
+</html>`;
+    }
+
+    function previewRewardPublicHtml(){
+      const win = window.open('', '_blank');
+      if(!win){
+        alert('瀏覽器擋住新視窗，請先允許彈出視窗。');
+        return;
+      }
+      win.document.open();
+      win.document.write(buildRewardPublicHtml());
+      win.document.close();
+    }
+
+    function exportRewardPublicHtml(){
+      const html = buildRewardPublicHtml();
+      const blob = new Blob([html], { type:'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const safePeriod = getRewardPeriodLabel(state.rewardConfig).replace(/[\/:*?"<>|\s]+/g,'_');
+      a.href = url;
+      a.download = `開發月獎勵公開版_${safePeriod}.html`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    }
+
+    function openRewardModal(){
+      try { renderRewardDashboard(); } catch(err) { console.error(err); }
+      const modal = document.getElementById('rewardModal');
+      if(modal){
+        modal.classList.add('show');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeRewardModal(){
+      const modal = document.getElementById('rewardModal');
+      if(modal){
+        modal.classList.remove('show');
+        modal.style.display = '';
+      }
     }
 
     function normalizeRocMonth(raw){
@@ -2586,26 +3466,21 @@
       }, 1000);
     }
 
-    function rocFileTimestamp(){
-      const dt = new Date();
-      const pad = n => String(n).padStart(2,'0');
-      const rocYear = dt.getFullYear() - 1911;
-      return `${rocYear}年${dt.getMonth()+1}月${dt.getDate()}日_${pad(dt.getHours())}點${pad(dt.getMinutes())}分`;
-    }
 
     function exportJson(){
-      autoSaveNow();
       const payload = {
         app: 'NEW本製作',
-        type: 'newbook-json-backup',
+        appId: SYNC_APP_ID,
         exportedAt: new Date().toISOString(),
-        storageKey: STORAGE_KEY,
+        version: 'reward-json-v1',
         data: state
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json;charset=utf-8;' });
       const a = document.createElement('a');
+      const dt = new Date();
+      const pad = n => String(n).padStart(2,'0');
       a.href = URL.createObjectURL(blob);
-      a.download = `NEW本製作_JSON備份_${rocFileTimestamp()}.json`;
+      a.download = `NEW本製作備份_${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}_${pad(dt.getHours())}${pad(dt.getMinutes())}.json`;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
@@ -2614,55 +3489,206 @@
       }, 1000);
     }
 
-    function triggerImportJson(){
-      const input = document.getElementById('importJsonFileInput');
-      if(!input) return;
-      input.value = '';
-      input.click();
-    }
-
-    function normalizeImportedState(next){
-      if(!next || typeof next !== 'object') throw new Error('JSON內容不是有效資料。');
-      if(!Array.isArray(next.cases)) throw new Error('JSON裡找不到案件資料 cases。');
-      if(!Array.isArray(next.assistants)) next.assistants = defaultAssistants();
-      if(!Array.isArray(next.customActions)) next.customActions = [];
-      if(!Array.isArray(next.companyArchiveItems)) next.companyArchiveItems = [];
-      if(!next.fieldSettings || typeof next.fieldSettings !== 'object') next.fieldSettings = {};
-      next.assistants = normalizeAssistants(next.assistants);
-      if(!next.assistants.length) next.assistants = defaultAssistants();
-      return next;
-    }
-
-    function applyImportedJson(parsed){
-      const next = normalizeImportedState(parsed?.data || parsed?.state || parsed);
-      state = next;
-      FIELD_DEFS.splice(BASE_FIELD_COUNT);
-      mergeCustomActions();
-      currentCaseId = state.cases[0]?.id || null;
-      activeModalCaseId = null;
-      closeModal();
-      saveState();
-      scheduleRemoteSave();
-      renderAll();
-      setSaveStatus('已匯入JSON並自動存檔', false);
-      alert(`已匯入JSON，共 ${state.cases.length} 筆案件。`);
-    }
-
-    function importJsonFromFile(file){
+    async function importJsonFile(file){
       if(!file) return;
-      const ok = confirm('匯入JSON會用檔案內容覆蓋目前這份本機資料，確定要匯入嗎？');
-      if(!ok) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const parsed = JSON.parse(String(reader.result || ''));
-          applyImportedJson(parsed);
-        } catch(err) {
-          alert('匯入JSON失敗：' + (err?.message || err));
+      let parsed;
+      try {
+        parsed = JSON.parse(await file.text());
+      } catch(err){
+        alert('JSON 檔案格式錯誤，無法匯入。');
+        return;
+      }
+      const incoming = parsed && parsed.data && Array.isArray(parsed.data.cases)
+        ? parsed.data
+        : (parsed && Array.isArray(parsed.cases) ? parsed : null);
+      if(!incoming){
+        alert('這個 JSON 不是 NEW本備份檔，沒有讀到案件資料。');
+        return;
+      }
+      const count = Array.isArray(incoming.cases) ? incoming.cases.length : 0;
+      if(!confirm(`讀到 ${count} 筆案件資料。\n\n按「確定」會覆蓋目前 NEW本資料；按「取消」則不匯入。`)) return;
+      state = incoming;
+      if(!Array.isArray(state.assistants) || !state.assistants.length) state.assistants = defaultAssistants();
+      if(!Array.isArray(state.customActions)) state.customActions = [];
+      if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
+      if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
+      ensureAssistantsState();
+      ensureRewardConfig();
+      mergeCustomActions();
+      state.cases.forEach(ensureCaseShape);
+      currentCaseId = state.cases[0]?.id || null;
+      autoSaveNow();
+      renderAll();
+      alert(`JSON 匯入完成：${count} 筆案件。`);
+    }
+
+    function worksheetXmlToRows(sheet){
+      const rows = [];
+      const rowEls = Array.from(sheet.getElementsByTagNameNS('*','Row'));
+      rowEls.forEach(rowEl => {
+        const row = [];
+        Array.from(rowEl.children).filter(el => el.localName === 'Cell').forEach(cell => {
+          const indexAttr = cell.getAttribute('ss:Index') || cell.getAttributeNS('urn:schemas-microsoft-com:office:spreadsheet','Index');
+          if(indexAttr){
+            const targetIndex = Math.max(1, Number(indexAttr)) - 1;
+            while(row.length < targetIndex) row.push('');
+          }
+          const dataEl = Array.from(cell.children).find(el => el.localName === 'Data');
+          row.push(dataEl ? dataEl.textContent : '');
+        });
+        if(row.some(v => String(v || '').trim() !== '')) rows.push(row);
+      });
+      return rows;
+    }
+
+    function parseExcelXmlWorkbook(textContent){
+      const xml = new DOMParser().parseFromString(textContent, 'text/xml');
+      const parseError = xml.getElementsByTagName('parsererror')[0];
+      if(parseError) throw new Error('Excel 檔案格式讀取失敗。');
+      const sheets = Array.from(xml.getElementsByTagNameNS('*','Worksheet'));
+      if(!sheets.length) throw new Error('找不到工作表。請匯入本系統匯出的 .xls 檔。');
+      return sheets.map(sheet => {
+        const name = sheet.getAttribute('ss:Name') || sheet.getAttributeNS('urn:schemas-microsoft-com:office:spreadsheet','Name') || '工作表';
+        const rows = worksheetXmlToRows(sheet);
+        const headers = (rows[0] || []).map(h => String(h || '').trim());
+        const objects = rows.slice(1).map(row => {
+          const obj = {};
+          headers.forEach((h, i) => { if(h) obj[h] = row[i] || ''; });
+          return obj;
+        }).filter(obj => Object.values(obj).some(v => String(v || '').trim() !== ''));
+        return { name, headers, objects };
+      });
+    }
+
+    function splitExcelParts(raw){
+      return String(raw || '').split('｜').map(v => v.trim()).filter(Boolean);
+    }
+
+    function setImportedItemValue(def, item, raw){
+      const value = String(raw || '').trim();
+      if(!value) return;
+      if(def.type === 'text' || def.type === 'dateText' || def.type === 'select' || def.type === 'optionOnly'){
+        item.value = def.dateAuto ? normalizeRocDate(value) : value;
+      } else if(def.type === 'assistant'){
+        item.assistant = value;
+      } else if(def.type === 'assistantOrOption'){
+        if((def.specialOptions || []).includes(value)) item.option = value;
+        else item.assistant = value;
+      } else if(def.type === 'textOption'){
+        const parts = splitExcelParts(value);
+        item.value = parts[0] || value;
+        item.option = parts[1] || '';
+      } else if(def.type === 'textAssistant'){
+        const parts = splitExcelParts(value);
+        item.value = parts[0] || value;
+        item.assistant = parts[1] || '';
+      } else if(def.type === 'dateTextNote'){
+        const parts = splitExcelParts(value);
+        item.extra = item.extra || { date:'', note:'' };
+        item.extra.date = normalizeRocDate(parts[0] || value);
+        item.extra.note = parts[1] || '';
+      } else if(def.type === 'dateAssistant'){
+        const parts = splitExcelParts(value);
+        item.extra = item.extra || { date:'' };
+        item.extra.date = normalizeRocDate(parts[0] || value);
+        item.assistant = parts[1] || '';
+      } else if(def.type === 'dateOption'){
+        const parts = splitExcelParts(value);
+        item.extra = item.extra || { date:'' };
+        item.extra.date = normalizeRocDate(parts[0] || value);
+        item.option = parts[1] || '';
+      } else if(def.type === 'dateTextNoteAssistant'){
+        const parts = splitExcelParts(value);
+        item.extra = item.extra || { date:'', note:'' };
+        item.extra.date = normalizeRocDate(parts[0] || value);
+        item.extra.note = parts[1] || '';
+        item.assistant = parts[2] || '';
+      } else if(def.type === 'dateTextNoteOption'){
+        const parts = splitExcelParts(value);
+        item.extra = item.extra || { date:'', note:'' };
+        item.extra.date = normalizeRocDate(parts[0] || value);
+        item.extra.note = parts[1] || '';
+        item.option = parts[2] || '';
+      } else if(def.type === 'locationInfo'){
+        item.extra = item.extra || { date:'', note:'', none:false };
+        if(value === '無') item.extra.none = true;
+        else {
+          const parts = splitExcelParts(value);
+          item.extra.date = normalizeRocDate(parts[0] || value);
+          item.extra.note = parts[1] || '';
         }
+      }
+      syncStatusWithContent(def, item);
+      touch(item);
+    }
+
+    function caseFromImportedRow(row, sheetName){
+      const c = createEmptyCase();
+      c.archived = String(row['案件狀態'] || sheetName || '').includes('封存');
+      c.archivedAt = c.archived ? new Date().toISOString() : '';
+      c.caseNote = String(row['記事欄'] || '').trim();
+      const directMap = {
+        '案名':'caseName',
+        '進案日期':'entryDate',
+        '業務':'developer',
+        '開發業務':'developer',
+        '主約編號':'mainContractNo',
+        '委託開始':'entrustStart',
+        '委託結束':'entrustEnd'
       };
-      reader.onerror = () => alert('匯入JSON失敗：檔案讀取失敗。');
-      reader.readAsText(file, 'utf-8');
+      Object.entries(directMap).forEach(([header, key]) => {
+        if(row[header] == null) return;
+        const def = getFieldDefByKey(key);
+        if(def) setImportedItemValue(def, c.items[key], row[header]);
+      });
+      FIELD_DEFS.forEach(def => {
+        if(def.key === 'companyArchive'){
+          (def.subitems || []).forEach(name => {
+            const header = `公司物件存檔-${name}`;
+            if(row[header] != null) c.items[def.key].subitems[name] = String(row[header] || '').trim();
+          });
+          syncStatusWithContent(def, c.items[def.key]);
+          return;
+        }
+        if(row[def.label] != null) setImportedItemValue(def, c.items[def.key], row[def.label]);
+      });
+      return c;
+    }
+
+    async function importExcelFile(file){
+      if(!file) return;
+      const textContent = await file.text();
+      if(!textContent.includes('<Workbook')){
+        alert('目前匯入支援「本系統匯出的 NEW本製作 .xls」。如果是一般 .xlsx，請先用本系統匯出格式整理後再匯入。');
+        return;
+      }
+      let sheets;
+      try {
+        sheets = parseExcelXmlWorkbook(textContent);
+      } catch(err){
+        alert(err.message || '匯入失敗。');
+        return;
+      }
+      const importedCases = [];
+      sheets.forEach(sheet => {
+        sheet.objects.forEach(row => {
+          if(String(row['案名'] || row['主約編號'] || row['進案日期'] || '').trim()){
+            importedCases.push(caseFromImportedRow(row, sheet.name));
+          }
+        });
+      });
+      if(!importedCases.length){
+        alert('沒有讀到可匯入的案件資料。');
+        return;
+      }
+      if(!confirm(`讀到 ${importedCases.length} 筆案件。
+
+按「確定」會覆蓋目前 NEW本資料；按「取消」則不匯入。`)) return;
+      state.cases = importedCases;
+      if(!state.assistants || !state.assistants.length) state.assistants = defaultAssistants();
+      autoSaveNow();
+      renderAll();
+      alert(`匯入完成：${importedCases.length} 筆案件。`);
     }
 
     function toggleArchiveCase(caseId, forceState){
@@ -2819,20 +3845,25 @@
       renderAssistantList();
       renderCustomActionList();
       renderArchiveConfigEditor();
+      renderRewardDashboard();
       setLastSyncTimeText(remoteUpdatedAt ? fmtTime(remoteUpdatedAt) : '—');
       setSaveStatus('已自動存檔', false);
       updateConfigFloatingTools();
     }
 
     document.getElementById('newCaseBtn').onclick = addCase;
+    const openRewardBtn = document.getElementById('openRewardBtn');
+    if(openRewardBtn) openRewardBtn.onclick = openRewardModal;
     document.getElementById('exportExcelBtn').onclick = exportExcel;
     const exportJsonBtn = document.getElementById('exportJsonBtn');
-    if(exportJsonBtn) exportJsonBtn.onclick = exportJson;
     const importJsonBtn = document.getElementById('importJsonBtn');
-    if(importJsonBtn) importJsonBtn.onclick = triggerImportJson;
-    const importJsonFileInput = document.getElementById('importJsonFileInput');
-    if(importJsonFileInput){
-      importJsonFileInput.onchange = e => importJsonFromFile(e.target.files?.[0]);
+    const importJsonInput = document.getElementById('importJsonInput');
+    if(exportJsonBtn) exportJsonBtn.onclick = exportJson;
+    if(importJsonBtn && importJsonInput) importJsonBtn.onclick = () => importJsonInput.click();
+    if(importJsonInput){
+      importJsonInput.addEventListener('change', e => {
+        importJsonFile(e.target.files && e.target.files[0]).finally(() => { e.target.value = ''; });
+      });
     }
     document.getElementById('addAssistantBtn').onclick = addAssistant;
     document.getElementById('addCustomActionBtn').onclick = addCustomAction;
@@ -2943,7 +3974,47 @@
     document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
     document.getElementById('modalCloseBtn').onclick = closeModal;
     document.getElementById('modalCloseBtnBottom').onclick = closeModal;
+    document.getElementById('rewardCloseBtn').onclick = closeRewardModal;
+    document.getElementById('rewardCloseBtnBottom').onclick = closeRewardModal;
+    const rewardPreviewPublicBtn = document.getElementById('rewardPreviewPublicBtn');
+    if(rewardPreviewPublicBtn) rewardPreviewPublicBtn.onclick = previewRewardPublicHtml;
+    const rewardPreviewPublicBtnBottom = document.getElementById('rewardPreviewPublicBtnBottom');
+    if(rewardPreviewPublicBtnBottom) rewardPreviewPublicBtnBottom.onclick = previewRewardPublicHtml;
+    const rewardExportPublicBtn = document.getElementById('rewardExportPublicBtn');
+    if(rewardExportPublicBtn) rewardExportPublicBtn.onclick = exportRewardPublicHtml;
+    const rewardExportPublicBtnBottom = document.getElementById('rewardExportPublicBtnBottom');
+    if(rewardExportPublicBtnBottom) rewardExportPublicBtnBottom.onclick = exportRewardPublicHtml;
+    ['rewardStartDateInput','rewardEndDateInput','rewardPrize1Input','rewardPrize2Input','rewardPrize3Input','rewardThresholdInput'].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('change', readRewardConfigFromInputs);
+      el.addEventListener('blur', readRewardConfigFromInputs);
+    });
+    const rewardCaseFilterEl = document.getElementById('rewardCaseFilterPerson');
+    if(rewardCaseFilterEl){
+      rewardCaseFilterEl.addEventListener('input', () => {
+        state.rewardConfig.detailFilterPerson = rewardCaseFilterEl.value || '';
+        scheduleAutoSave();
+        renderRewardDashboard();
+      });
+      rewardCaseFilterEl.addEventListener('change', () => {
+        state.rewardConfig.detailFilterPerson = rewardCaseFilterEl.value || '';
+        scheduleAutoSave();
+        renderRewardDashboard();
+      });
+    }
+    const rewardAddRosterBtn = document.getElementById('rewardAddRosterBtn');
+    if(rewardAddRosterBtn) rewardAddRosterBtn.onclick = addRewardRosterPerson;
+    const rewardResetRosterBtn = document.getElementById('rewardResetRosterBtn');
+    if(rewardResetRosterBtn) rewardResetRosterBtn.onclick = resetRewardRoster;
+    const rewardRosterNameInput = document.getElementById('rewardRosterNameInput');
+    if(rewardRosterNameInput){
+      rewardRosterNameInput.addEventListener('keydown', e => {
+        if(e.key === 'Enter') addRewardRosterPerson();
+      });
+    }
     document.getElementById('caseModal').addEventListener('click', e => { if(e.target.id === 'caseModal') closeModal(); });
+    document.getElementById('rewardModal').addEventListener('click', e => { if(e.target.id === 'rewardModal') closeRewardModal(); });
     window.addEventListener('beforeunload', () => autoSaveNow());
 
     renderAll();
