@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>開發月獎勵排行榜｜公開版</title>
+<style>
+  :root{--bg:#fff7cf;--card:#fff;--line:#93c5fd;--text:#172033;--muted:#64748b;--pri:#2563eb;--ok:#166534;--warn:#b45309;--danger:#dc2626}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);color:var(--text)}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 18px 42px}
+  .poster{display:grid;gap:16px;border:8px solid #f4c542;border-radius:32px;padding:16px;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);box-shadow:0 22px 54px rgba(30,64,175,.16)}
+  .poster-head{position:relative;overflow:hidden;padding:24px 22px;border-radius:22px;background:linear-gradient(135deg,#ffffff 0%,#fff7ed 46%,#eff6ff 100%);border:3px solid #38bdf8;box-shadow:0 10px 0 rgba(14,165,233,.16)}
+  .poster-head:before{content:'★';position:absolute;left:18px;top:14px;color:#f59e0b;font-size:24px;transform:rotate(-12deg)}
+  .poster-head:after{content:'★';position:absolute;right:20px;top:18px;color:#22c55e;font-size:22px;transform:rotate(12deg)}
+  .poster-title{position:relative;z-index:1;font-size:38px;font-weight:1000;letter-spacing:2px;color:#0f172a;text-align:center;text-shadow:2px 2px 0 #fde68a}
+  .poster-sub{position:relative;z-index:1;margin-top:10px;text-align:center;color:#0369a1;font-size:17px;font-weight:900}
+  .poster-card{border:3px solid #93c5fd;border-radius:24px;padding:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);box-shadow:0 12px 0 rgba(147,197,253,.18)}
+  .poster-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .poster-card h4{margin:0;font-size:21px;color:#0f172a;font-weight:1000;letter-spacing:.5px}
+  .totalbadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#facc15 0%,#fb923c 100%);color:#7c2d12;border:2px solid #fff7ed;font-size:17px;font-weight:1000;box-shadow:0 6px 16px rgba(251,146,60,.28)}
+  .chart-wrap{overflow-x:auto;padding-bottom:4px}
+  .column-chart{display:grid;gap:8px;min-width:480px}
+  .chart-svg{display:block;width:100%;height:auto}
+  .egg-zone{display:flex;flex-wrap:wrap;gap:10px}
+  .egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}
+  .note,.egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}
+  .statusbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:14px;font-size:13px;font-weight:800;color:#475569}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;border:1px solid #cbd5e1;background:#fff}
+  .badge.ok{background:#dff7e6;color:#166534;border-color:#bbf7d0}.badge.warn{background:#ffe8c7;color:#92400e;border-color:#fed7aa}.badge.err{background:#ffd9d9;color:#b91c1c;border-color:#fecaca}
+  .setup{display:none;margin-bottom:16px;border:2px dashed #f59e0b;border-radius:20px;background:#fffdf4;padding:14px;box-shadow:0 10px 25px rgba(245,158,11,.14)}
+  .setup.show{display:block}.setup h3{margin:0 0 10px;font-size:18px}.setup-grid{display:grid;grid-template-columns:1fr 1.5fr auto auto;gap:8px;align-items:center}.setup input{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font:inherit}.setup button{border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:900;cursor:pointer}.btn{background:#2563eb;color:#fff}.btn2{background:#eef2ff;color:#3730a3}.small{font-size:12px;color:#64748b;line-height:1.7;margin-top:8px}
+  @media(max-width:980px){.poster-title{font-size:30px}.poster-card-head{align-items:flex-start}.setup-grid{grid-template-columns:1fr}.setup button{width:100%}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="wrap">
+  <section id="setupBox" class="setup">
+    <h3>公開版線上榜單設定</h3>
+    <div class="setup-grid">
+      <input id="urlInput" placeholder="Supabase Project URL">
+      <input id="keyInput" placeholder="Publishable / anon key">
+      <button class="btn" id="connectBtn">連線預覽</button>
+      <button class="btn2" id="downloadConfiguredBtn">下載已填入設定版</button>
+    </div>
+    <div class="small">先貼上 Supabase URL 與 Publishable Key 測試。確認有資料後，按「下載已填入設定版」，再把下載的新檔案改名為 index.html 上傳到 GitHub Pages。</div>
+  </section>
+
+  <div class="statusbar">
+    <span id="statusBadge" class="badge ok">已連線更新</span>
+    <span id="lastUpdateBadge" class="badge">最後更新：2026/05/05 14:43:33</span>
+    <span id="nextUpdateBadge" class="badge">每30秒自動更新｜24秒後刷新</span>
+  </div>
+
+  <div class="poster" id="poster"><div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜115/3/1 ～ 115/6/30</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">總分:23.5分</div></div><div class="note">目前尚無符合6分門檻的排名資料</div></div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div><div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 1510 334" role="img" aria-label="柱狀圖"><g><line x1="44" y1="278.0" x2="1494" y2="278.0" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="282.0" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">0</text></g><g><line x1="44" y1="191.3" x2="1494" y2="191.3" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="195.3" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">2分</text></g><g><line x1="44" y1="104.7" x2="1494" y2="104.7" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="108.7" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">4分</text></g><g><line x1="44" y1="18.0" x2="1494" y2="18.0" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="22.0" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">6分</text></g><line x1="44" y1="18" x2="44" y2="278" stroke="#94a3b8" stroke-width="1.5"></line><line x1="44" y1="278" x2="1494" y2="278" stroke="#94a3b8" stroke-width="1.5"></line><g><rect x="59.1" y="83.0" width="27.8" height="195.0" fill="#e11d48" opacity="0.96"></rect><text x="73.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">張小曼</text></g><g><rect x="117.1" y="104.7" width="27.8" height="173.3" fill="#f97316" opacity="0.96"></rect><text x="131.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳帝元</text></g><g><rect x="175.1" y="148.0" width="27.8" height="130.0" fill="#eab308" opacity="0.96"></rect><text x="189.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">余沛臻</text></g><g><rect x="233.1" y="169.7" width="27.8" height="108.3" fill="#22c55e" opacity="0.96"></rect><text x="247.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王妤宸</text></g><g><rect x="291.1" y="191.3" width="27.8" height="86.7" fill="#06b6d4" opacity="0.96"></rect><text x="305.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">阮氏金水</text></g><g><rect x="349.1" y="202.2" width="27.8" height="75.8" fill="#3b82f6" opacity="0.96"></rect><text x="363.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林顯昌</text></g><g><rect x="407.1" y="202.2" width="27.8" height="75.8" fill="#6366f1" opacity="0.96"></rect><text x="421.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林姿岑</text></g><g><rect x="465.1" y="213.0" width="27.8" height="65.0" fill="#8b5cf6" opacity="0.96"></rect><text x="479.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳信良</text></g><g><rect x="523.1" y="234.7" width="27.8" height="43.3" fill="#ec4899" opacity="0.96"></rect><text x="537.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">黃文成</text></g><g><rect x="581.1" y="256.3" width="27.8" height="21.7" fill="#14b8a6" opacity="0.96"></rect><text x="595.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">李安安</text></g><g><rect x="639.1" y="256.3" width="27.8" height="21.7" fill="#84cc16" opacity="0.96"></rect><text x="653.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林俊嘉</text></g><g><rect x="697.1" y="256.3" width="27.8" height="21.7" fill="#f43f5e" opacity="0.96"></rect><text x="711.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">吳佩玲</text></g><g><rect x="755.1" y="278.0" width="27.8" height="0.0" fill="#e11d48" opacity="0.96"></rect><text x="769.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">謝馨儀</text></g><g><rect x="813.1" y="278.0" width="27.8" height="0.0" fill="#f97316" opacity="0.96"></rect><text x="827.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">蔡宇育</text></g><g><rect x="871.1" y="278.0" width="27.8" height="0.0" fill="#eab308" opacity="0.96"></rect><text x="885.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">柯育婷</text></g><g><rect x="929.1" y="278.0" width="27.8" height="0.0" fill="#22c55e" opacity="0.96"></rect><text x="943.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳珮菁</text></g><g><rect x="987.1" y="278.0" width="27.8" height="0.0" fill="#06b6d4" opacity="0.96"></rect><text x="1001.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王俞云</text></g><g><rect x="1045.1" y="278.0" width="27.8" height="0.0" fill="#3b82f6" opacity="0.96"></rect><text x="1059.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">葉翊緁</text></g><g><rect x="1103.1" y="278.0" width="27.8" height="0.0" fill="#6366f1" opacity="0.96"></rect><text x="1117.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">郭建佑</text></g><g><rect x="1161.1" y="278.0" width="27.8" height="0.0" fill="#8b5cf6" opacity="0.96"></rect><text x="1175.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">田庭宇</text></g><g><rect x="1219.1" y="278.0" width="27.8" height="0.0" fill="#ec4899" opacity="0.96"></rect><text x="1233.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">買淑玲</text></g><g><rect x="1277.1" y="278.0" width="27.8" height="0.0" fill="#14b8a6" opacity="0.96"></rect><text x="1291.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">劉勝仁</text></g><g><rect x="1335.1" y="278.0" width="27.8" height="0.0" fill="#84cc16" opacity="0.96"></rect><text x="1349.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">宋喜輝</text></g><g><rect x="1393.1" y="278.0" width="27.8" height="0.0" fill="#f43f5e" opacity="0.96"></rect><text x="1407.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">業翊緁</text></g><g><rect x="1451.1" y="278.0" width="27.8" height="0.0" fill="#e11d48" opacity="0.96"></rect><text x="1465.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王若芸</text></g></svg></div></div></div><div class="poster-card"><div class="poster-card-head"><h4>🌱 加油破蛋區</h4></div><div class="egg-zone"><span class="egg-chip">謝馨儀</span><span class="egg-chip">蔡宇育</span><span class="egg-chip">柯育婷</span><span class="egg-chip">陳珮菁</span><span class="egg-chip">王俞云</span><span class="egg-chip">葉翊緁</span><span class="egg-chip">郭建佑</span><span class="egg-chip">田庭宇</span><span class="egg-chip">買淑玲</span><span class="egg-chip">劉勝仁</span><span class="egg-chip">宋喜輝</span><span class="egg-chip">業翊緁</span><span class="egg-chip">王若芸</span></div><div class="egg-note">未滿6分先在排序圖中追分，一起往上衝！</div></div></div>
+</div>
+
+<script>
+/********** 上傳 GitHub 前可直接填在這裡 **********/
+const SUPABASE_URL = 'https://oiywtmjbasoonfuxemtr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_dhr81918k0zRtar14yepIA_ZWmTKT10';
+const TABLE_NAME = 'app_state';
+const APP_ID = 'newbook_v14';
+const AUTO_REFRESH_MS = 30000;
+/**********************************************/
+
+const ROC_YEAR = new Date().getFullYear() - 1911;
+const LS_URL = 'reward_public_supabase_url';
+const LS_KEY = 'reward_public_supabase_key';
+let state = { cases: [], rewardConfig: {} };
+let client = null;
+let timer = null;
+let countTimer = null;
+let nextAt = 0;
+
+const REWARD_DEFAULT_ROSTER = ['余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'];
+const REWARD_AUTO_EXCLUDED_NAMES = ['王啟山','林玉環'];
+const DEVELOPER_MASTER_NAMES = ['王啟山','柯育婷','林玉環','楊巧甄','王若芸','田庭宇','王妤宸','陳帝元','王俞云','買淑玲','余沛臻','林俊嘉','林顯昌','黃文成','林姿岑','劉勝仁','張小曼','陳信良','李安安','宋喜輝','謝馨儀','吳佩玲','郭建佑','葉翊緁','蔡宇育','陳珮菁','阮金水','阮氏金水'];
+const DEVELOPER_SPECIAL_ALIAS_MAP = {'和小曼':'張小曼','阮金水':'阮氏金水'};
+const DEVELOPER_ALIAS_GROUPS = (() => {
+  const groups = DEVELOPER_MASTER_NAMES.map(full => {
+    const alias = full.length > 2 ? full.slice(-2) : full;
+    return alias !== full ? [full, alias] : [full];
+  });
+  Object.entries(DEVELOPER_SPECIAL_ALIAS_MAP).forEach(([alias, full]) => {
+    const group = groups.find(arr => arr.includes(full));
+    if(group && !group.includes(alias)) group.push(alias);
+  });
+  return groups;
+})();
+const DEVELOPER_CANONICAL_MAP = (() => {
+  const map = {};
+  DEVELOPER_MASTER_NAMES.forEach(full => {
+    map[full] = full;
+    const alias = full.length > 2 ? full.slice(-2) : full;
+    map[alias] = full;
+  });
+  Object.entries(DEVELOPER_SPECIAL_ALIAS_MAP).forEach(([alias, full]) => { map[alias] = full; });
+  return map;
+})();
+const COMMON_SINGLE_SURNAMES = new Set('王李張劉陳楊黃趙吳周徐孫馬朱胡郭何高林羅鄭梁謝宋唐許韓馮鄧曹彭曾蕭田董潘袁於余葉蔣杜蘇魏程呂丁任沈姚盧姜崔鍾譚陸汪范金石廖賈夏韋傅方白鄒孟熊秦邱江尹薛閻段雷侯龍史陶黎賀顧毛郝龔邵萬錢嚴賴武戴莫孔向湯'.split(''));
+const COMMON_DOUBLE_SURNAMES = ['歐陽','司馬','上官','夏侯','諸葛','東方','皇甫','尉遲','公孫','慕容','司徒','司空','令狐','鍾離','長孫','宇文','鮮于','閭丘','子車','軒轅','端木'];
+
+function normalizePersonName(v){ return String(v || '').trim().replace(/\s+/g,''); }
+function canonicalDeveloperName(name){
+  const normalized = normalizePersonName(name);
+  if(!normalized) return '';
+  if(DEVELOPER_CANONICAL_MAP[normalized]) return DEVELOPER_CANONICAL_MAP[normalized];
+  for(const group of DEVELOPER_ALIAS_GROUPS){
+    const normalizedGroup = group.map(normalizePersonName);
+    if(normalizedGroup.includes(normalized)) return normalizedGroup[0];
+  }
+  return normalized;
+}
+function startsWithCommonSurname(name){
+  const normalized = normalizePersonName(name);
+  if(!normalized) return false;
+  if(COMMON_DOUBLE_SURNAMES.some(s => normalized.startsWith(s))) return true;
+  return COMMON_SINGLE_SURNAMES.has(normalized.charAt(0));
+}
+function getNamePlausibilityScore(name){
+  const normalized = normalizePersonName(name);
+  if(!normalized) return 999;
+  let score = 0;
+  if(!startsWithCommonSurname(normalized)) score += 20;
+  if(normalized.length === 2) score += 3;
+  if(normalized.length === 4) score += 1;
+  if(normalized.length < 2 || normalized.length > 4) score += 50;
+  return score;
+}
+function splitUnknownDeveloperString(raw){
+  const normalized = normalizePersonName(raw);
+  if(!normalized) return [];
+  if(normalized.length === 5){
+    const first2 = normalized.slice(0,2), last3 = normalized.slice(2), first3 = normalized.slice(0,3), last2 = normalized.slice(3);
+    return getNamePlausibilityScore(first2)+getNamePlausibilityScore(last3) <= getNamePlausibilityScore(first3)+getNamePlausibilityScore(last2) ? [first2,last3] : [first3,last2];
+  }
+  const memo = new Map();
+  function solve(start){
+    if(start === normalized.length) return { parts: [], score: 0 };
+    if(memo.has(start)) return memo.get(start);
+    let best = null;
+    [4,3,2].forEach(len => {
+      if(start + len > normalized.length) return;
+      const head = normalized.slice(start, start + len);
+      const tail = solve(start + len);
+      if(!tail) return;
+      const score = tail.score + getNamePlausibilityScore(head) + (10 - len);
+      const candidate = { parts: [head].concat(tail.parts), score };
+      if(!best || candidate.score < best.score || (candidate.score === best.score && candidate.parts.length < best.parts.length)) best = candidate;
+    });
+    memo.set(start,best); return best;
+  }
+  return solve(0)?.parts || [normalized];
+}
+function getKnownDeveloperNames(){
+  const set = new Set();
+  DEVELOPER_ALIAS_GROUPS.forEach(group => group.forEach(name => set.add(normalizePersonName(name))));
+  (state.cases || []).forEach(c => {
+    const raw = normalizePersonName(fieldText(c,'developer'));
+    if(raw && raw.length <= 3) set.add(raw);
+  });
+  return [...set].filter(Boolean).sort((a,b) => b.length - a.length);
+}
+function splitDeveloperNames(raw){
+  const normalized = normalizePersonName(raw);
+  if(!normalized) return [];
+  const separated = normalized.split(/[、，,+\/&與和]/).map(normalizePersonName).filter(Boolean);
+  if(separated.length > 1) return separated;
+  const known = getKnownDeveloperNames();
+  let remaining = normalized;
+  const matched = [];
+  while(remaining){
+    const hit = known.find(name => remaining.startsWith(name));
+    if(hit){ matched.push(hit); remaining = remaining.slice(hit.length); continue; }
+    const unknownParts = splitUnknownDeveloperString(remaining);
+    if(unknownParts.length){ matched.push(...unknownParts); remaining = ''; }
+    break;
+  }
+  return matched.length && !remaining ? matched : splitUnknownDeveloperString(normalized);
+}
+function getRewardDeveloperList(raw){ return [...new Set(splitDeveloperNames(raw).map(canonicalDeveloperName).filter(Boolean))]; }
+function isRewardAutoExcludedName(name){ return REWARD_AUTO_EXCLUDED_NAMES.includes(canonicalDeveloperName(name)); }
+function ensureRewardConfig(){
+  const defaults = { startDate:'115/3/1', endDate:'115/6/30', prize1:3000, prize2:2000, prize3:1500, rankingThreshold:6, roster:REWARD_DEFAULT_ROSTER, detailFilterPerson:'全部人員' };
+  if(!state.rewardConfig || typeof state.rewardConfig !== 'object') state.rewardConfig = {};
+  Object.keys(defaults).forEach(k => { if(state.rewardConfig[k] === undefined || state.rewardConfig[k] === null || state.rewardConfig[k] === '') state.rewardConfig[k] = defaults[k]; });
+}
+function getRewardExplicitRosterNames(){ ensureRewardConfig(); const source = Array.isArray(state.rewardConfig.roster) && state.rewardConfig.roster.length ? state.rewardConfig.roster : REWARD_DEFAULT_ROSTER; return [...new Set(source.map(canonicalDeveloperName).filter(Boolean))]; }
+function getRewardAutoDeveloperNames(){
+  const explicitSet = new Set(getRewardExplicitRosterNames());
+  const names = [];
+  (state.cases || []).forEach(c => {
+    getRewardDeveloperList(fieldText(c,'developer')).forEach(name => {
+      const clean = canonicalDeveloperName(name);
+      if(!clean) return;
+      if(isRewardAutoExcludedName(clean) && !explicitSet.has(clean)) return;
+      if(!names.includes(clean)) names.push(clean);
+    });
+  });
+  return names;
+}
+function getRewardRosterNames(){
+  const explicit = getRewardExplicitRosterNames();
+  const explicitSet = new Set(explicit);
+  const auto = getRewardAutoDeveloperNames();
+  return [...new Set([...explicit, ...auto].filter(name => {
+    const clean = canonicalDeveloperName(name);
+    if(!clean) return false;
+    if(isRewardAutoExcludedName(clean) && !explicitSet.has(clean)) return false;
+    return true;
+  }))];
+}
+function getRewardSortIndex(name){ const roster = getRewardRosterNames(); const idx = roster.indexOf(canonicalDeveloperName(name)); return idx >= 0 ? idx : 999 + roster.length; }
+function fieldText(c, key){
+  const raw = c?.items?.[key];
+  if(raw == null) return '';
+  if(typeof raw === 'string') return raw.trim();
+  if(typeof raw?.value === 'string' && raw.value.trim() !== '') return raw.value.trim();
+  if(typeof raw?.option === 'string' && raw.option.trim() !== '') return raw.option.trim();
+  if(typeof raw?.assistant === 'string' && raw.assistant.trim() !== '') return raw.assistant.trim();
+  return '';
+}
+function caseNameOf(c){ return c?.items?.caseName?.value?.trim() || '未命名案件'; }
+function normalizeRocDate(raw){
+  let v = String(raw || '').trim();
+  if(!v) return '';
+  v = v.replace(/[-.]/g,'/').replace(/\s+/g,'');
+  if(/^\d{1,2}\/\d{1,2}$/.test(v)){ const [m,d] = v.split('/').map(n => String(Number(n))); return `${ROC_YEAR}/${m}/${d}`; }
+  if(/^\d{2,3}\/\d{1,2}\/\d{1,2}$/.test(v)){ const [y,m,d] = v.split('/').map(n => String(Number(n))); return `${y}/${m}/${d}`; }
+  if(/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(v)){ const [y,m,d] = v.split('/').map(Number); if(y >= 1912) return `${y-1911}/${m}/${d}`; }
+  return v;
+}
+function parseRocDateParts(raw){ const v = normalizeRocDate(raw); const m = String(v || '').match(/^(\d{2,3})\/(\d{1,2})\/(\d{1,2})$/); return m ? { rocYear:Number(m[1]), month:Number(m[2]), day:Number(m[3]) } : null; }
+function rocPartsToDate(parts){ if(!parts) return null; const y = parts.rocYear + 1911; const d = new Date(y, parts.month-1, parts.day); return d.getFullYear()===y && d.getMonth()===parts.month-1 && d.getDate()===parts.day ? d : null; }
+function isRocDateBetween(raw,startRaw,endRaw){ const date=rocPartsToDate(parseRocDateParts(raw)); if(!date) return false; const start=rocPartsToDate(parseRocDateParts(startRaw)); const end=rocPartsToDate(parseRocDateParts(endRaw)); if(start && date<start) return false; if(end && date>end) return false; return true; }
+function getMinEntrustMonthsQualified(c, months=3){ const start=rocPartsToDate(parseRocDateParts(fieldText(c,'entrustStart'))); const end=rocPartsToDate(parseRocDateParts(fieldText(c,'entrustEnd'))); if(!start || !end || end<start) return false; const anchor = new Date(start.getFullYear(), start.getMonth()+months, start.getDate()); return anchor <= end; }
+function parseRewardMoneyToWan(raw){ const text=String(raw||'').trim().replace(/,/g,''); if(!text) return 0; const num=parseFloat((text.match(/-?\d+(?:\.\d+)?/)||[])[0]||'0'); if(!Number.isFinite(num)) return 0; if(text.includes('億')) return num*10000; if(text.includes('萬')) return num; if(num>=10000) return num/10000; return num; }
+function parseRewardPercent(raw){ const text=String(raw||'').trim().replace(/,/g,''); if(!text) return 0; const num=parseFloat((text.match(/-?\d+(?:\.\d+)?/)||[])[0]||'0'); return Number.isFinite(num) ? num : 0; }
+function formatRewardScore(value){ const num = Math.round((Number(value)||0)*100)/100; if(num===0) return '-'; return Number.isInteger(num) ? String(num) : num.toFixed(2).replace(/0+$/,'').replace(/\.$/,''); }
+function getRewardPeriodLabel(cfg){ const start=normalizeRocDate(cfg?.startDate||''); const end=normalizeRocDate(cfg?.endDate||''); if(start&&end) return `${start} ～ ${end}`; if(start) return `${start} 起`; if(end) return `至 ${end}`; return '全部期間'; }
+function escapeHtml(str=''){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;'); }
+function inferRewardContractType(c){ const raw=String(fieldText(c,'contractType')||'').trim(); if(raw) return raw; const no=String(fieldText(c,'mainContractNo')||'').trim().toUpperCase(); if(/(^|[^A-Z])(EA|LA)/.test(no)||no.startsWith('EA')||no.startsWith('LA')) return '專約'; if(/(^|[^A-Z])(EG|LG)/.test(no)||no.startsWith('EG')||no.startsWith('LG')) return '一般約'; return ''; }
+function getRewardCaseResult(c, cfg){
+  const entryDate = normalizeRocDate(fieldText(c,'entryDate'));
+  const developers = getRewardDeveloperList(fieldText(c,'developer'));
+  const contractType = inferRewardContractType(c);
+  const isSpecial = contractType === '專約';
+  const basePriceWan = parseRewardMoneyToWan(fieldText(c,'basePrice'));
+  const percent = parseRewardPercent(fieldText(c,'percent'));
+  const shelfDate = normalizeRocDate(c?.items?.bookShelfLocation?.extra?.date || '');
+  const reasonList = [];
+  if(!entryDate) reasonList.push('未填進案日期');
+  if(entryDate && !isRocDateBetween(entryDate,cfg.startDate,cfg.endDate)) reasonList.push('不在統計期間');
+  if(!developers.length) reasonList.push('未填開發業務');
+  if(!contractType) reasonList.push('未判斷契種');
+  if(!getMinEntrustMonthsQualified(c,3)) reasonList.push('委託未滿3個月');
+  if(!shelfDate) reasonList.push('架上未填日期');
+  if(basePriceWan <= 0) reasonList.push('未填底價');
+  if(percent <= 0) reasonList.push('未填%數');
+  let basePoints = 0, isHalf = false;
+  if(contractType){
+    basePoints = isSpecial ? 2.5 : 1;
+    if(!isSpecial){
+      if(basePriceWan > 0 && basePriceWan < 300) reasonList.push('一般約底價未滿300萬');
+      if(percent > 0 && percent < 3) reasonList.push('一般約%數未滿3%');
+    } else if((basePriceWan > 0 && basePriceWan < 300) || (percent > 0 && percent < 3)) isHalf = true;
+  }
+  const eligible = !reasonList.length;
+  const totalPoints = eligible ? (isHalf ? 1.25 : basePoints) : 0;
+  const splitCount = Math.max(developers.length,1);
+  const sharePoint = totalPoints > 0 ? totalPoints / splitCount : 0;
+  return { id:c.id, caseName:caseNameOf(c), developerText:fieldText(c,'developer') || '—', entryDate:entryDate||'—', contractType:contractType||'—', shelfDate:shelfDate||'—', eligible, isHalf, totalPoints, allocations:developers.map(name => ({name,score:sharePoint})) };
+}
+function computeRewardStats(){
+  ensureRewardConfig();
+  const cfg = state.rewardConfig;
+  const cases = Array.isArray(state.cases) ? state.cases : [];
+  const caseResults = cases.map(c => getRewardCaseResult(c,cfg));
+  const personMap = new Map();
+  const explicitRosterSet = new Set(getRewardExplicitRosterNames());
+  getRewardRosterNames().forEach(name => personMap.set(name,{name,score:0,cases:0}));
+  caseResults.forEach(row => row.allocations.forEach(item => {
+    const cleanName = canonicalDeveloperName(item.name);
+    if(!cleanName) return;
+    if(isRewardAutoExcludedName(cleanName) && !explicitRosterSet.has(cleanName)) return;
+    if(!personMap.has(cleanName)) personMap.set(cleanName,{name:cleanName,score:0,cases:0});
+    const t = personMap.get(cleanName);
+    t.score += Number(item.score||0);
+    if(Number(item.score||0)>0) t.cases += 1;
+  }));
+  const totalPoints = [...personMap.values()].reduce((sum,item)=>sum+Number(item.score||0),0);
+  const rankings = [...personMap.values()].map(item => {
+    const score = Math.round((Number(item.score)||0)*100)/100;
+    return { name:item.name, score, cases:item.cases, qualified:score >= Number(cfg.rankingThreshold || 0) };
+  }).sort((a,b)=>(b.score-a.score)||(getRewardSortIndex(a.name)-getRewardSortIndex(b.name))||String(a.name).localeCompare(String(b.name),'zh-Hant'));
+  let displayRank = 0, previousQualifiedScore = null;
+  rankings.forEach(row => { if(row.qualified){ if(previousQualifiedScore===null || row.score!==previousQualifiedScore) displayRank += 1; row.rank = displayRank; previousQualifiedScore = row.score; } else row.rank = null; });
+  return { cfg, totalPoints, rankings, publicRows:rankings.filter(x=>x.qualified).map(row=>({rank:row.rank,name:row.name,score:row.score})), scoreRows:rankings.map(row=>({rank:row.rank,name:row.name,score:row.score,qualified:row.qualified})), zeroRows:rankings.filter(x=>x.score<=0), eligibleCases:caseResults.filter(x=>x.eligible).length };
+}
+function getRewardChartMax(rows,minValue){ const scores=(Array.isArray(rows)?rows:[]).map(row=>Number(row.score||0)).filter(Number.isFinite); const maxScore=Math.max(Number(minValue||0),...scores,0); return Math.max(2,Math.ceil(maxScore/2)*2); }
+function getRewardChartColor(index){ const palette=['#e11d48','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6','#84cc16','#f43f5e']; return palette[index % palette.length]; }
+function buildRewardColumnChart(rows, emptyText, options={}){
+  const list = Array.isArray(rows) ? rows : [];
+  if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`;
+  const maxScore = getRewardChartMax(list, options.minValue || 0);
+  const ticks=[]; for(let v=0; v<=maxScore; v+=2) ticks.push(v);
+  const chartHeight=260, top=18, left=44, right=16, bottom=56;
+  const slot=Math.max(58,Math.min(84,Math.floor(540/Math.max(list.length,1))));
+  const plotWidth=Math.max(300,list.length*slot), width=left+plotWidth+right, height=top+chartHeight+bottom;
+  const barWidth=Math.min(40,Math.max(22,slot*.48));
+  const itemsSvg=list.map((row,idx)=>{
+    const score=Number(row.score||0), xCenter=left+(idx+.5)*(plotWidth/list.length), x=xCenter-barWidth/2;
+    const barHeight=maxScore>0?(score/maxScore)*chartHeight:0, y=top+chartHeight-barHeight;
+    const line1=options.showStatus ? (row.rank ? `第${row.rank}名` : (score>0?'追分中':'加油')) : '';
+    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="${getRewardChartColor(idx)}" opacity="0.96"></rect>${line1?`<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+18}" text-anchor="middle" font-size="11" font-weight="900" fill="#64748b">${escapeHtml(line1)}</text>`:''}<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+36}" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">${escapeHtml(String(row.name||''))}</text></g>`;
+  }).join('');
+  const gridSvg=ticks.map(v=>{ const y=top+chartHeight-((v/maxScore)*chartHeight); return `<g><line x1="${left}" y1="${y.toFixed(1)}" x2="${left+plotWidth}" y2="${y.toFixed(1)}" stroke="#cbd5e1" stroke-width="1"></line><text x="${left-8}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">${v===0?'0':`${v}分`}</text></g>`; }).join('');
+  const axisSvg=`<line x1="${left}" y1="${top}" x2="${left}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line><line x1="${left}" y1="${top+chartHeight}" x2="${left+plotWidth}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line>`;
+  return `<div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="柱狀圖">${gridSvg}${axisSvg}${itemsSvg}</svg></div></div>`;
+}
+function buildPosterMarkup(data){
+  const rankChartHtml=buildRewardColumnChart(data.publicRows||[],`目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold||0)}分門檻的排名資料`,{minValue:data.cfg?.rankingThreshold||0,showStatus:true});
+  const scoreChartHtml=buildRewardColumnChart(data.scoreRows||[],'目前尚無人員分數資料',{minValue:data.cfg?.rankingThreshold||0,showStatus:false});
+  const eggRows=data.zeroRows||[];
+  const eggHtml=eggRows.length ? eggRows.map(row=>`<span class="egg-chip">${escapeHtml(row.name)}</span>`).join('') : '<span class="egg-chip">目前全員都已破蛋</span>';
+  return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">總分:${escapeHtml(formatRewardScore(data.totalPoints))}分</div></div>${rankChartHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>🌱 加油破蛋區</h4></div><div class="egg-zone">${eggHtml}</div><div class="egg-note">未滿${escapeHtml(formatRewardScore(data.cfg?.rankingThreshold||0))}分先在排序圖中追分，一起往上衝！</div></div>`;
+}
+function setStatus(kind,text){ const el=document.getElementById('statusBadge'); el.className='badge '+kind; el.textContent=text; }
+function fmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); if(Number.isNaN(d.getTime())) return '—'; const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
+async function loadRemote(){
+  if(!client) return;
+  try{
+    const { data, error } = await client.from(TABLE_NAME).select('app_id,data,revision,updated_at').eq('app_id',APP_ID).maybeSingle();
+    if(error) throw error;
+    if(!data || !data.data) throw new Error('Supabase 找不到資料，請確認主檔案已連線並同步。');
+    state = data.data;
+    ensureRewardConfig();
+    document.getElementById('poster').innerHTML = buildPosterMarkup(computeRewardStats());
+    setStatus('ok','已連線更新');
+    document.getElementById('lastUpdateBadge').textContent = '最後更新：' + fmtDateTime(data.updated_at || new Date().toISOString());
+  }catch(err){
+    console.error(err);
+    setStatus('err','讀取失敗');
+    document.getElementById('poster').innerHTML = `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">讀取失敗</div></div><div class="poster-card"><div class="note">${escapeHtml(err.message || String(err))}</div></div>`;
+  }
+}
+function startTimer(){
+  clearInterval(timer); clearInterval(countTimer);
+  nextAt = Date.now() + AUTO_REFRESH_MS;
+  timer = setInterval(() => { loadRemote(); nextAt = Date.now() + AUTO_REFRESH_MS; }, AUTO_REFRESH_MS);
+  countTimer = setInterval(() => { const sec = Math.max(0, Math.ceil((nextAt - Date.now())/1000)); document.getElementById('nextUpdateBadge').textContent = `每30秒自動更新｜${sec}秒後刷新`; }, 1000);
+}
+function connect(url,key,saveLocal=false){
+  if(!url || !key){ document.getElementById('setupBox').classList.add('show'); setStatus('warn','請填 Supabase'); return; }
+  if(!window.supabase?.createClient){ setStatus('err','Supabase套件未載入'); return; }
+  client = window.supabase.createClient(url,key);
+  if(saveLocal){ localStorage.setItem(LS_URL,url); localStorage.setItem(LS_KEY,key); }
+  setStatus('warn','連線中...');
+  loadRemote(); startTimer();
+}
+function buildConfiguredHtml(url,key){
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  html = html.replace(/const SUPABASE_URL = '[^']*';/, `const SUPABASE_URL = '${url.replace(/'/g,"\\'")}';`);
+  html = html.replace(/const SUPABASE_KEY = '[^']*';/, `const SUPABASE_KEY = '${key.replace(/'/g,"\\'")}';`);
+  html = html.replace(/<section id="setupBox" class="setup show">/, '<section id="setupBox" class="setup">');
+  return html;
+}
+function downloadConfigured(){
+  const url = document.getElementById('urlInput').value.trim();
+  const key = document.getElementById('keyInput').value.trim();
+  if(!url || !key){ alert('請先貼上 Supabase URL 與 Publishable Key。'); return; }
+  const blob = new Blob([buildConfiguredHtml(url,key)], { type:'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'index.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function init(){
+  const url = SUPABASE_URL || localStorage.getItem(LS_URL) || '';
+  const key = SUPABASE_KEY || localStorage.getItem(LS_KEY) || '';
+  document.getElementById('urlInput').value = url;
+  document.getElementById('keyInput').value = key;
+  document.getElementById('connectBtn').onclick = () => connect(document.getElementById('urlInput').value.trim(), document.getElementById('keyInput').value.trim(), true);
+  document.getElementById('downloadConfiguredBtn').onclick = downloadConfigured;
+  if(SUPABASE_URL && SUPABASE_KEY){ document.getElementById('setupBox').classList.remove('show'); connect(SUPABASE_URL,SUPABASE_KEY,false); }
+  else { document.getElementById('setupBox').classList.add('show'); if(url && key) connect(url,key,false); }
+}
+init();
+</script>
+
+</body></html>
