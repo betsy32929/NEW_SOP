@@ -183,6 +183,9 @@
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
+          <button class="ghost" id="exportJsonBtn">匯出JSON</button>
+          <button class="ghost" id="importJsonBtn">匯入JSON</button>
+          <input id="importJsonFileInput" type="file" accept=".json,application/json" style="display:none;" />
           <span class="save-status" id="globalSaveStatus">已自動存檔</span>
           <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">最後同步時間：—</span>
         </div>
@@ -2583,6 +2586,85 @@
       }, 1000);
     }
 
+    function rocFileTimestamp(){
+      const dt = new Date();
+      const pad = n => String(n).padStart(2,'0');
+      const rocYear = dt.getFullYear() - 1911;
+      return `${rocYear}年${dt.getMonth()+1}月${dt.getDate()}日_${pad(dt.getHours())}點${pad(dt.getMinutes())}分`;
+    }
+
+    function exportJson(){
+      autoSaveNow();
+      const payload = {
+        app: 'NEW本製作',
+        type: 'newbook-json-backup',
+        exportedAt: new Date().toISOString(),
+        storageKey: STORAGE_KEY,
+        data: state
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `NEW本製作_JSON備份_${rocFileTimestamp()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 1000);
+    }
+
+    function triggerImportJson(){
+      const input = document.getElementById('importJsonFileInput');
+      if(!input) return;
+      input.value = '';
+      input.click();
+    }
+
+    function normalizeImportedState(next){
+      if(!next || typeof next !== 'object') throw new Error('JSON內容不是有效資料。');
+      if(!Array.isArray(next.cases)) throw new Error('JSON裡找不到案件資料 cases。');
+      if(!Array.isArray(next.assistants)) next.assistants = defaultAssistants();
+      if(!Array.isArray(next.customActions)) next.customActions = [];
+      if(!Array.isArray(next.companyArchiveItems)) next.companyArchiveItems = [];
+      if(!next.fieldSettings || typeof next.fieldSettings !== 'object') next.fieldSettings = {};
+      next.assistants = normalizeAssistants(next.assistants);
+      if(!next.assistants.length) next.assistants = defaultAssistants();
+      return next;
+    }
+
+    function applyImportedJson(parsed){
+      const next = normalizeImportedState(parsed?.data || parsed?.state || parsed);
+      state = next;
+      FIELD_DEFS.splice(BASE_FIELD_COUNT);
+      mergeCustomActions();
+      currentCaseId = state.cases[0]?.id || null;
+      activeModalCaseId = null;
+      closeModal();
+      saveState();
+      scheduleRemoteSave();
+      renderAll();
+      setSaveStatus('已匯入JSON並自動存檔', false);
+      alert(`已匯入JSON，共 ${state.cases.length} 筆案件。`);
+    }
+
+    function importJsonFromFile(file){
+      if(!file) return;
+      const ok = confirm('匯入JSON會用檔案內容覆蓋目前這份本機資料，確定要匯入嗎？');
+      if(!ok) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result || ''));
+          applyImportedJson(parsed);
+        } catch(err) {
+          alert('匯入JSON失敗：' + (err?.message || err));
+        }
+      };
+      reader.onerror = () => alert('匯入JSON失敗：檔案讀取失敗。');
+      reader.readAsText(file, 'utf-8');
+    }
+
     function toggleArchiveCase(caseId, forceState){
       const c = getCaseById(caseId);
       if(!c) return;
@@ -2744,6 +2826,14 @@
 
     document.getElementById('newCaseBtn').onclick = addCase;
     document.getElementById('exportExcelBtn').onclick = exportExcel;
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    if(exportJsonBtn) exportJsonBtn.onclick = exportJson;
+    const importJsonBtn = document.getElementById('importJsonBtn');
+    if(importJsonBtn) importJsonBtn.onclick = triggerImportJson;
+    const importJsonFileInput = document.getElementById('importJsonFileInput');
+    if(importJsonFileInput){
+      importJsonFileInput.onchange = e => importJsonFromFile(e.target.files?.[0]);
+    }
     document.getElementById('addAssistantBtn').onclick = addAssistant;
     document.getElementById('addCustomActionBtn').onclick = addCustomAction;
     const saveArchiveConfigBtn = document.getElementById('saveArchiveConfigBtn');
