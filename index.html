@@ -179,6 +179,17 @@
     .reward-rank-badge.top1{background:#fff3bf; color:#92400e; border-color:#fcd34d}
     .reward-rank-badge.top2{background:#edf2f7; color:#475569; border-color:#cbd5e1}
     .reward-rank-badge.top3{background:#ffe4cf; color:#9a3412; border-color:#fdba74}
+
+    .reward-rank-list{display:grid; gap:10px}
+    .reward-rank-row{display:grid; grid-template-columns:72px 1fr 110px; gap:10px; align-items:center; padding:12px 14px; border-radius:18px; border:2px solid #dbeafe; background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
+    .reward-rank-row.top1{background:linear-gradient(90deg,#fff4b5 0%,#fffbe6 100%); border-color:#facc15; box-shadow:0 10px 24px rgba(250,204,21,.22)}
+    .reward-rank-row.top2{background:linear-gradient(90deg,#edf2f7 0%,#ffffff 100%); border-color:#cbd5e1}
+    .reward-rank-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%); border-color:#fdba74}
+    .reward-rank-row .rank{font-size:24px; font-weight:1000; text-align:center; color:#0f172a}
+    .reward-rank-row .name{font-size:19px; font-weight:1000; color:#111827}
+    .reward-rank-row .score{font-size:18px; font-weight:1000; color:#1d4ed8; text-align:right}
+    .reward-public-rules{margin:0; padding-left:22px; color:#334155; line-height:1.9; font-weight:900}
+    .reward-public-disclaimer{margin-top:10px; padding:10px 12px; border-radius:14px; background:#fff7ed; border:1px solid #fed7aa; color:#92400e; font-size:13px; font-weight:900; line-height:1.6}
     .reward-score{font-weight:900; color:#1d4ed8}
     .reward-note{font-size:12px; color:var(--muted); line-height:1.7}
     .reward-export-bar{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:10px}
@@ -617,6 +628,10 @@
           <div class="reward-metric"><div class="k">統計期間</div><div class="v" id="rewardPeriodText">—</div></div>
           <div class="reward-metric"><div class="k">總分</div><div class="v" id="rewardTotalPointsText">0</div></div>
         </div>
+        <div class="reward-summary-grid compact">
+          <div class="reward-metric"><div class="k">加碼總金額</div><div class="v" id="rewardTotalPoolText">$0</div></div>
+          <div class="reward-metric"><div class="k">金額公式</div><div class="v" id="rewardPoolFormulaText" style="font-size:15px; line-height:1.55;">—</div></div>
+        </div>
 
         <details class="setting-card reward-hidden-panel" id="rewardInternalPanel">
           <summary>內部排行榜設定</summary>
@@ -624,14 +639,13 @@
             <div>
               <div class="section-title" style="margin-bottom:10px;">
                 <span>統計設定</span>
-                <span class="tiny">可自行改期間、前三名獎金、排名門檻</span>
+                <span class="tiny">可自行改期間、排名門檻、每人參加費與公司加碼</span>
               </div>
               <div class="reward-setting-grid">
                 <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">統計開始</div><input id="rewardStartDateInput" class="field-input" type="text" placeholder="例如：115/3/1"></label>
                 <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">統計結束</div><input id="rewardEndDateInput" class="field-input" type="text" placeholder="例如：115/6/30"></label>
-                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第一名獎金</div><input id="rewardPrize1Input" class="field-input" type="number" min="0" step="1" placeholder="3000"></label>
-                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第二名獎金</div><input id="rewardPrize2Input" class="field-input" type="number" min="0" step="1" placeholder="2000"></label>
-                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">第三名獎金</div><input id="rewardPrize3Input" class="field-input" type="number" min="0" step="1" placeholder="1500"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">每人參加費</div><input id="rewardParticipationFeeInput" class="field-input" type="number" min="0" step="1" placeholder="500"></label>
+                <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">公司加碼</div><input id="rewardCompanyBonusInput" class="field-input" type="number" min="0" step="1" placeholder="50000"></label>
                 <label><div class="tiny" style="margin-bottom:6px; font-weight:800;">可排名門檻</div><input id="rewardThresholdInput" class="field-input" type="number" min="0" step="0.5" placeholder="6"></label>
               </div>
               <ul class="reward-rule-list">
@@ -640,7 +654,9 @@
                 <li>需同時符合：有進案日期、委託期間至少 3 個月、物件本位置「架上」有日期。</li>
                 <li>一般約：底價需滿 300 萬，且 % 數需滿 3%。</li>
                 <li>專約：底價未滿 300 萬或 % 數未滿 3%，改以半件計算（1.25 分，不重複再對半）。</li>
-                <li>名次獎金固定：第一名 3,000 元、第二名 2,000 元、第三名 1,500 元。</li>
+                <li>外縣市不列入計分；案名直接寫區域視為台南市，若為外縣市案名會寫出縣市。</li>
+                <li>物件須配合團看才可記分；進案即售出不列入計算。</li>
+                <li>加碼公式：(業務人數 + 老闆 + 老闆娘 − 未繳款人員) × 每人參加費 + 公司加碼 = 總金額；個人分數 / 總分 × 總金額 = 個人加碼拿回金額。</li>
               </ul>
             </div>
             <div class="reward-roster-editor">
@@ -660,7 +676,7 @@
               <div class="section-title" style="margin-bottom:10px;"><span>內部排行榜</span><span class="tiny">內部用，公開版不會顯示獎金</span></div>
               <div class="reward-table-wrap">
                 <table>
-                  <thead><tr><th style="width:82px;">排名</th><th style="width:180px;">業務</th><th style="width:100px;">分數</th><th style="width:120px;">基本獎金</th><th style="width:120px;">名次獎金</th><th style="width:120px;">預估合計</th><th style="width:120px;">是否達門檻</th></tr></thead>
+                  <thead><tr><th style="width:82px;">排名</th><th style="width:180px;">業務</th><th style="width:100px;">分數</th><th style="width:160px;">個人加碼拿回金額</th><th style="width:120px;">是否達門檻</th></tr></thead>
                   <tbody id="rewardRankingTableBody"></tbody>
                 </table>
               </div>
@@ -738,6 +754,9 @@
         prize1: 3000,
         prize2: 2000,
         prize3: 1500,
+        participationFee: 500,
+        companyBonus: 50000,
+        unpaidNames: ['王妤宸','王若芸'],
         rankingThreshold: 6,
         roster: ['余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'],
         detailFilterPerson: '全部人員'
@@ -757,6 +776,11 @@
       '余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'
     ];
     const REWARD_AUTO_EXCLUDED_NAMES = ['王啟山','林玉環'];
+    const REWARD_OWNER_NAMES = ['王啟山','林玉環'];
+    const REWARD_DEFAULT_UNPAID_NAMES = ['王妤宸','王若芸'];
+    const REWARD_EXTERNAL_COUNTY_KEYWORDS = [
+      '台北市','臺北市','新北市','桃園市','新竹市','新竹縣','苗栗縣','台中市','臺中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','高雄市','屏東縣','宜蘭縣','花蓮縣','台東縣','臺東縣','澎湖縣','基隆市','金門縣','連江縣'
+    ];
 
     function getRewardExplicitRosterNames(){
       ensureRewardConfig();
@@ -768,6 +792,33 @@
 
     function isRewardAutoExcludedName(name){
       return REWARD_AUTO_EXCLUDED_NAMES.includes(canonicalDeveloperName(name));
+    }
+
+    function getRewardUnpaidNames(){
+      ensureRewardConfig();
+      const source = Array.isArray(state.rewardConfig.unpaidNames) && state.rewardConfig.unpaidNames.length
+        ? state.rewardConfig.unpaidNames
+        : REWARD_DEFAULT_UNPAID_NAMES;
+      return [...new Set(source.map(name => canonicalDeveloperName(name)).filter(Boolean))];
+    }
+
+    function isRewardUnpaidName(name){
+      return getRewardUnpaidNames().includes(canonicalDeveloperName(name));
+    }
+
+    function getRewardContributionNames(){
+      const names = [...new Set([...getRewardRosterNames(), ...REWARD_OWNER_NAMES].map(name => canonicalDeveloperName(name)).filter(Boolean))];
+      return names.filter(name => !isRewardUnpaidName(name));
+    }
+
+    function isRewardExternalCountyCase(c){
+      const text = String(caseNameOf(c) || '').replace(/臺/g, '台');
+      return REWARD_EXTERNAL_COUNTY_KEYWORDS.some(place => text.includes(String(place).replace(/臺/g, '台')));
+    }
+
+    function isRewardInstantSoldCase(c){
+      const text = [caseNameOf(c), fieldText(c,'caseName'), c?.caseNote, c?.note, c?.memo, c?.remark].map(x => String(x || '')).join(' ');
+      return /(進案即售出|進案即成交|即售出|即成交)/.test(text);
     }
 
     function getRewardAutoDeveloperNames(){
@@ -2091,6 +2142,8 @@
 
       if(!entryDate) reasonList.push('未填進案日期');
       if(entryDate && !isRocDateBetween(entryDate, cfg.startDate, cfg.endDate)) reasonList.push('不在統計期間');
+      if(isRewardExternalCountyCase(c)) reasonList.push('外縣市不列入計分');
+      if(isRewardInstantSoldCase(c)) reasonList.push('進案即售出不列入計算');
       if(!developers.length) reasonList.push('未填開發業務');
       if(!contractType) reasonList.push('未判斷契種');
       if(!getMinEntrustMonthsQualified(c, 3)) reasonList.push('委託未滿3個月');
@@ -2148,12 +2201,6 @@
       ensureRewardConfig();
       const cfg = state.rewardConfig;
       const caseResults = allCases().map(c => getRewardCaseResult(c, cfg));
-      const rankPrizes = {
-        1: Math.max(0, Number(cfg.prize1 || 0)),
-        2: Math.max(0, Number(cfg.prize2 || 0)),
-        3: Math.max(0, Number(cfg.prize3 || 0))
-      };
-      const pool = rankPrizes[1] + rankPrizes[2] + rankPrizes[3];
       const personMap = new Map();
       const explicitRosterSet = new Set(getRewardExplicitRosterNames());
       getRewardRosterNames().forEach(name => personMap.set(name, { name, score:0, cases:0 }));
@@ -2169,16 +2216,21 @@
         });
       });
       const totalPoints = [...personMap.values()].reduce((sum, item) => sum + Number(item.score || 0), 0);
+      const participationFee = Math.max(0, Number(cfg.participationFee || 0));
+      const companyBonus = Math.max(0, Number(cfg.companyBonus || 0));
+      const contributionNames = getRewardContributionNames();
+      const participationTotal = contributionNames.length * participationFee;
+      const totalBonusPool = participationTotal + companyBonus;
       const rankings = [...personMap.values()].map(item => {
         const score = Math.round((Number(item.score) || 0) * 100) / 100;
-        const baseReward = score * 200;
+        const bonusReward = totalPoints > 0 ? (score / totalPoints) * totalBonusPool : 0;
         return {
           name: item.name,
           score,
           cases: item.cases,
-          baseReward,
-          bonusReward: 0,
-          totalReward: baseReward,
+          baseReward: 0,
+          bonusReward,
+          totalReward: bonusReward,
           qualified: score >= Number(cfg.rankingThreshold || 0)
         };
       }).sort((a,b) => (b.score - a.score) || (getRewardSortIndex(a.name) - getRewardSortIndex(b.name)) || String(a.name).localeCompare(String(b.name), 'zh-Hant'));
@@ -2192,15 +2244,19 @@
         } else {
           row.rank = null;
         }
-        row.bonusReward = row.qualified && row.rank && row.rank <= 3 ? (rankPrizes[row.rank] || 0) : 0;
-        row.totalReward = row.baseReward + row.bonusReward;
       });
       const qualifiedRows = rankings.filter(x => x.qualified);
       const chasingRows = rankings.filter(x => !x.qualified && x.score > 0);
       const zeroRows = rankings.filter(x => x.score <= 0);
       return {
         cfg,
-        pool,
+        pool: totalBonusPool,
+        participationFee,
+        companyBonus,
+        contributionNames,
+        contributionCount: contributionNames.length,
+        participationTotal,
+        totalBonusPool,
         totalPoints,
         eligibleCases: caseResults.filter(x => x.eligible).length,
         qualifiedPeople: rankings.filter(x => x.qualified).length,
@@ -2281,11 +2337,27 @@
         </div>`;
     }
 
+    function getRewardRankBadge(row){
+      if(!row || !row.rank) return '—';
+      if(row.rank === 1) return '🥇';
+      if(row.rank === 2) return '🥈';
+      if(row.rank === 3) return '🥉';
+      return String(row.rank);
+    }
+
+    function buildRewardRankList(rows, emptyText){
+      const list = Array.isArray(rows) ? rows : [];
+      if(!list.length) return `<div class="reward-note">${escapeHtml(emptyText)}</div>`;
+      return `<div class="reward-rank-list">${list.map(row => {
+        const topClass = row.rank === 1 ? 'top1' : row.rank === 2 ? 'top2' : row.rank === 3 ? 'top3' : '';
+        return `<div class="reward-rank-row ${topClass}"><span class="rank">${escapeHtml(getRewardRankBadge(row))}</span><span class="name">${escapeHtml(row.name)}</span><span class="score">${escapeHtml(formatRewardScore(row.score))}分</span></div>`;
+      }).join('')}</div>`;
+    }
+
     function buildRewardPublicPosterMarkup(data){
-      const rankChartHtml = buildRewardColumnChart(
+      const rankListHtml = buildRewardRankList(
         data.publicRows || [],
-        `目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold || 0)}分門檻的排名資料`,
-        { minValue: data.cfg?.rankingThreshold || 0, showStatus: true, legend: false }
+        `目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold || 0)}分門檻的排名資料`
       );
 
       const scoreChartHtml = buildRewardColumnChart(
@@ -2294,8 +2366,7 @@
         { minValue: data.cfg?.rankingThreshold || 0, showStatus: false, legend: false }
       );
 
-      const eggRows = data.zeroRows || [];
-      const eggHtml = eggRows.length ? eggRows.map(row => `<span class="reward-egg-chip">${escapeHtml(row.name)}</span>`).join('') : '<span class="reward-egg-chip">目前全員都已破蛋</span>';
+      const totalText = data.totalPoints > 0 ? `總分:${escapeHtml(formatRewardScore(data.totalPoints))}分` : '總分:-分';
       return `
         <div class="reward-poster-head">
           <div class="reward-poster-title">開發月獎勵排行榜</div>
@@ -2304,18 +2375,21 @@
         <div class="reward-poster-card">
           <div class="reward-poster-card-head">
             <h4>📌 目前排行</h4>
-            <div class="reward-poster-totalbadge">總分:${escapeHtml(formatRewardScore(data.totalPoints))}分</div>
+            <div class="reward-poster-totalbadge">${totalText}</div>
           </div>
-          ${rankChartHtml}
+          ${rankListHtml}
         </div>
         <div class="reward-poster-card">
           <div class="reward-poster-card-head"><h4>📊 目前人員排序</h4></div>
           ${scoreChartHtml}
         </div>
-        <div class="reward-poster-card">
-          <div class="reward-poster-card-head"><h4>🌱 加油破蛋區</h4></div>
-          <div class="reward-egg-zone">${eggHtml}</div>
-          <div class="reward-egg-note">未滿${escapeHtml(formatRewardScore(data.cfg?.rankingThreshold || 0))}分先在排序圖中追分，一起往上衝！</div>
+        <div class="reward-poster-card reward-rule-card">
+          <div class="reward-poster-card-head"><h4>📣 公告辦法</h4></div>
+          <ol class="reward-public-rules">
+            <li>物件須配合團看才可記分。</li>
+            <li>進案即售出，不列入計算。</li>
+          </ol>
+          <div class="reward-public-disclaimer">公告辦法，本公司保有決定取消、終止、修改或暫停之權利。</div>
         </div>
       `;
     }
@@ -2329,9 +2403,8 @@
       };
       setVal('rewardStartDateInput', normalizeRocDate(cfg.startDate || ''));
       setVal('rewardEndDateInput', normalizeRocDate(cfg.endDate || ''));
-      setVal('rewardPrize1Input', cfg.prize1 ?? 3000);
-      setVal('rewardPrize2Input', cfg.prize2 ?? 2000);
-      setVal('rewardPrize3Input', cfg.prize3 ?? 1500);
+      setVal('rewardParticipationFeeInput', cfg.participationFee ?? 500);
+      setVal('rewardCompanyBonusInput', cfg.companyBonus ?? 50000);
       setVal('rewardThresholdInput', cfg.rankingThreshold ?? 0);
 
       const data = computeRewardStats();
@@ -2340,21 +2413,26 @@
       const totalPointsEl = document.getElementById('rewardTotalPointsText');
       if(periodEl) periodEl.textContent = getRewardPeriodLabel(cfg);
       if(totalPointsEl) totalPointsEl.textContent = formatRewardScore(data.totalPoints);
+      const poolEl = document.getElementById('rewardTotalPoolText');
+      const formulaEl = document.getElementById('rewardPoolFormulaText');
+      if(poolEl) poolEl.textContent = formatRewardCurrency(data.totalBonusPool);
+      if(formulaEl){
+        const unpaid = getRewardUnpaidNames();
+        formulaEl.textContent = `(${data.contributionCount}人 × ${formatRewardCurrency(data.participationFee)}) + ${formatRewardCurrency(data.companyBonus)} = ${formatRewardCurrency(data.totalBonusPool)}；未繳款不列入：${unpaid.join('、') || '無'}`;
+      }
 
       const rankingBody = document.getElementById('rewardRankingTableBody');
       if(rankingBody){
         if(!data.rankings.length){
-          rankingBody.innerHTML = '<tr><td colspan="7"><div class="empty">目前沒有可計分的業務</div></td></tr>';
+          rankingBody.innerHTML = '<tr><td colspan="5"><div class="empty">目前沒有可計分的業務</div></td></tr>';
         } else {
           rankingBody.innerHTML = data.rankings.map(row => {
             const badgeClass = row.rank === 1 ? 'top1' : row.rank === 2 ? 'top2' : row.rank === 3 ? 'top3' : '';
-            const rankText = row.rank ? `#${row.rank}` : '—';
+            const rankText = row.rank ? (row.rank <= 3 ? getRewardRankBadge(row) : String(row.rank)) : '—';
             return `<tr>
-              <td><span class="reward-rank-badge ${badgeClass}">${rankText}</span></td>
+              <td><span class="reward-rank-badge ${badgeClass}">${escapeHtml(rankText)}</span></td>
               <td><div class="reward-name-stack"><div>${escapeHtml(row.name)}</div><div class="subline">計分案件 ${escapeHtml(String(row.cases))} 件</div></div></td>
               <td><span class="reward-score">${escapeHtml(formatRewardScore(row.score))}</span></td>
-              <td>${escapeHtml(formatRewardCurrency(row.baseReward))}</td>
-              <td>${escapeHtml(formatRewardCurrency(row.bonusReward))}</td>
               <td>${escapeHtml(formatRewardCurrency(row.totalReward))}</td>
               <td>${row.qualified ? '<span class="reward-pill-yes">可排名</span>' : '<span class="reward-pill-no">未達門檻</span>'}</td>
             </tr>`;
@@ -2405,15 +2483,14 @@
       ensureRewardConfig();
       const startEl = document.getElementById('rewardStartDateInput');
       const endEl = document.getElementById('rewardEndDateInput');
-      const prize1El = document.getElementById('rewardPrize1Input');
-      const prize2El = document.getElementById('rewardPrize2Input');
-      const prize3El = document.getElementById('rewardPrize3Input');
+      const feeEl = document.getElementById('rewardParticipationFeeInput');
+      const companyBonusEl = document.getElementById('rewardCompanyBonusInput');
       const thresholdEl = document.getElementById('rewardThresholdInput');
       state.rewardConfig.startDate = normalizeRocDate(startEl?.value || '');
       state.rewardConfig.endDate = normalizeRocDate(endEl?.value || '');
-      state.rewardConfig.prize1 = Math.max(0, Number(prize1El?.value || 0));
-      state.rewardConfig.prize2 = Math.max(0, Number(prize2El?.value || 0));
-      state.rewardConfig.prize3 = Math.max(0, Number(prize3El?.value || 0));
+      state.rewardConfig.participationFee = Math.max(0, Number(feeEl?.value || 0));
+      state.rewardConfig.companyBonus = Math.max(0, Number(companyBonusEl?.value || 0));
+      state.rewardConfig.unpaidNames = [...REWARD_DEFAULT_UNPAID_NAMES];
       state.rewardConfig.rankingThreshold = Math.max(0, Number(thresholdEl?.value || 0));
       state.rewardConfig.detailFilterPerson = document.getElementById('rewardCaseFilterPerson')?.value || '';
       scheduleAutoSave();
@@ -2430,7 +2507,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>開發月獎勵排行榜</title>
 <style>
-body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);color:#172033}.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 42px}.poster{display:grid;gap:16px;border:8px solid #f4c542;border-radius:32px;padding:16px;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);box-shadow:0 22px 54px rgba(30,64,175,.16)}.reward-poster-head{position:relative;overflow:hidden;padding:24px 22px;border-radius:22px;background:linear-gradient(135deg,#ffffff 0%,#fff7ed 46%,#eff6ff 100%);border:3px solid #38bdf8;box-shadow:0 10px 0 rgba(14,165,233,.16)}.reward-poster-head:before{content:'★';position:absolute;left:18px;top:14px;color:#f59e0b;font-size:24px;transform:rotate(-12deg)}.reward-poster-head:after{content:'★';position:absolute;right:20px;top:18px;color:#22c55e;font-size:22px;transform:rotate(12deg)}.reward-poster-title{position:relative;z-index:1;font-size:38px;font-weight:1000;letter-spacing:2px;color:#0f172a;text-align:center;text-shadow:2px 2px 0 #fde68a}.reward-poster-sub{position:relative;z-index:1;margin-top:10px;text-align:center;color:#0369a1;font-size:17px;font-weight:900}.reward-poster-card{border:3px solid #93c5fd;border-radius:24px;padding:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);box-shadow:0 12px 0 rgba(147,197,253,.18)}.reward-poster-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.reward-poster-card h4{margin:0;font-size:21px;color:#0f172a;font-weight:1000;letter-spacing:.5px}.reward-poster-totalbadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#facc15 0%,#fb923c 100%);color:#7c2d12;border:2px solid #fff7ed;font-size:17px;font-weight:1000;box-shadow:0 6px 16px rgba(251,146,60,.28)}.reward-chart-wrap{overflow-x:auto;padding-bottom:4px}.reward-column-chart{display:grid;gap:8px;min-width:480px}.reward-chart-svg{display:block;width:100%;height:auto}.reward-chart-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.reward-chart-legend span{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#f8fafc;border:1px solid #dbeafe;font-size:12px;font-weight:900;color:#475569}.reward-chart-legend i{display:inline-block;width:12px;height:12px;border-radius:999px}.reward-egg-zone{display:flex;flex-wrap:wrap;gap:10px}.reward-egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}.reward-note,.reward-egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}@media(max-width:980px){.reward-poster-title{font-size:30px}.reward-poster-card-head{align-items:flex-start}}
+body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);color:#172033}.wrap{max-width:1120px;margin:0 auto;padding:28px 18px 42px}.poster{display:grid;gap:16px;border:8px solid #f4c542;border-radius:32px;padding:16px;background:linear-gradient(135deg,#fff7cf 0%,#e0f2fe 48%,#dcfce7 100%);box-shadow:0 22px 54px rgba(30,64,175,.16)}.reward-poster-head{position:relative;overflow:hidden;padding:24px 22px;border-radius:22px;background:linear-gradient(135deg,#ffffff 0%,#fff7ed 46%,#eff6ff 100%);border:3px solid #38bdf8;box-shadow:0 10px 0 rgba(14,165,233,.16)}.reward-poster-head:before{content:'★';position:absolute;left:18px;top:14px;color:#f59e0b;font-size:24px;transform:rotate(-12deg)}.reward-poster-head:after{content:'★';position:absolute;right:20px;top:18px;color:#22c55e;font-size:22px;transform:rotate(12deg)}.reward-poster-title{position:relative;z-index:1;font-size:38px;font-weight:1000;letter-spacing:2px;color:#0f172a;text-align:center;text-shadow:2px 2px 0 #fde68a}.reward-poster-sub{position:relative;z-index:1;margin-top:10px;text-align:center;color:#0369a1;font-size:17px;font-weight:900}.reward-poster-card{border:3px solid #93c5fd;border-radius:24px;padding:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);box-shadow:0 12px 0 rgba(147,197,253,.18)}.reward-poster-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.reward-poster-card h4{margin:0;font-size:21px;color:#0f172a;font-weight:1000;letter-spacing:.5px}.reward-poster-totalbadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#facc15 0%,#fb923c 100%);color:#7c2d12;border:2px solid #fff7ed;font-size:17px;font-weight:1000;box-shadow:0 6px 16px rgba(251,146,60,.28)}.reward-chart-wrap{overflow-x:auto;padding-bottom:4px}.reward-column-chart{display:grid;gap:8px;min-width:480px}.reward-chart-svg{display:block;width:100%;height:auto}.reward-chart-legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.reward-chart-legend span{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:#f8fafc;border:1px solid #dbeafe;font-size:12px;font-weight:900;color:#475569}.reward-chart-legend i{display:inline-block;width:12px;height:12px;border-radius:999px}.reward-egg-zone{display:flex;flex-wrap:wrap;gap:10px}.reward-egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}.reward-note,.reward-egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}.reward-rank-list{display:grid;gap:10px}.reward-rank-row{display:grid;grid-template-columns:72px 1fr 110px;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;border:2px solid #dbeafe;background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}.reward-rank-row.top1{background:linear-gradient(90deg,#fff4b5 0%,#fffbe6 100%);border-color:#facc15;box-shadow:0 10px 24px rgba(250,204,21,.22)}.reward-rank-row.top2{background:linear-gradient(90deg,#edf2f7 0%,#ffffff 100%);border-color:#cbd5e1}.reward-rank-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%);border-color:#fdba74}.reward-rank-row .rank{font-size:24px;font-weight:1000;text-align:center;color:#0f172a}.reward-rank-row .name{font-size:19px;font-weight:1000;color:#111827}.reward-rank-row .score{font-size:18px;font-weight:1000;color:#1d4ed8;text-align:right}.reward-public-rules{margin:0;padding-left:22px;color:#334155;line-height:1.9;font-weight:900}.reward-public-disclaimer{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#92400e;font-size:13px;font-weight:900;line-height:1.6}@media(max-width:980px){.reward-poster-title{font-size:30px}.reward-poster-card-head{align-items:flex-start}.reward-rank-row{grid-template-columns:58px 1fr 90px}}
 </style>
 </head>
 <body>
@@ -3984,7 +4061,7 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
     if(rewardExportPublicBtn) rewardExportPublicBtn.onclick = exportRewardPublicHtml;
     const rewardExportPublicBtnBottom = document.getElementById('rewardExportPublicBtnBottom');
     if(rewardExportPublicBtnBottom) rewardExportPublicBtnBottom.onclick = exportRewardPublicHtml;
-    ['rewardStartDateInput','rewardEndDateInput','rewardPrize1Input','rewardPrize2Input','rewardPrize3Input','rewardThresholdInput'].forEach(id => {
+    ['rewardStartDateInput','rewardEndDateInput','rewardParticipationFeeInput','rewardCompanyBonusInput','rewardThresholdInput'].forEach(id => {
       const el = document.getElementById(id);
       if(!el) return;
       el.addEventListener('change', readRewardConfigFromInputs);
