@@ -24,12 +24,23 @@
   .egg-zone{display:flex;flex-wrap:wrap;gap:10px}
   .egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}
   .note,.egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}
+
+  .rank-list{display:grid;gap:10px}
+  .rank-row{display:grid;grid-template-columns:72px 1fr 110px;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;border:2px solid #dbeafe;background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
+  .rank-row.top1{background:linear-gradient(90deg,#fff4b5 0%,#fffbe6 100%);border-color:#facc15;box-shadow:0 10px 24px rgba(250,204,21,.22)}
+  .rank-row.top2{background:linear-gradient(90deg,#edf2f7 0%,#ffffff 100%);border-color:#cbd5e1}
+  .rank-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%);border-color:#fdba74}
+  .rank-row .rank{font-size:24px;font-weight:1000;text-align:center;color:#0f172a}
+  .rank-row .name{font-size:19px;font-weight:1000;color:#111827}
+  .rank-row .score{font-size:18px;font-weight:1000;color:#1d4ed8;text-align:right}
+  .public-rules{margin:0;padding-left:22px;color:#334155;line-height:1.9;font-weight:900}
+  .public-disclaimer{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#92400e;font-size:13px;font-weight:900;line-height:1.6}
   .statusbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:14px;font-size:13px;font-weight:800;color:#475569}
   .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;border:1px solid #cbd5e1;background:#fff}
   .badge.ok{background:#dff7e6;color:#166534;border-color:#bbf7d0}.badge.warn{background:#ffe8c7;color:#92400e;border-color:#fed7aa}.badge.err{background:#ffd9d9;color:#b91c1c;border-color:#fecaca}
   .setup{display:none;margin-bottom:16px;border:2px dashed #f59e0b;border-radius:20px;background:#fffdf4;padding:14px;box-shadow:0 10px 25px rgba(245,158,11,.14)}
   .setup.show{display:block}.setup h3{margin:0 0 10px;font-size:18px}.setup-grid{display:grid;grid-template-columns:1fr 1.5fr auto auto;gap:8px;align-items:center}.setup input{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font:inherit}.setup button{border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:900;cursor:pointer}.btn{background:#2563eb;color:#fff}.btn2{background:#eef2ff;color:#3730a3}.small{font-size:12px;color:#64748b;line-height:1.7;margin-top:8px}
-  @media(max-width:980px){.poster-title{font-size:30px}.poster-card-head{align-items:flex-start}.setup-grid{grid-template-columns:1fr}.setup button{width:100%}}
+  @media(max-width:980px){.poster-title{font-size:30px}.poster-card-head{align-items:flex-start}.rank-row{grid-template-columns:58px 1fr 90px}.setup-grid{grid-template-columns:1fr}.setup button{width:100%}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -52,7 +63,7 @@
     <span id="nextUpdateBadge" class="badge">每30秒自動更新｜24秒後刷新</span>
   </div>
 
-  <div class="poster" id="poster"><div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜115/3/1 ～ 115/6/30</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">總分:23.5分</div></div><div class="note">目前尚無符合6分門檻的排名資料</div></div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div><div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 1510 334" role="img" aria-label="柱狀圖"><g><line x1="44" y1="278.0" x2="1494" y2="278.0" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="282.0" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">0</text></g><g><line x1="44" y1="191.3" x2="1494" y2="191.3" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="195.3" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">2分</text></g><g><line x1="44" y1="104.7" x2="1494" y2="104.7" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="108.7" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">4分</text></g><g><line x1="44" y1="18.0" x2="1494" y2="18.0" stroke="#cbd5e1" stroke-width="1"></line><text x="36" y="22.0" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">6分</text></g><line x1="44" y1="18" x2="44" y2="278" stroke="#94a3b8" stroke-width="1.5"></line><line x1="44" y1="278" x2="1494" y2="278" stroke="#94a3b8" stroke-width="1.5"></line><g><rect x="59.1" y="83.0" width="27.8" height="195.0" fill="#e11d48" opacity="0.96"></rect><text x="73.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">張小曼</text></g><g><rect x="117.1" y="104.7" width="27.8" height="173.3" fill="#f97316" opacity="0.96"></rect><text x="131.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳帝元</text></g><g><rect x="175.1" y="148.0" width="27.8" height="130.0" fill="#eab308" opacity="0.96"></rect><text x="189.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">余沛臻</text></g><g><rect x="233.1" y="169.7" width="27.8" height="108.3" fill="#22c55e" opacity="0.96"></rect><text x="247.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王妤宸</text></g><g><rect x="291.1" y="191.3" width="27.8" height="86.7" fill="#06b6d4" opacity="0.96"></rect><text x="305.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">阮氏金水</text></g><g><rect x="349.1" y="202.2" width="27.8" height="75.8" fill="#3b82f6" opacity="0.96"></rect><text x="363.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林顯昌</text></g><g><rect x="407.1" y="202.2" width="27.8" height="75.8" fill="#6366f1" opacity="0.96"></rect><text x="421.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林姿岑</text></g><g><rect x="465.1" y="213.0" width="27.8" height="65.0" fill="#8b5cf6" opacity="0.96"></rect><text x="479.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳信良</text></g><g><rect x="523.1" y="234.7" width="27.8" height="43.3" fill="#ec4899" opacity="0.96"></rect><text x="537.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">黃文成</text></g><g><rect x="581.1" y="256.3" width="27.8" height="21.7" fill="#14b8a6" opacity="0.96"></rect><text x="595.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">李安安</text></g><g><rect x="639.1" y="256.3" width="27.8" height="21.7" fill="#84cc16" opacity="0.96"></rect><text x="653.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">林俊嘉</text></g><g><rect x="697.1" y="256.3" width="27.8" height="21.7" fill="#f43f5e" opacity="0.96"></rect><text x="711.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">吳佩玲</text></g><g><rect x="755.1" y="278.0" width="27.8" height="0.0" fill="#e11d48" opacity="0.96"></rect><text x="769.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">謝馨儀</text></g><g><rect x="813.1" y="278.0" width="27.8" height="0.0" fill="#f97316" opacity="0.96"></rect><text x="827.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">蔡宇育</text></g><g><rect x="871.1" y="278.0" width="27.8" height="0.0" fill="#eab308" opacity="0.96"></rect><text x="885.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">柯育婷</text></g><g><rect x="929.1" y="278.0" width="27.8" height="0.0" fill="#22c55e" opacity="0.96"></rect><text x="943.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">陳珮菁</text></g><g><rect x="987.1" y="278.0" width="27.8" height="0.0" fill="#06b6d4" opacity="0.96"></rect><text x="1001.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王俞云</text></g><g><rect x="1045.1" y="278.0" width="27.8" height="0.0" fill="#3b82f6" opacity="0.96"></rect><text x="1059.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">葉翊緁</text></g><g><rect x="1103.1" y="278.0" width="27.8" height="0.0" fill="#6366f1" opacity="0.96"></rect><text x="1117.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">郭建佑</text></g><g><rect x="1161.1" y="278.0" width="27.8" height="0.0" fill="#8b5cf6" opacity="0.96"></rect><text x="1175.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">田庭宇</text></g><g><rect x="1219.1" y="278.0" width="27.8" height="0.0" fill="#ec4899" opacity="0.96"></rect><text x="1233.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">買淑玲</text></g><g><rect x="1277.1" y="278.0" width="27.8" height="0.0" fill="#14b8a6" opacity="0.96"></rect><text x="1291.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">劉勝仁</text></g><g><rect x="1335.1" y="278.0" width="27.8" height="0.0" fill="#84cc16" opacity="0.96"></rect><text x="1349.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">宋喜輝</text></g><g><rect x="1393.1" y="278.0" width="27.8" height="0.0" fill="#f43f5e" opacity="0.96"></rect><text x="1407.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">業翊緁</text></g><g><rect x="1451.1" y="278.0" width="27.8" height="0.0" fill="#e11d48" opacity="0.96"></rect><text x="1465.0" y="314" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">王若芸</text></g></svg></div></div></div><div class="poster-card"><div class="poster-card-head"><h4>🌱 加油破蛋區</h4></div><div class="egg-zone"><span class="egg-chip">謝馨儀</span><span class="egg-chip">蔡宇育</span><span class="egg-chip">柯育婷</span><span class="egg-chip">陳珮菁</span><span class="egg-chip">王俞云</span><span class="egg-chip">葉翊緁</span><span class="egg-chip">郭建佑</span><span class="egg-chip">田庭宇</span><span class="egg-chip">買淑玲</span><span class="egg-chip">劉勝仁</span><span class="egg-chip">宋喜輝</span><span class="egg-chip">業翊緁</span><span class="egg-chip">王若芸</span></div><div class="egg-note">未滿6分先在排序圖中追分，一起往上衝！</div></div></div>
+  <div class="poster" id="poster"><div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">資料讀取中</div></div><div class="poster-card"><div class="note">連線後會自動更新排行榜。</div></div></div>
 </div>
 
 <script>
@@ -75,6 +86,9 @@ let nextAt = 0;
 
 const REWARD_DEFAULT_ROSTER = ['余沛臻','林顯昌','林姿岑','張小曼','李安安','謝馨儀','蔡宇育','柯育婷','陳珮菁','林俊嘉','王俞云','陳帝元','黃文成','陳信良','葉翊緁','郭建佑','阮氏金水','田庭宇','買淑玲','劉勝仁','宋喜輝','吳佩玲'];
 const REWARD_AUTO_EXCLUDED_NAMES = ['王啟山','林玉環'];
+const REWARD_OWNER_NAMES = ['王啟山','林玉環'];
+const REWARD_DEFAULT_UNPAID_NAMES = ['王妤宸','王若芸'];
+const REWARD_EXTERNAL_COUNTY_KEYWORDS = ['台北市','臺北市','新北市','桃園市','新竹市','新竹縣','苗栗縣','台中市','臺中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','高雄市','屏東縣','宜蘭縣','花蓮縣','台東縣','臺東縣','澎湖縣','基隆市','金門縣','連江縣'];
 const DEVELOPER_MASTER_NAMES = ['王啟山','柯育婷','林玉環','楊巧甄','王若芸','田庭宇','王妤宸','陳帝元','王俞云','買淑玲','余沛臻','林俊嘉','林顯昌','黃文成','林姿岑','劉勝仁','張小曼','陳信良','李安安','宋喜輝','謝馨儀','吳佩玲','郭建佑','葉翊緁','蔡宇育','陳珮菁','阮金水','阮氏金水'];
 const DEVELOPER_SPECIAL_ALIAS_MAP = {'和小曼':'張小曼','阮金水':'阮氏金水'};
 const DEVELOPER_ALIAS_GROUPS = (() => {
@@ -181,8 +195,14 @@ function splitDeveloperNames(raw){
 }
 function getRewardDeveloperList(raw){ return [...new Set(splitDeveloperNames(raw).map(canonicalDeveloperName).filter(Boolean))]; }
 function isRewardAutoExcludedName(name){ return REWARD_AUTO_EXCLUDED_NAMES.includes(canonicalDeveloperName(name)); }
+function getRewardUnpaidNames(){ ensureRewardConfig(); const source = Array.isArray(state.rewardConfig.unpaidNames) && state.rewardConfig.unpaidNames.length ? state.rewardConfig.unpaidNames : REWARD_DEFAULT_UNPAID_NAMES; return [...new Set(source.map(canonicalDeveloperName).filter(Boolean))]; }
+function isRewardUnpaidName(name){ return getRewardUnpaidNames().includes(canonicalDeveloperName(name)); }
+function getRewardContributionNames(){ const names = [...new Set([...getRewardRosterNames(), ...REWARD_OWNER_NAMES].map(canonicalDeveloperName).filter(Boolean))]; return names.filter(name => !isRewardUnpaidName(name)); }
+function isRewardExternalCountyCase(c){ const text = String(caseNameOf(c)||'').replace(/臺/g,'台'); return REWARD_EXTERNAL_COUNTY_KEYWORDS.some(place => text.includes(String(place).replace(/臺/g,'台'))); }
+function isRewardInstantSoldCase(c){ const text = [caseNameOf(c), fieldText(c,'caseName'), c?.caseNote, c?.note, c?.memo, c?.remark].map(x => String(x||'')).join(' '); return /(進案即售出|進案即成交|即售出|即成交)/.test(text); }
+function formatRewardCurrency(value){ const num = Math.round(Number(value)||0); return '$' + num.toLocaleString('zh-Hant'); }
 function ensureRewardConfig(){
-  const defaults = { startDate:'115/3/1', endDate:'115/6/30', prize1:3000, prize2:2000, prize3:1500, rankingThreshold:6, roster:REWARD_DEFAULT_ROSTER, detailFilterPerson:'全部人員' };
+  const defaults = { startDate:'115/3/1', endDate:'115/6/30', prize1:3000, prize2:2000, prize3:1500, participationFee:500, companyBonus:50000, unpaidNames:REWARD_DEFAULT_UNPAID_NAMES, rankingThreshold:6, roster:REWARD_DEFAULT_ROSTER, detailFilterPerson:'全部人員' };
   if(!state.rewardConfig || typeof state.rewardConfig !== 'object') state.rewardConfig = {};
   Object.keys(defaults).forEach(k => { if(state.rewardConfig[k] === undefined || state.rewardConfig[k] === null || state.rewardConfig[k] === '') state.rewardConfig[k] = defaults[k]; });
 }
@@ -252,6 +272,8 @@ function getRewardCaseResult(c, cfg){
   const reasonList = [];
   if(!entryDate) reasonList.push('未填進案日期');
   if(entryDate && !isRocDateBetween(entryDate,cfg.startDate,cfg.endDate)) reasonList.push('不在統計期間');
+  if(isRewardExternalCountyCase(c)) reasonList.push('外縣市不列入計分');
+  if(isRewardInstantSoldCase(c)) reasonList.push('進案即售出不列入計算');
   if(!developers.length) reasonList.push('未填開發業務');
   if(!contractType) reasonList.push('未判斷契種');
   if(!getMinEntrustMonthsQualified(c,3)) reasonList.push('委託未滿3個月');
@@ -290,13 +312,19 @@ function computeRewardStats(){
     if(Number(item.score||0)>0) t.cases += 1;
   }));
   const totalPoints = [...personMap.values()].reduce((sum,item)=>sum+Number(item.score||0),0);
+  const participationFee = Math.max(0, Number(cfg.participationFee || 0));
+  const companyBonus = Math.max(0, Number(cfg.companyBonus || 0));
+  const contributionNames = getRewardContributionNames();
+  const participationTotal = contributionNames.length * participationFee;
+  const totalBonusPool = participationTotal + companyBonus;
   const rankings = [...personMap.values()].map(item => {
     const score = Math.round((Number(item.score)||0)*100)/100;
-    return { name:item.name, score, cases:item.cases, qualified:score >= Number(cfg.rankingThreshold || 0) };
+    const bonusReward = totalPoints > 0 ? (score / totalPoints) * totalBonusPool : 0;
+    return { name:item.name, score, cases:item.cases, qualified:score >= Number(cfg.rankingThreshold || 0), bonusReward, totalReward:bonusReward };
   }).sort((a,b)=>(b.score-a.score)||(getRewardSortIndex(a.name)-getRewardSortIndex(b.name))||String(a.name).localeCompare(String(b.name),'zh-Hant'));
   let displayRank = 0, previousQualifiedScore = null;
   rankings.forEach(row => { if(row.qualified){ if(previousQualifiedScore===null || row.score!==previousQualifiedScore) displayRank += 1; row.rank = displayRank; previousQualifiedScore = row.score; } else row.rank = null; });
-  return { cfg, totalPoints, rankings, publicRows:rankings.filter(x=>x.qualified).map(row=>({rank:row.rank,name:row.name,score:row.score})), scoreRows:rankings.map(row=>({rank:row.rank,name:row.name,score:row.score,qualified:row.qualified})), zeroRows:rankings.filter(x=>x.score<=0), eligibleCases:caseResults.filter(x=>x.eligible).length };
+  return { cfg, totalPoints, participationFee, companyBonus, contributionNames, contributionCount:contributionNames.length, participationTotal, totalBonusPool, rankings, publicRows:rankings.filter(x=>x.qualified).map(row=>({rank:row.rank,name:row.name,score:row.score})), scoreRows:rankings.map(row=>({rank:row.rank,name:row.name,score:row.score,qualified:row.qualified})), zeroRows:rankings.filter(x=>x.score<=0), eligibleCases:caseResults.filter(x=>x.eligible).length };
 }
 function getRewardChartMax(rows,minValue){ const scores=(Array.isArray(rows)?rows:[]).map(row=>Number(row.score||0)).filter(Number.isFinite); const maxScore=Math.max(Number(minValue||0),...scores,0); return Math.max(2,Math.ceil(maxScore/2)*2); }
 function getRewardChartColor(index){ const palette=['#e11d48','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6','#84cc16','#f43f5e']; return palette[index % palette.length]; }
@@ -319,12 +347,13 @@ function buildRewardColumnChart(rows, emptyText, options={}){
   const axisSvg=`<line x1="${left}" y1="${top}" x2="${left}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line><line x1="${left}" y1="${top+chartHeight}" x2="${left+plotWidth}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line>`;
   return `<div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="柱狀圖">${gridSvg}${axisSvg}${itemsSvg}</svg></div></div>`;
 }
+function getRewardRankBadge(row){ if(!row || !row.rank) return '—'; if(row.rank===1) return '🥇'; if(row.rank===2) return '🥈'; if(row.rank===3) return '🥉'; return String(row.rank); }
+function buildRewardRankList(rows, emptyText){ const list=Array.isArray(rows)?rows:[]; if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`; return `<div class="rank-list">${list.map(row=>{ const topClass=row.rank===1?'top1':row.rank===2?'top2':row.rank===3?'top3':''; return `<div class="rank-row ${topClass}"><span class="rank">${escapeHtml(getRewardRankBadge(row))}</span><span class="name">${escapeHtml(row.name)}</span><span class="score">${escapeHtml(formatRewardScore(row.score))}分</span></div>`; }).join('')}</div>`; }
 function buildPosterMarkup(data){
-  const rankChartHtml=buildRewardColumnChart(data.publicRows||[],`目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold||0)}分門檻的排名資料`,{minValue:data.cfg?.rankingThreshold||0,showStatus:true});
+  const rankListHtml=buildRewardRankList(data.publicRows||[],`目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold||0)}分門檻的排名資料`);
   const scoreChartHtml=buildRewardColumnChart(data.scoreRows||[],'目前尚無人員分數資料',{minValue:data.cfg?.rankingThreshold||0,showStatus:false});
-  const eggRows=data.zeroRows||[];
-  const eggHtml=eggRows.length ? eggRows.map(row=>`<span class="egg-chip">${escapeHtml(row.name)}</span>`).join('') : '<span class="egg-chip">目前全員都已破蛋</span>';
-  return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">總分:${escapeHtml(formatRewardScore(data.totalPoints))}分</div></div>${rankChartHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>🌱 加油破蛋區</h4></div><div class="egg-zone">${eggHtml}</div><div class="egg-note">未滿${escapeHtml(formatRewardScore(data.cfg?.rankingThreshold||0))}分先在排序圖中追分，一起往上衝！</div></div>`;
+  const totalText=data.totalPoints>0?`總分:${escapeHtml(formatRewardScore(data.totalPoints))}分`:'總分:-分';
+  return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">${totalText}</div></div>${rankListHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div><div class="poster-card rule-card"><div class="poster-card-head"><h4>📣 公告辦法</h4></div><ol class="public-rules"><li>物件須配合團看才可記分。</li><li>進案即售出，不列入計算。</li></ol><div class="public-disclaimer">公告辦法，本公司保有決定取消、終止、修改或暫停之權利。</div></div>`;
 }
 function setStatus(kind,text){ const el=document.getElementById('statusBadge'); el.className='badge '+kind; el.textContent=text; }
 function fmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); if(Number.isNaN(d.getTime())) return '—'; const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
