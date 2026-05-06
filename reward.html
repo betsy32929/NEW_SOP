@@ -26,21 +26,35 @@
   .note,.egg-note{margin-top:10px;font-size:14px;color:#475569;line-height:1.8;font-weight:800}
 
   .rank-list{display:grid;gap:10px}
-  .rank-row{display:grid;grid-template-columns:72px 1fr 110px;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;border:2px solid #dbeafe;background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
+  .rank-row{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;padding:12px 14px;border-radius:18px;border:2px solid #dbeafe;background:linear-gradient(90deg,#ffffff 0%,#f8fafc 100%)}
   .rank-row.top1{background:linear-gradient(90deg,#fff4b5 0%,#fffbe6 100%);border-color:#facc15;box-shadow:0 10px 24px rgba(250,204,21,.22)}
   .rank-row.top2{background:linear-gradient(90deg,#edf2f7 0%,#ffffff 100%);border-color:#cbd5e1}
   .rank-row.top3{background:linear-gradient(90deg,#ffdfc8 0%,#fff7f1 100%);border-color:#fdba74}
   .rank-row .rank{font-size:24px;font-weight:1000;text-align:center;color:#0f172a}
   .rank-row .name{font-size:19px;font-weight:1000;color:#111827}
   .rank-row .score{font-size:18px;font-weight:1000;color:#1d4ed8;text-align:right}
+  .rule-card{background:linear-gradient(180deg,#ffffff 0%,#fffaf0 100%)}
+  .rule-intro{display:grid;gap:8px;margin-bottom:12px}
+  .rule-main{padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fef3c7 0%,#fff7ed 100%);border:2px solid #fbbf24;color:#7c2d12;font-size:16px;font-weight:1000;line-height:1.7}
+  .rule-sub{padding:10px 12px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:13px;font-weight:900;line-height:1.7}
+  .rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .rule-section{border-radius:18px;padding:12px;border:2px solid #dbeafe;background:#fff;box-shadow:0 8px 18px rgba(15,23,42,.06)}
+  .rule-section.include{border-color:#86efac;background:linear-gradient(180deg,#f0fdf4 0%,#ffffff 100%)}
+  .rule-section.exclude{border-color:#fca5a5;background:linear-gradient(180deg,#fff1f2 0%,#ffffff 100%)}
+  .rule-section-title{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:15px;font-weight:1000;margin-bottom:8px}
+  .rule-section.include .rule-section-title{background:#dcfce7;color:#166534;border:1px solid #86efac}
+  .rule-section.exclude .rule-section-title{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
   .public-rules{margin:0;padding-left:22px;color:#334155;line-height:1.9;font-weight:900}
-  .public-disclaimer{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#92400e;font-size:13px;font-weight:900;line-height:1.6}
+  .public-rules li{margin:4px 0}
+  .rule-note{display:block;margin-top:6px;padding:8px 10px;border-radius:12px;background:#fff7ed;border:1px dashed #fb923c;color:#9a3412;font-size:12px;line-height:1.65;font-weight:900}
+  .public-disclaimer{margin-top:12px;padding:11px 13px;border-radius:14px;background:#fff7ed;border:2px solid #fed7aa;color:#92400e;font-size:13px;font-weight:1000;line-height:1.6;text-align:center}
+  @media(max-width:980px){.rule-grid{grid-template-columns:1fr}}
   .statusbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:14px;font-size:13px;font-weight:800;color:#475569}
   .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:999px;border:1px solid #cbd5e1;background:#fff}
   .badge.ok{background:#dff7e6;color:#166534;border-color:#bbf7d0}.badge.warn{background:#ffe8c7;color:#92400e;border-color:#fed7aa}.badge.err{background:#ffd9d9;color:#b91c1c;border-color:#fecaca}
   .setup{display:none;margin-bottom:16px;border:2px dashed #f59e0b;border-radius:20px;background:#fffdf4;padding:14px;box-shadow:0 10px 25px rgba(245,158,11,.14)}
   .setup.show{display:block}.setup h3{margin:0 0 10px;font-size:18px}.setup-grid{display:grid;grid-template-columns:1fr 1.5fr auto auto;gap:8px;align-items:center}.setup input{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;font:inherit}.setup button{border:0;border-radius:12px;padding:10px 14px;font:inherit;font-weight:900;cursor:pointer}.btn{background:#2563eb;color:#fff}.btn2{background:#eef2ff;color:#3730a3}.small{font-size:12px;color:#64748b;line-height:1.7;margin-top:8px}
-  @media(max-width:980px){.poster-title{font-size:30px}.poster-card-head{align-items:flex-start}.rank-row{grid-template-columns:58px 1fr 90px}.setup-grid{grid-template-columns:1fr}.setup button{width:100%}}
+  @media(max-width:980px){.poster-title{font-size:30px}.poster-card-head{align-items:flex-start}.rank-row{grid-template-columns:58px 1fr}.setup-grid{grid-template-columns:1fr}.setup button{width:100%}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -197,12 +211,13 @@ function getRewardDeveloperList(raw){ return [...new Set(splitDeveloperNames(raw
 function isRewardAutoExcludedName(name){ return REWARD_AUTO_EXCLUDED_NAMES.includes(canonicalDeveloperName(name)); }
 function getRewardUnpaidNames(){ ensureRewardConfig(); const source = Array.isArray(state.rewardConfig.unpaidNames) && state.rewardConfig.unpaidNames.length ? state.rewardConfig.unpaidNames : REWARD_DEFAULT_UNPAID_NAMES; return [...new Set(source.map(canonicalDeveloperName).filter(Boolean))]; }
 function isRewardUnpaidName(name){ return getRewardUnpaidNames().includes(canonicalDeveloperName(name)); }
-function getRewardContributionNames(){ const names = [...new Set([...getRewardRosterNames(), ...REWARD_OWNER_NAMES].map(canonicalDeveloperName).filter(Boolean))]; return names.filter(name => !isRewardUnpaidName(name)); }
+function getRewardDefaultContributionNames(){ const names = [...new Set([...getRewardRosterNames(), ...REWARD_OWNER_NAMES].map(canonicalDeveloperName).filter(Boolean))]; return names.filter(name => !isRewardUnpaidName(name)); }
+function getRewardContributionNames(){ ensureRewardConfig(); const configured = Array.isArray(state.rewardConfig.contributionNames) ? [...new Set(state.rewardConfig.contributionNames.map(canonicalDeveloperName).filter(Boolean))] : []; const hasCustomList = !!state.rewardConfig.contributionNamesCustom || configured.length > 0; return hasCustomList ? configured : getRewardDefaultContributionNames(); }
 function isRewardExternalCountyCase(c){ const text = String(caseNameOf(c)||'').replace(/臺/g,'台'); return REWARD_EXTERNAL_COUNTY_KEYWORDS.some(place => text.includes(String(place).replace(/臺/g,'台'))); }
 function isRewardInstantSoldCase(c){ const text = [caseNameOf(c), fieldText(c,'caseName'), c?.caseNote, c?.note, c?.memo, c?.remark].map(x => String(x||'')).join(' '); return /(進案即售出|進案即成交|即售出|即成交)/.test(text); }
 function formatRewardCurrency(value){ const num = Math.round(Number(value)||0); return '$' + num.toLocaleString('zh-Hant'); }
 function ensureRewardConfig(){
-  const defaults = { startDate:'115/3/1', endDate:'115/6/30', prize1:3000, prize2:2000, prize3:1500, participationFee:500, companyBonus:50000, unpaidNames:REWARD_DEFAULT_UNPAID_NAMES, rankingThreshold:6, roster:REWARD_DEFAULT_ROSTER, detailFilterPerson:'全部人員' };
+  const defaults = { startDate:'115/3/1', endDate:'115/6/30', prize1:3000, prize2:2000, prize3:1500, participationFee:500, companyBonus:5000, unpaidNames:REWARD_DEFAULT_UNPAID_NAMES, thresholdBonus:1000, contributionNames:[], contributionNamesCustom:false, rankingThreshold:6, roster:REWARD_DEFAULT_ROSTER, detailFilterPerson:'全部人員' };
   if(!state.rewardConfig || typeof state.rewardConfig !== 'object') state.rewardConfig = {};
   Object.keys(defaults).forEach(k => { if(state.rewardConfig[k] === undefined || state.rewardConfig[k] === null || state.rewardConfig[k] === '') state.rewardConfig[k] = defaults[k]; });
 }
@@ -348,12 +363,12 @@ function buildRewardColumnChart(rows, emptyText, options={}){
   return `<div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="柱狀圖">${gridSvg}${axisSvg}${itemsSvg}</svg></div></div>`;
 }
 function getRewardRankBadge(row){ if(!row || !row.rank) return '—'; if(row.rank===1) return '🥇'; if(row.rank===2) return '🥈'; if(row.rank===3) return '🥉'; return String(row.rank); }
-function buildRewardRankList(rows, emptyText){ const list=Array.isArray(rows)?rows:[]; if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`; return `<div class="rank-list">${list.map(row=>{ const topClass=row.rank===1?'top1':row.rank===2?'top2':row.rank===3?'top3':''; return `<div class="rank-row ${topClass}"><span class="rank">${escapeHtml(getRewardRankBadge(row))}</span><span class="name">${escapeHtml(row.name)}</span><span class="score">${escapeHtml(formatRewardScore(row.score))}分</span></div>`; }).join('')}</div>`; }
+function buildRewardRankList(rows, emptyText){ const list=Array.isArray(rows)?rows:[]; if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`; return `<div class="rank-list">${list.map(row=>{ const topClass=row.rank===1?'top1':row.rank===2?'top2':row.rank===3?'top3':''; return `<div class="rank-row ${topClass}"><span class="rank">${escapeHtml(getRewardRankBadge(row))}</span><span class="name">${escapeHtml(row.name)}</span></div>`; }).join('')}</div>`; }
 function buildPosterMarkup(data){
   const rankListHtml=buildRewardRankList(data.publicRows||[],`目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold||0)}分門檻的排名資料`);
   const scoreChartHtml=buildRewardColumnChart(data.scoreRows||[],'目前尚無人員分數資料',{minValue:data.cfg?.rankingThreshold||0,showStatus:false});
   const totalText=data.totalPoints>0?`總分:${escapeHtml(formatRewardScore(data.totalPoints))}分`:'總分:-分';
-  return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">${totalText}</div></div>${rankListHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div><div class="poster-card rule-card"><div class="poster-card-head"><h4>📣 公告辦法</h4></div><ol class="public-rules"><li>物件須配合團看才可記分。</li><li>進案即售出，不列入計算。</li></ol><div class="public-disclaimer">公告辦法，本公司保有決定取消、終止、修改或暫停之權利。</div></div>`;
+  return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div><div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">${totalText}</div></div>${rankListHtml}</div><div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div><div class="poster-card rule-card"><div class="poster-card-head"><h4>📣 公告辦法</h4></div><div class="rule-intro"><div class="rule-main">開發物件，必須符合以下條件…</div><div class="rule-sub">進案收件日期以資料齊全為準，含進案表、契約、謄本。</div></div><div class="rule-grid"><div class="rule-section include"><div class="rule-section-title">✅ 列入計算</div><ol class="public-rules"><li>開發進案：台南市為主、高雄到路竹。</li><li>物件2個禮拜內需配合公司團看。<span class="rule-note">不方便多人團看，請自行安排小團看，並在照片上編輯：1.案名 2.地址 3.日期。</span></li><li>委託期限：3個月(含)起，才可列入計算。</li><li>一般約改專約可列入計算。</li><li>專簽物件服務費不足3%，以半件計算。</li><li>底價300萬(以下)以半件計算。</li><li>同批物件計1件、建商餘屋算1件。</li></ol></div><div class="rule-section exclude"><div class="rule-section-title">🚫 不列入計算</div><ol class="public-rules"><li>產權不清、授權不齊。</li><li>沒進案程序直接成交不列入計算。</li><li>缺資料不列入計算：缺授權書、沒契約、缺照片、缺格局圖。</li><li>原物件續約不論專約一般約，不列入計算。</li><li>出售持分物件，不列入計算。</li><li>服務費少於3%，不列入計算。</li><li>進案1個月內它店售出，不列入計算分數。</li><li>租件、預售屋不列入計算。</li></ol></div></div><div class="public-disclaimer">公告辦法，本公司保有決定取消、終止、修改或暫停之權利。</div></div>`;
 }
 function setStatus(kind,text){ const el=document.getElementById('statusBadge'); el.className='badge '+kind; el.textContent=text; }
 function fmtDateTime(iso){ if(!iso) return '—'; const d=new Date(iso); if(Number.isNaN(d.getTime())) return '—'; const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}/${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`; }
