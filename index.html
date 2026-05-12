@@ -2369,6 +2369,16 @@
       const qualifiedRows = rankings.filter(x => x.qualified);
       const chasingRows = rankings.filter(x => !x.qualified && x.score > 0);
       const zeroRows = rankings.filter(x => x.score <= 0);
+      const detailCaseResults = caseResults
+        .filter(row => row.entryDate && row.entryDate !== '—' && isRocDateBetween(row.entryDate, cfg.startDate, cfg.endDate))
+        .sort((a,b) => {
+          const ad = rocPartsToDate(parseRocDateParts(a.entryDate));
+          const bd = rocPartsToDate(parseRocDateParts(b.entryDate));
+          const at = ad ? ad.getTime() : 0;
+          const bt = bd ? bd.getTime() : 0;
+          return (bt - at) || String(a.caseName).localeCompare(String(b.caseName), 'zh-Hant');
+        });
+
       return {
         cfg,
         pool: totalBonusPool,
@@ -2388,7 +2398,7 @@
         scoreRows: rankings.map(row => ({ rank: row.rank, name: row.name, score: row.score, qualified: row.qualified })),
         chasingRows,
         zeroRows,
-        caseResults: caseResults.sort((a,b) => (b.totalPoints - a.totalPoints) || String(a.caseName).localeCompare(String(b.caseName), 'zh-Hant'))
+        caseResults: detailCaseResults
       };
     }
 
