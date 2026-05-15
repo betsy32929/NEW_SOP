@@ -54,6 +54,17 @@
     .value{font-size:22px; font-weight:800; line-height:1.2}
     .save-status{display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px; background:var(--green-soft); border:1px solid #bbf7d0; color:var(--green); font-size:12px; font-weight:800}
     .save-status.pending{background:var(--amber-soft); border-color:#fed7aa; color:var(--amber)}
+    .modal-head-main{display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; flex-wrap:wrap}
+    .modal-progress-row{width:100%; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+    .modal-progress-panel{display:inline-flex; flex-direction:column; gap:4px; min-width:280px; max-width:520px; flex:1 1 320px; padding:8px 12px; border-radius:14px; background:rgba(255,255,255,.78); border:1px solid #b9d2ff; color:#1e3a8a; box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+    .modal-progress-label{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12px; font-weight:900; white-space:nowrap}
+    .modal-progress-track{height:9px; border-radius:999px; overflow:hidden; background:#dbeafe; border:1px solid #bfdbfe}
+    .modal-progress-track > span{display:block; height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#1d4ed8); transition:width .18s ease}
+    .manual-save-btn{background:linear-gradient(135deg,#ef4444 0,#dc2626 100%); color:#fff; font-weight:900; box-shadow:0 8px 18px rgba(220,38,38,.28)}
+    .manual-save-btn:hover{box-shadow:0 10px 22px rgba(220,38,38,.34)}
+    .modal-top-btn{background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:900}
+    .modal-close-btn{background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-weight:900}
+    .modal-footer-actions{display:flex; justify-content:flex-start; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 0 0}
     #lastSyncTimeTopText{color:#334155; font-size:13px; white-space:nowrap;}
     .section{padding:16px}
     .section-title{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 12px; font-size:18px; font-weight:800}
@@ -388,7 +399,7 @@
           <button class="soft" id="importJsonBtn">匯入JSON</button>
           <input id="importJsonInput" type="file" accept=".json,application/json" style="display:none">
           <button class="soft" id="openRewardBtn" onclick="openRewardModal()">開發月獎勵統計</button>
-          <span class="save-status" id="globalSaveStatus">已自動存檔</span>
+          <span class="save-status" id="globalSaveStatus">最後更新存檔時間：—</span>
           <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">最後同步時間：—</span>
         </div>
       </div>
@@ -577,16 +588,23 @@
   <div id="caseModal" class="modal">
     <div class="modal-card">
       <div class="modal-head">
-        <div>
-          <div class="modal-title" id="modalTitle">案件操作</div>
-          <div class="tiny" id="modalSub">點選欄位即可編修</div>
+        <div class="modal-head-main">
+          <div>
+            <div class="modal-title" id="modalTitle">案件操作</div>
+            <div class="tiny" id="modalSub">點選欄位即可編修</div>
+          </div>
+          <div class="top-actions">
+            <button class="modal-top-btn" id="modalScrollTopBtn">頂端</button>
+            <button class="manual-save-btn" id="modalManualSaveBtn">存檔</button>
+            <button class="modal-close-btn" id="modalCloseBtn">關閉</button>
+          </div>
         </div>
-        <div class="top-actions">
-          <span class="save-status" id="modalSaveStatus">已自動存檔</span>
-          <button class="top-strong" id="modalScrollTopBtn">頂端</button>
-          <button class="archive-soft" id="modalArchiveBtn">封存</button>
-          <button class="danger" id="modalDeleteBtn">刪除案件</button>
-          <button class="ghost" id="modalCloseBtn">關閉</button>
+        <div class="modal-progress-row">
+          <div class="modal-progress-panel" id="modalProgressPanel" title="目前案件完成進度">
+            <div class="modal-progress-label"><span>目前進度</span><strong id="modalProgressText">0%</strong></div>
+            <div class="modal-progress-track"><span id="modalProgressBar"></span></div>
+          </div>
+          <span class="save-status" id="modalSaveStatus">最後更新存檔時間：—</span>
         </div>
       </div>
       <div class="modal-body">
@@ -616,8 +634,9 @@
           </table>
         </div>
 
-        <div class="top-actions" style="justify-content:flex-end;">
-          <button class="ghost" id="modalCloseBtnBottom">關閉</button>
+        <div class="modal-footer-actions">
+          <button class="archive-soft" id="modalArchiveBtn">封存</button>
+          <button class="danger" id="modalDeleteBtn">刪除案件</button>
         </div>
       </div>
     </div>
@@ -761,6 +780,7 @@
 
     let currentCaseId = state.cases[0]?.id || null;
     let activeModalCaseId = null;
+    let modalManualSavedSinceOpen = false;
     let saveTimer = null;
     let mainRefreshTimer = null;
     let modalStatusFilter = 'all';
@@ -1223,7 +1243,7 @@
           renderModalSummary(c);
           renderModalActions(c);
         } else {
-          closeModal();
+          closeModal({ save:false });
         }
       }
       if(!silent) setSyncStatus('ok', '已收到另一台電腦的最新更新。');
@@ -1297,13 +1317,14 @@
             if(!Array.isArray(parsed.customActions)) parsed.customActions = [];
             if(!Array.isArray(parsed.companyArchiveItems)) parsed.companyArchiveItems = [];
             if(!parsed.fieldSettings || typeof parsed.fieldSettings !== 'object') parsed.fieldSettings = {};
+            if(!parsed.lastSavedAt) parsed.lastSavedAt = '';
             parsed.assistants = normalizeAssistants(parsed.assistants);
             if(!parsed.assistants.length) parsed.assistants = defaultAssistants();
             return parsed;
           }
         } catch(err) {}
       }
-      return { assistants:defaultAssistants(), customActions:[], fieldSettings:{}, companyArchiveItems:[], cases:[createEmptyCase()] };
+      return { assistants:defaultAssistants(), customActions:[], fieldSettings:{}, companyArchiveItems:[], lastSavedAt:'', cases:[createEmptyCase()] };
     }
 
     function mergeCustomActions(){
@@ -1698,22 +1719,33 @@
       }
     }
 
+    function formatLocalSaveTime(iso){
+      if(!iso) return '—';
+      const d = new Date(iso);
+      if(Number.isNaN(d.getTime())) return '—';
+      const pad = n => String(n).padStart(2,'0');
+      return `${d.getFullYear() - 1911}/${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
     function setSaveStatus(text, pending=false){
+      const displayText = pending ? text : `最後更新存檔時間：${formatLocalSaveTime(state?.lastSavedAt || '')}`;
       ['globalSaveStatus','modalSaveStatus'].forEach(id => {
         const el = document.getElementById(id);
         if(!el) return;
-        el.textContent = text;
+        el.textContent = displayText;
         el.classList.toggle('pending', pending);
       });
     }
 
     function saveState(){
+      state.lastSavedAt = new Date().toISOString();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
     function autoSaveNow(){
       clearTimeout(saveTimer);
       lastLocalEditAt = Date.now();
+      if(activeModalCaseId) modalManualSavedSinceOpen = false;
       saveState();
       scheduleRemoteSave();
       if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
@@ -1724,7 +1756,8 @@
 
     function scheduleAutoSave(){
       lastLocalEditAt = Date.now();
-      setSaveStatus('自動存檔中…', true);
+      if(activeModalCaseId) modalManualSavedSinceOpen = false;
+      setSaveStatus('存檔中…', true);
       clearTimeout(saveTimer);
       saveTimer = setTimeout(() => autoSaveNow(), 280);
     }
@@ -3081,6 +3114,13 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       document.getElementById('modalTitle').textContent = caseNameOf(c);
       document.getElementById('modalSub').textContent = `開發:${fieldText(c,'developer')} | 主約編號:${fieldText(c,'mainContractNo')} | 契變編號:${changeContractDisplay(c)}`;
       document.getElementById('modalCaseNoteInput').value = c.caseNote || '';
+      const stats = getCaseStats(c);
+      const progressText = document.getElementById('modalProgressText');
+      const progressBar = document.getElementById('modalProgressBar');
+      const progressPanel = document.getElementById('modalProgressPanel');
+      if(progressText) progressText.textContent = `${stats.progress}%（${stats.done}/${stats.total}）`;
+      if(progressBar) progressBar.style.width = `${stats.progress}%`;
+      if(progressPanel) progressPanel.title = `目前完成 ${stats.done} 項，尚未完成 ${stats.pending} 項`;
       const archiveBtn = document.getElementById('modalArchiveBtn');
       if(archiveBtn) archiveBtn.textContent = c.archived ? '解除封存' : '封存';
     }
@@ -3532,6 +3572,108 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       renderModalSummary(c);
     }
 
+    function syncCurrentModalInputsToState(options={}){
+      const c = getCaseById(activeModalCaseId);
+      if(!c) return false;
+      const normalizeDates = !!options.normalizeDates;
+      const changedKeys = new Set();
+      let changed = false;
+      const markChanged = key => { changed = true; changedKeys.add(key); };
+      const setValue = (item, prop, value, key) => {
+        const next = String(value ?? '');
+        if(String(item[prop] ?? '') !== next){
+          item[prop] = next;
+          markChanged(key);
+        }
+      };
+      const setExtra = (item, prop, value, key) => {
+        item.extra = item.extra || {};
+        const next = String(value ?? '');
+        if(String(item.extra[prop] ?? '') !== next){
+          item.extra[prop] = next;
+          markChanged(key);
+        }
+      };
+
+      document.querySelectorAll('#caseModal .modal-value-input').forEach(el => {
+        const key = el.dataset.key;
+        const def = FIELD_DEFS.find(x => x.key === key);
+        const item = c.items[key];
+        if(!def || !item) return;
+        let value = el.value;
+        if(normalizeDates && (def.dateAuto || el.dataset.dateAuto === '1')){
+          value = normalizeRocDate(value);
+          el.value = value;
+        }
+        setValue(item, 'value', value, key);
+        if(def.type === 'textOption' && hasTextValue(item.value) && hasTextValue(item.option)){
+          item.option = '';
+          markChanged(key);
+        }
+      });
+
+      document.querySelectorAll('#caseModal .modal-select-input').forEach(el => {
+        const key = el.dataset.key;
+        const def = FIELD_DEFS.find(x => x.key === key);
+        const item = c.items[key];
+        if(!def || !item) return;
+        setValue(item, 'value', el.value, key);
+      });
+
+      document.querySelectorAll('#caseModal .modal-loc-date, #caseModal .modal-date-note-date, #caseModal .modal-date-option-date').forEach(el => {
+        const key = el.dataset.key;
+        const def = FIELD_DEFS.find(x => x.key === key);
+        const item = c.items[key];
+        if(!def || !item) return;
+        let value = el.value;
+        if(normalizeDates){
+          value = normalizeRocDate(value);
+          el.value = value;
+        }
+        setExtra(item, 'date', value, key);
+      });
+
+      document.querySelectorAll('#caseModal .modal-loc-note, #caseModal .modal-date-note-text').forEach(el => {
+        const key = el.dataset.key;
+        const def = FIELD_DEFS.find(x => x.key === key);
+        const item = c.items[key];
+        if(!def || !item) return;
+        setExtra(item, 'note', el.value, key);
+      });
+
+      const noteInput = document.getElementById('modalCaseNoteInput');
+      if(noteInput && String(c.caseNote || '') !== String(noteInput.value || '')){
+        c.caseNote = noteInput.value;
+        changed = true;
+      }
+
+      changedKeys.forEach(key => {
+        const def = FIELD_DEFS.find(x => x.key === key);
+        const item = c.items[key];
+        if(!def || !item) return;
+        syncStatusWithContent(def, item);
+        touch(item);
+      });
+      return changed;
+    }
+
+    function manualSaveCurrentModal(){
+      const c = getCaseById(activeModalCaseId);
+      if(!c) return;
+      syncCurrentModalInputsToState({ normalizeDates:true });
+      autoSaveNow();
+      renderStats();
+      renderPendingFilterOptions();
+      renderPendingTable();
+      if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
+      renderSummaryTable();
+      renderSummaryMonthCounts();
+      renderModalSummary(c);
+      renderModalActions(c);
+      modalManualSavedSinceOpen = true;
+      setSaveStatus('', false);
+    }
+
     const modalCaseNoteInput = document.getElementById('modalCaseNoteInput');
     if(modalCaseNoteInput){
       modalCaseNoteInput.addEventListener('input', e => {
@@ -3551,9 +3693,11 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
     function openModal(caseId){
       currentCaseId = caseId;
       activeModalCaseId = caseId;
+      modalManualSavedSinceOpen = false;
       modalStatusFilter = 'all';
       const c = getCaseById(caseId);
       if(!c) return;
+      setSaveStatus('', false);
       renderModalSummary(c);
       renderModalActions(c);
       document.getElementById('caseModal').classList.add('show');
@@ -3561,9 +3705,23 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       if(caseNameInput) updateCaseNameWarning(c.id, caseNameInput, false);
     }
 
-    function closeModal(){
+    function closeModal(options={}){
+      const shouldSave = options.save !== false;
+      if(shouldSave && activeModalCaseId){
+        syncCurrentModalInputsToState({ normalizeDates:true });
+        autoSaveNow();
+      }
       activeModalCaseId = null;
+      modalManualSavedSinceOpen = false;
       document.getElementById('caseModal').classList.remove('show');
+    }
+
+    function requestModalClose(){
+      if(activeModalCaseId && !modalManualSavedSinceOpen){
+        setSaveStatus('請先按紅色「存檔」再關閉', true);
+        return;
+      }
+      closeModal({ save:false });
     }
 
     function xmlEscape(v){
@@ -3971,7 +4129,7 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       state.cases = state.cases.filter(x => x.id !== targetId);
       currentCaseId = state.cases[0]?.id || null;
       autoSaveNow();
-      closeModal();
+      closeModal({ save:false });
       renderAll();
     }
 
@@ -4210,16 +4368,17 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
         renderSummaryMonthCounts();
       });
     }
-    document.getElementById('modalArchiveBtn').onclick = () => { if(activeModalCaseId) { const c = getCaseById(activeModalCaseId); toggleArchiveCase(activeModalCaseId, !c.archived); if(c.archived) closeModal(); else renderModalActions(c); } };
+    document.getElementById('modalArchiveBtn').onclick = () => { if(activeModalCaseId) { syncCurrentModalInputsToState({ normalizeDates:true }); const c = getCaseById(activeModalCaseId); toggleArchiveCase(activeModalCaseId, !c.archived); if(c.archived) closeModal({ save:false }); else renderModalActions(c); } };
     document.getElementById('modalScrollTopBtn').onclick = () => {
       const card = document.querySelector('#caseModal .modal-card');
       if(card) card.scrollTo({ top: 0, behavior: 'smooth' });
       const noteInput = document.getElementById('modalCaseNoteInput');
       if(noteInput) noteInput.focus();
     };
+    const modalManualSaveBtn = document.getElementById('modalManualSaveBtn');
+    if(modalManualSaveBtn) modalManualSaveBtn.onclick = manualSaveCurrentModal;
     document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
-    document.getElementById('modalCloseBtn').onclick = closeModal;
-    document.getElementById('modalCloseBtnBottom').onclick = closeModal;
+    document.getElementById('modalCloseBtn').onclick = requestModalClose;
     document.getElementById('rewardCloseBtn').onclick = closeRewardModal;
     document.getElementById('rewardCloseBtnBottom').onclick = closeRewardModal;
     const rewardPreviewPublicBtn = document.getElementById('rewardPreviewPublicBtn');
@@ -4270,11 +4429,15 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
         if(e.key === 'Enter') addRewardRosterPerson();
       });
     }
-    document.getElementById('caseModal').addEventListener('click', e => { if(e.target.id === 'caseModal') closeModal(); });
+    document.getElementById('caseModal').addEventListener('click', e => { /* 點選旁邊背景不關閉，避免未按存檔就離開輸入畫面 */ });
     document.getElementById('rewardModal').addEventListener('click', e => { if(e.target.id === 'rewardModal') closeRewardModal(); });
-    window.addEventListener('beforeunload', () => autoSaveNow());
+    window.addEventListener('beforeunload', () => {
+      if(activeModalCaseId) syncCurrentModalInputsToState({ normalizeDates:true });
+      autoSaveNow();
+    });
 
     renderAll();
+    setSaveStatus('', false);
     bindConfigFloatingTools();
     initSyncUI();
   </script>
