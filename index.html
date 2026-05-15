@@ -64,6 +64,7 @@
     .manual-save-btn:hover{box-shadow:0 10px 22px rgba(220,38,38,.34)}
     .modal-top-btn{background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:900}
     .modal-close-btn{background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-weight:900}
+    .modal-close-btn:disabled{opacity:.55; cursor:not-allowed; transform:none !important}
     .modal-footer-actions{display:flex; justify-content:flex-start; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 0 0}
     #lastSyncTimeTopText{color:#334155; font-size:13px; white-space:nowrap;}
     .section{padding:16px}
@@ -1742,10 +1743,20 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
 
+    function refreshCloseButtonState(){
+      const closeBtn = document.getElementById('modalCloseBtn');
+      if(!closeBtn) return;
+      closeBtn.disabled = !!activeModalCaseId && !modalManualSavedSinceOpen;
+      closeBtn.title = closeBtn.disabled ? '請先按紅色「存檔」確認寫入後再關閉' : '';
+    }
+
     function autoSaveNow(){
       clearTimeout(saveTimer);
       lastLocalEditAt = Date.now();
-      if(activeModalCaseId) modalManualSavedSinceOpen = false;
+      if(activeModalCaseId) {
+        modalManualSavedSinceOpen = false;
+        refreshCloseButtonState();
+      }
       saveState();
       scheduleRemoteSave();
       if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
@@ -1756,7 +1767,10 @@
 
     function scheduleAutoSave(){
       lastLocalEditAt = Date.now();
-      if(activeModalCaseId) modalManualSavedSinceOpen = false;
+      if(activeModalCaseId) {
+        modalManualSavedSinceOpen = false;
+        refreshCloseButtonState();
+      }
       setSaveStatus('存檔中…', true);
       clearTimeout(saveTimer);
       saveTimer = setTimeout(() => autoSaveNow(), 280);
@@ -3657,21 +3671,59 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       return changed;
     }
 
-    function manualSaveCurrentModal(){
+    async function manualSaveCurrentModal(){
       const c = getCaseById(activeModalCaseId);
       if(!c) return;
-      syncCurrentModalInputsToState({ normalizeDates:true });
-      autoSaveNow();
-      renderStats();
-      renderPendingFilterOptions();
-      renderPendingTable();
-      if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
-      renderSummaryTable();
-      renderSummaryMonthCounts();
-      renderModalSummary(c);
-      renderModalActions(c);
-      modalManualSavedSinceOpen = true;
-      setSaveStatus('', false);
+      const btn = document.getElementById('modalManualSaveBtn');
+      const originalText = btn ? btn.textContent : '';
+      try {
+        if(btn){
+          btn.disabled = true;
+          btn.textContent = '存檔中…';
+        }
+        setSaveStatus('存檔中…', true);
+        clearTimeout(saveTimer);
+        clearTimeout(remoteSaveTimer);
+
+        const activeEl = document.activeElement;
+        if(activeEl && document.getElementById('caseModal')?.contains(activeEl) && typeof activeEl.blur === 'function'){
+          activeEl.blur();
+        }
+
+        syncCurrentModalInputsToState({ normalizeDates:true });
+        saveState();
+        renderStats();
+        renderPendingFilterOptions();
+        renderPendingTable();
+        if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
+        renderSummaryTable();
+        renderSummaryMonthCounts();
+        renderModalSummary(c);
+        renderModalActions(c);
+
+        if(syncClient){
+          await remoteSaveNow();
+        }
+
+        modalManualSavedSinceOpen = true;
+        refreshCloseButtonState();
+        setSaveStatus('', false);
+        if(btn) btn.textContent = '已存檔';
+        setTimeout(() => {
+          const nowBtn = document.getElementById('modalManualSaveBtn');
+          if(nowBtn && nowBtn.textContent === '已存檔') nowBtn.textContent = originalText || '存檔';
+        }, 900);
+      } catch(err){
+        modalManualSavedSinceOpen = false;
+        refreshCloseButtonState();
+        showSyncError(err);
+        setSaveStatus('存檔失敗，請再按一次存檔', true);
+      } finally {
+        if(btn){
+          btn.disabled = false;
+          if(btn.textContent === '存檔中…') btn.textContent = originalText || '存檔';
+        }
+      }
     }
 
     const modalCaseNoteInput = document.getElementById('modalCaseNoteInput');
@@ -3694,6 +3746,7 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       currentCaseId = caseId;
       activeModalCaseId = caseId;
       modalManualSavedSinceOpen = false;
+      refreshCloseButtonState();
       modalStatusFilter = 'all';
       const c = getCaseById(caseId);
       if(!c) return;
@@ -3713,12 +3766,14 @@ body{margin:0;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;backgrou
       }
       activeModalCaseId = null;
       modalManualSavedSinceOpen = false;
+      refreshCloseButtonState();
       document.getElementById('caseModal').classList.remove('show');
     }
 
     function requestModalClose(){
       if(activeModalCaseId && !modalManualSavedSinceOpen){
         setSaveStatus('請先按紅色「存檔」再關閉', true);
+        refreshCloseButtonState();
         return;
       }
       closeModal({ save:false });
