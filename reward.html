@@ -20,8 +20,42 @@
   .poster-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
   .poster-card h4{margin:0;font-size:21px;color:#0f172a;font-weight:1000;letter-spacing:.5px}
   .totalbadge{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#facc15 0%,#fb923c 100%);color:#7c2d12;border:2px solid #fff7ed;font-size:17px;font-weight:1000;box-shadow:0 6px 16px rgba(251,146,60,.28);white-space:nowrap}
+
+  .gold-sort-wrap{width:100%;max-width:100%;overflow:hidden;padding:2px 0 4px}
+  .gold-sort-board{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:end;width:100%;max-width:100%;min-width:0}
+  .gold-axis{height:180px;position:relative;border-right:2px solid #94a3b8;margin-bottom:42px}
+  .gold-axis-label{position:absolute;right:7px;transform:translateY(50%);font-size:11px;font-weight:1000;color:#475569;white-space:nowrap}
+  .gold-area{position:relative;height:214px;display:grid;grid-template-columns:repeat(var(--gold-count),minmax(0,1fr));gap:clamp(2px,.55vw,7px);align-items:end;justify-content:stretch;width:100%;max-width:100%;min-width:0}
+  .gold-grid-line{position:absolute;left:0;right:0;height:1.5px;background:#9fc5ff;z-index:0;opacity:.86}
+  .gold-person{position:relative;z-index:1;height:214px;display:grid;grid-template-rows:180px 30px;gap:4px;min-width:0}
+  .gold-score-box{height:180px;display:flex;align-items:end;justify-content:center;position:relative}
+  .gold-track{width:36px;height:100%;display:flex;align-items:end;justify-content:center;position:relative}
+  .gold-track:before{content:'';position:absolute;top:0;bottom:0;width:7px;border-radius:999px;background:linear-gradient(180deg,#f8fafc 0%,#e5e7eb 100%);box-shadow:inset 0 1px 3px rgba(15,23,42,.12)}
+  .gold-fill{position:relative;width:12px;border-radius:999px;background:linear-gradient(180deg,var(--line-top,#2563eb) 0%,var(--line-mid,#38bdf8) 62%,var(--line-soft,#dbeafe) 100%);box-shadow:0 5px 12px rgba(15,23,42,.16)}
+  .gold-dot{display:none}
+  .gold-dot:after{display:none}
+  .gold-name{min-height:30px;display:grid;place-items:center;text-align:center;font-size:10.5px;font-weight:1000;line-height:1.15;padding:4px 2px;border-radius:10px;border:1.5px solid #ead58b;background:linear-gradient(180deg,#fffef2 0%,#fff8cf 100%);overflow:hidden}
+  .gold-sort-board.fit-all{min-width:0 !important}
+  .gold-area.fit-all{min-width:0 !important}
+  .gold-area.fit-all .gold-person{min-width:0}
+  .gold-area.many .gold-name{font-size:9.3px;padding:3px 1px;border-radius:8px}
+  .gold-area.many .gold-track{width:24px}
+  .gold-area.many .gold-fill{width:9px}
+  .gold-area.many2{gap:2px}
+  .gold-area.many2 .gold-name{font-size:8.2px;letter-spacing:-.5px;padding:2px 0;border-width:1px}
+  .gold-area.many2 .gold-track{width:20px}
+  .gold-area.many2 .gold-fill{width:8px}
+  @media(max-width:560px){
+    .gold-sort-board{grid-template-columns:36px auto;gap:6px}
+    .gold-axis{height:160px;margin-bottom:38px}
+    .gold-area{height:190px;gap:2px}
+    .gold-person{height:190px;grid-template-rows:160px 26px}
+    .gold-score-box{height:160px}
+    .gold-track{width:32px}
+    .gold-name{font-size:10px;min-height:26px}
+  }
   .chart-wrap{width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;-webkit-overflow-scrolling:touch}
-  .column-chart{display:grid;gap:8px;width:100%;max-width:100%;min-width:0}
+  .column-chart{display:grid;gap:6px;width:100%;max-width:100%;min-width:0}
   .chart-svg{display:block;width:100%;max-width:100%;height:auto}
   .egg-zone{display:flex;flex-wrap:wrap;gap:10px}
   .egg-chip{padding:9px 14px;border-radius:999px;border:2px dashed #38bdf8;background:#f0f9ff;color:#0369a1;font-weight:900;font-size:13px}
@@ -242,8 +276,10 @@ function ensureRewardConfig(){
   Object.keys(defaults).forEach(k => { if(state.rewardConfig[k] === undefined || state.rewardConfig[k] === null || state.rewardConfig[k] === '') state.rewardConfig[k] = defaults[k]; });
 }
 function getRewardExplicitRosterNames(){ ensureRewardConfig(); const source = Array.isArray(state.rewardConfig.roster) && state.rewardConfig.roster.length ? state.rewardConfig.roster : REWARD_DEFAULT_ROSTER; return [...new Set(source.map(canonicalDeveloperName).filter(Boolean))]; }
+function getRewardRosterExcludedNames(){ ensureRewardConfig(); const source = Array.isArray(state.rewardConfig.rosterExcluded) ? state.rewardConfig.rosterExcluded : []; return [...new Set(source.map(canonicalDeveloperName).filter(Boolean))]; }
 function getRewardAutoDeveloperNames(){
   const explicitSet = new Set(getRewardExplicitRosterNames());
+  const excludedSet = new Set(getRewardRosterExcludedNames());
   const names = [];
   (state.cases || []).forEach(c => {
     getRewardDeveloperList(fieldText(c,'developer')).forEach(name => {
@@ -256,12 +292,14 @@ function getRewardAutoDeveloperNames(){
   return names;
 }
 function getRewardRosterNames(){
-  const explicit = getRewardExplicitRosterNames();
+  const excludedSet = new Set(getRewardRosterExcludedNames());
+  const explicit = getRewardExplicitRosterNames().filter(name => !excludedSet.has(name));
   const explicitSet = new Set(explicit);
   const auto = getRewardAutoDeveloperNames();
   return [...new Set([...explicit, ...auto].filter(name => {
     const clean = canonicalDeveloperName(name);
     if(!clean) return false;
+    if(excludedSet.has(clean)) return false;
     if(isRewardAutoExcludedName(clean) && !explicitSet.has(clean)) return false;
     return true;
   }))];
@@ -336,10 +374,12 @@ function computeRewardStats(){
   const caseResults = cases.map(c => getRewardCaseResult(c,cfg));
   const personMap = new Map();
   const explicitRosterSet = new Set(getRewardExplicitRosterNames());
+  const excludedRosterSet = new Set(getRewardRosterExcludedNames());
   getRewardRosterNames().forEach(name => personMap.set(name,{name,score:0,cases:0}));
   caseResults.forEach(row => row.allocations.forEach(item => {
     const cleanName = canonicalDeveloperName(item.name);
     if(!cleanName) return;
+    if(excludedRosterSet.has(cleanName)) return;
     if(isRewardAutoExcludedName(cleanName) && !explicitRosterSet.has(cleanName)) return;
     if(!personMap.has(cleanName)) personMap.set(cleanName,{name:cleanName,score:0,cases:0});
     const t = personMap.get(cleanName);
@@ -359,7 +399,7 @@ function computeRewardStats(){
   }).sort((a,b)=>(b.score-a.score)||(getRewardSortIndex(a.name)-getRewardSortIndex(b.name))||String(a.name).localeCompare(String(b.name),'zh-Hant'));
   let displayRank = 0, previousQualifiedScore = null;
   rankings.forEach(row => { if(row.qualified){ if(previousQualifiedScore===null || row.score!==previousQualifiedScore) displayRank += 1; row.rank = displayRank; previousQualifiedScore = row.score; } else row.rank = null; });
-  return { cfg, totalPoints, participationFee, companyBonus, contributionNames, contributionCount:contributionNames.length, participationTotal, totalBonusPool, rankings, publicRows:rankings.filter(x=>x.qualified).map(row=>({rank:row.rank,name:row.name,score:row.score})), scoreRows:rankings.map(row=>({rank:row.rank,name:row.name,score:row.score,qualified:row.qualified})), zeroRows:rankings.filter(x=>x.score<=0), eligibleCases:caseResults.filter(x=>x.eligible).length };
+  return { cfg, totalPoints, participationFee, companyBonus, contributionNames, contributionCount:contributionNames.length, participationTotal, totalBonusPool, rankings, publicRows:rankings.filter(x=>x.qualified).map(row=>({rank:row.rank,name:row.name,score:row.score})), scoreRows:rankings.filter(x=>x.score>0).map(row=>({rank:row.rank,name:row.name,score:row.score,qualified:row.qualified})), zeroRows:rankings.filter(x=>x.score<=0), eligibleCases:caseResults.filter(x=>x.eligible).length };
 }
 function getRewardChartMax(rows,minValue){ const scores=(Array.isArray(rows)?rows:[]).map(row=>Number(row.score||0)).filter(Number.isFinite); const maxScore=Math.max(Number(minValue||0),...scores,0); return Math.max(2,Math.ceil(maxScore/2)*2); }
 function getRewardChartColor(index){ const palette=['#e11d48','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#6366f1','#8b5cf6','#ec4899','#14b8a6','#84cc16','#f43f5e']; return palette[index % palette.length]; }
@@ -368,29 +408,85 @@ function buildRewardColumnChart(rows, emptyText, options={}){
   if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`;
   const maxScore = getRewardChartMax(list, options.minValue || 0);
   const ticks=[]; for(let v=0; v<=maxScore; v+=2) ticks.push(v);
-  const chartHeight=260, top=18, left=44, right=16, bottom=56;
-  const slot=Math.max(58,Math.min(84,Math.floor(540/Math.max(list.length,1))));
-  const plotWidth=Math.max(300,list.length*slot), width=left+plotWidth+right, height=top+chartHeight+bottom;
-  const barWidth=Math.min(40,Math.max(22,slot*.48));
+  const chartHeight=170, top=14, left=38, right=12, bottom=42;
+  const slot=Math.max(42,Math.min(58,Math.floor(420/Math.max(list.length,1))));
+  const plotWidth=Math.max(260,list.length*slot), width=left+plotWidth+right, height=top+chartHeight+bottom;
+  const barWidth=Math.min(28,Math.max(16,slot*.42));
   const itemsSvg=list.map((row,idx)=>{
     const score=Number(row.score||0), xCenter=left+(idx+.5)*(plotWidth/list.length), x=xCenter-barWidth/2;
     const barHeight=maxScore>0?(score/maxScore)*chartHeight:0, y=top+chartHeight-barHeight;
     const line1=options.showStatus ? (row.rank ? `第${row.rank}名` : (score>0?'追分中':'加油')) : '';
-    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="${getRewardChartColor(idx)}" opacity="0.96"></rect>${line1?`<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+18}" text-anchor="middle" font-size="11" font-weight="900" fill="#64748b">${escapeHtml(line1)}</text>`:''}<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+36}" text-anchor="middle" font-size="12" font-weight="900" fill="#0f172a">${escapeHtml(String(row.name||''))}</text></g>`;
+    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${barHeight.toFixed(1)}" fill="${getRewardChartColor(idx)}" opacity="0.96"></rect>${line1?`<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+14}" text-anchor="middle" font-size="10" font-weight="900" fill="#64748b">${escapeHtml(line1)}</text>`:''}<text x="${xCenter.toFixed(1)}" y="${top+chartHeight+30}" text-anchor="middle" font-size="11" font-weight="900" fill="#0f172a">${escapeHtml(String(row.name||''))}</text></g>`;
   }).join('');
-  const gridSvg=ticks.map(v=>{ const y=top+chartHeight-((v/maxScore)*chartHeight); return `<g><line x1="${left}" y1="${y.toFixed(1)}" x2="${left+plotWidth}" y2="${y.toFixed(1)}" stroke="#cbd5e1" stroke-width="1"></line><text x="${left-8}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="12" font-weight="900" fill="#64748b">${v===0?'0':`${v}分`}</text></g>`; }).join('');
+  const gridSvg=ticks.map(v=>{ const y=top+chartHeight-((v/maxScore)*chartHeight); return `<g><line x1="${left}" y1="${y.toFixed(1)}" x2="${left+plotWidth}" y2="${y.toFixed(1)}" stroke="#cbd5e1" stroke-width="1"></line><text x="${left-8}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="11" font-weight="900" fill="#64748b">${v===0?'0':`${v}分`}</text></g>`; }).join('');
   const axisSvg=`<line x1="${left}" y1="${top}" x2="${left}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line><line x1="${left}" y1="${top+chartHeight}" x2="${left+plotWidth}" y2="${top+chartHeight}" stroke="#94a3b8" stroke-width="1.5"></line>`;
   return `<div class="column-chart"><div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="柱狀圖">${gridSvg}${axisSvg}${itemsSvg}</svg></div></div>`;
 }
+
+function buildRewardGoldLocatorChart(rows, emptyText, options={}){
+  const list = Array.isArray(rows) ? rows.filter(row => Number(row.score || 0) > 0) : [];
+  if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`;
+  const maxScore = Math.max(Number(options.minValue || 10), ...list.map(row => Number(row.score || 0)).filter(Number.isFinite), 0);
+  const maxScale = Math.max(10, Math.ceil(maxScore / 2) * 2);
+  const count = Math.max(1, list.length);
+  const displayCount = Math.max(10, count);
+  const pct = score => Math.max(0, Math.min(100, (Number(score || 0) / maxScale) * 100));
+  const palette = [
+    ['#2563eb','#38bdf8','#dbeafe'],
+    ['#dc2626','#fb7185','#ffe4e6'],
+    ['#16a34a','#86efac','#dcfce7'],
+    ['#7c3aed','#a78bfa','#ede9fe'],
+    ['#ea580c','#fdba74','#ffedd5'],
+    ['#0891b2','#67e8f9','#cffafe'],
+    ['#be185d','#f472b6','#fce7f3'],
+    ['#4f46e5','#818cf8','#e0e7ff'],
+    ['#65a30d','#bef264','#ecfccb'],
+    ['#b45309','#facc15','#fef3c7'],
+    ['#0f766e','#5eead4','#ccfbf1'],
+    ['#9333ea','#d8b4fe','#f3e8ff'],
+    ['#1d4ed8','#93c5fd','#dbeafe'],
+    ['#e11d48','#fda4af','#ffe4e6']
+  ];
+  let axis = '';
+  let grid = '';
+  for(let v = 2; v <= maxScale; v += 2){
+    const p = pct(v);
+    axis += `<span class="gold-axis-label" style="bottom:${p}%">${v}</span>`;
+    grid += `<span class="gold-grid-line" style="bottom:${p}%"></span>`;
+  }
+  const manyClass = count > 14 ? 'many2' : (count > 10 ? 'many' : '');
+  const items = list.map((row, idx) => {
+    const h = pct(row.score);
+    const colors = palette[idx % palette.length];
+    return `<div class="gold-person">
+      <div class="gold-score-box">
+        <div class="gold-track" style="--line-top:${colors[0]};--line-mid:${colors[1]};--line-soft:${colors[2]}">
+          <div class="gold-fill" style="height:${h}%"></div>
+        </div>
+      </div>
+      <div class="gold-name">${escapeHtml(String(row.name || ''))}</div>
+    </div>`;
+  }).join('');
+  return `<div class="gold-sort-wrap">
+    <div class="gold-sort-board fit-all">
+      <div class="gold-axis">${axis}</div>
+      <div class="gold-area fit-all ${manyClass}" style="--gold-count:${displayCount}">${grid}${items}</div>
+    </div>
+  </div>`;
+}
+
 function getRewardRankBadge(row){ if(!row || !row.rank) return '—'; if(row.rank===1) return '🥇'; if(row.rank===2) return '🥈'; if(row.rank===3) return '🥉'; return String(row.rank); }
 function buildRewardRankList(rows, emptyText){ const list=Array.isArray(rows)?rows:[]; if(!list.length) return `<div class="note">${escapeHtml(emptyText)}</div>`; return `<div class="rank-list">${list.map(row=>{ const topClass=row.rank===1?'top1':row.rank===2?'top2':row.rank===3?'top3':''; return `<div class="rank-row ${topClass}"><span class="rank">${escapeHtml(getRewardRankBadge(row))}</span><span class="name">${escapeHtml(row.name)}</span></div>`; }).join('')}</div>`; }
+function buildRewardZeroZone(rows){ const list=Array.isArray(rows)?rows:[]; if(!list.length) return `<div class="note">目前沒有蓄勢待發人員</div>`; return `<div class="egg-zone">${list.map(row=>`<span class="egg-chip">${escapeHtml(row.name)}</span>`).join('')}</div>`; }
 function buildPosterMarkup(data){
   const rankListHtml=buildRewardRankList(data.publicRows||[],`目前尚無符合${formatRewardScore(data.cfg?.rankingThreshold||0)}分門檻的排名資料`);
-  const scoreChartHtml=buildRewardColumnChart(data.scoreRows||[],'目前尚無人員分數資料',{minValue:data.cfg?.rankingThreshold||0,showStatus:false});
+  const scoreChartHtml=buildRewardGoldLocatorChart(data.scoreRows||[],'目前尚無有分數人員資料',{minValue:10});
+  const zeroZoneHtml=buildRewardZeroZone(data.zeroRows||[]);
   const totalText=data.totalPoints>0?`總分:${escapeHtml(formatRewardScore(data.totalPoints))}分`:'總分:-分';
   return `<div class="poster-head"><div class="poster-title">開發月獎勵排行榜</div><div class="poster-sub">統計期間｜${escapeHtml(getRewardPeriodLabel(data.cfg))}</div></div>
   <div class="poster-card"><div class="poster-card-head"><h4>📌 目前排行</h4><div class="totalbadge">${totalText}</div></div>${rankListHtml}</div>
   <div class="poster-card"><div class="poster-card-head"><h4>📊 目前人員排序</h4></div>${scoreChartHtml}</div>
+  <div class="poster-card"><div class="poster-card-head"><h4>🌱 蓄勢待發區</h4></div>${zeroZoneHtml}</div>
   <div class="poster-card rule-card">
     <div class="poster-card-head"><h4>📣 公告辦法</h4></div>
     <div class="public-rule-intro">
