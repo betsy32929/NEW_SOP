@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V15_NEW本製作</title>
+  <title>V16_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -413,7 +413,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V15 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V16 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -430,7 +430,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V15：以 V14 為基底，修正輸入視窗完成率 100% 被舊雲端資料拉回 86% 的問題；兩台仍共用同一份雲端資料。</div>
+        <div class="tiny" style="margin-bottom:10px;">V16：以 V15 為基底，新增物件／輸入視窗開啟會自動跳到最頂端；輸入物件改為自動存檔＋自動上傳雲端，不再需要紅色存檔按鈕。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -613,11 +613,10 @@
         <div class="modal-head-main">
           <div>
             <div class="modal-title" id="modalTitle">案件操作</div>
-            <div class="tiny" id="modalSub">點選欄位即可編修</div>
+            <div class="tiny" id="modalSub">點選欄位即可編修，修改會自動存檔並同步雲端</div>
           </div>
           <div class="top-actions">
             <button class="modal-top-btn" id="modalScrollTopBtn">頂端</button>
-            <button class="manual-save-btn" id="modalManualSaveBtn">存檔</button>
             <button class="modal-close-btn" id="modalCloseBtn">關閉</button>
           </div>
         </div>
@@ -774,7 +773,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V15';
+    const APP_VERSION = 'V16';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1338,7 +1337,7 @@
           holdRemoteRow(
             row,
             activeModalCaseId
-              ? '另一台電腦有更新；目前輸入視窗開啟中，先不套用，避免 100% 被舊資料覆蓋。請先按紅色「存檔」。'
+              ? '另一台電腦有更新；目前輸入視窗開啟中，先不套用，避免 100% 被舊資料覆蓋。你目前的編輯會自動存檔並同步，關閉輸入視窗後再套用另一台更新。'
               : '另一台電腦有更新；等本機自動存檔完成後再套用。'
           );
         }
@@ -1820,17 +1819,13 @@
     function refreshCloseButtonState(){
       const closeBtn = document.getElementById('modalCloseBtn');
       if(!closeBtn) return;
-      closeBtn.disabled = !!activeModalCaseId && !modalManualSavedSinceOpen;
-      closeBtn.title = closeBtn.disabled ? '請先按紅色「存檔」確認寫入後再關閉' : '';
+      closeBtn.disabled = false;
+      closeBtn.title = activeModalCaseId ? '關閉前會自動寫入目前輸入內容並上傳雲端' : '';
     }
 
     function autoSaveNow(){
       clearTimeout(saveTimer);
       lastLocalEditAt = Date.now();
-      if(activeModalCaseId) {
-        modalManualSavedSinceOpen = false;
-        refreshCloseButtonState();
-      }
       saveState();
       scheduleRemoteSave();
       if(typeof populateSummaryFilterControls === 'function') populateSummaryFilterControls();
@@ -1841,10 +1836,6 @@
 
     function scheduleAutoSave(){
       lastLocalEditAt = Date.now();
-      if(activeModalCaseId) {
-        modalManualSavedSinceOpen = false;
-        refreshCloseButtonState();
-      }
       setSaveStatus('存檔中…', true);
       clearTimeout(saveTimer);
       saveTimer = setTimeout(() => autoSaveNow(), 280);
@@ -3883,6 +3874,14 @@
       });
     }
 
+    function scrollCaseModalToTop(options={}){
+      const card = document.querySelector('#caseModal .modal-card');
+      if(card) card.scrollTo({ top: 0, behavior: options.smooth ? 'smooth' : 'auto' });
+      const modalBody = document.querySelector('#caseModal .modal-body');
+      if(modalBody) modalBody.scrollTop = 0;
+      window.scrollTo({ top: 0, behavior: options.smooth ? 'smooth' : 'auto' });
+    }
+
     function openModal(caseId){
       currentCaseId = caseId;
       activeModalCaseId = caseId;
@@ -3895,6 +3894,8 @@
       renderModalSummary(c);
       renderModalActions(c);
       document.getElementById('caseModal').classList.add('show');
+      scrollCaseModalToTop({ smooth:false });
+      requestAnimationFrame(() => scrollCaseModalToTop({ smooth:false }));
       const caseNameInput = document.querySelector('.modal-value-input[data-key="caseName"]');
       if(caseNameInput) updateCaseNameWarning(c.id, caseNameInput, false);
     }
@@ -3904,6 +3905,7 @@
       if(shouldSave && activeModalCaseId){
         syncCurrentModalInputsToState({ normalizeDates:true });
         autoSaveNow();
+        if(syncClient) remoteSaveNow();
       }
       activeModalCaseId = null;
       modalManualSavedSinceOpen = false;
@@ -3915,12 +3917,7 @@
     }
 
     function requestModalClose(){
-      if(activeModalCaseId && !modalManualSavedSinceOpen){
-        setSaveStatus('請先按紅色「存檔」再關閉', true);
-        refreshCloseButtonState();
-        return;
-      }
-      closeModal({ save:false });
+      closeModal({ save:true });
     }
 
     function xmlEscape(v){
@@ -4075,7 +4072,7 @@
         app: 'NEW本製作',
         appId: SYNC_APP_ID,
         exportedAt: new Date().toISOString(),
-        version: 'V15_reward-json-v1',
+        version: 'V16_reward-json-v1',
         data: state
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json;charset=utf-8;' });
@@ -4569,8 +4566,7 @@
     }
     document.getElementById('modalArchiveBtn').onclick = () => { if(activeModalCaseId) { syncCurrentModalInputsToState({ normalizeDates:true }); const c = getCaseById(activeModalCaseId); toggleArchiveCase(activeModalCaseId, !c.archived); if(c.archived) closeModal({ save:false }); else renderModalActions(c); } };
     document.getElementById('modalScrollTopBtn').onclick = () => {
-      const card = document.querySelector('#caseModal .modal-card');
-      if(card) card.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollCaseModalToTop({ smooth:true });
       const noteInput = document.getElementById('modalCaseNoteInput');
       if(noteInput) noteInput.focus();
     };
@@ -4628,7 +4624,7 @@
         if(e.key === 'Enter') addRewardRosterPerson();
       });
     }
-    document.getElementById('caseModal').addEventListener('click', e => { /* 點選旁邊背景不關閉，避免未按存檔就離開輸入畫面 */ });
+    document.getElementById('caseModal').addEventListener('click', e => { /* 點選旁邊背景不關閉，避免誤觸離開輸入畫面 */ });
     document.getElementById('rewardModal').addEventListener('click', e => { if(e.target.id === 'rewardModal') closeRewardModal(); });
     window.addEventListener('beforeunload', () => {
       if(activeModalCaseId) syncCurrentModalInputsToState({ normalizeDates:true });
