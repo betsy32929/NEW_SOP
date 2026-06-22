@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V16_NEW本製作</title>
+  <title>V24_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,9 +171,31 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V17：輸入視窗內記事欄與狀態篩選固定浮動 */
-    #caseModal .case-note-row{position:sticky; top:112px; z-index:5; padding:10px 0; background:linear-gradient(180deg,#f8fbff 0,#ffffff 100%); border-bottom:1px solid #dbeafe}
-    #caseModal .action-toolbar{position:sticky; top:190px; z-index:5; box-shadow:0 8px 16px rgba(15,23,42,.08)}
+    /* V24：狀態篩選固定；封存/刪除在標題列第一排；封存刪除需二次確認 */
+    #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
+    #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
+    #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
+    #caseModal .modal-progress-row{align-items:flex-start}
+    #caseModal .modal-progress-stack{display:flex; flex-direction:column; gap:5px; min-width:280px; max-width:360px; flex:0 0 360px}
+    #caseModal .modal-progress-panel{min-width:0; max-width:none; width:100%; flex:none; padding:8px 12px}
+    #caseModal .modal-note-inline{display:flex; align-items:center; gap:8px; font-size:12px; font-weight:900; color:#1d4ed8; padding:0 2px; background:transparent; border:none}
+    #caseModal .modal-note-input{flex:1 1 auto; min-width:180px; padding:2px 0 3px; border:none; border-bottom:1px solid #93c5fd; border-radius:0; background:transparent; box-shadow:none; color:#1d4ed8; font-weight:800}
+    #caseModal .modal-note-input::placeholder{color:#60a5fa}
+    #caseModal .modal-note-input:focus{outline:none; border-bottom-color:#1d4ed8; box-shadow:none; background:transparent}
+    .progress-note-mini{margin-top:4px; font-size:12px; line-height:1.45; color:#2563eb; background:transparent}
+    #caseModal .modal-body{overflow:visible}
+    #caseModal .action-table{max-height:calc(100vh - 260px); overflow:auto}
+    #caseModal .action-table thead th{position:sticky; top:0; z-index:5; background:linear-gradient(180deg,#dce9ff 0,#edf4ff 100%); box-shadow:0 2px 0 #c7dbff}
+    #caseModal .modal-risk-actions{display:inline-flex; align-items:center; gap:6px; padding:3px 4px; border-radius:999px; background:rgba(255,255,255,.34); border:1px solid rgba(203,213,225,.75)}
+    #caseModal .modal-risk-actions button{padding:6px 10px; font-size:12px; font-weight:900; border-radius:999px; white-space:nowrap; transform:none}
+    #caseModal .modal-risk-actions .archive-soft{background:#f8fafc; color:#64748b; border:1px solid #cbd5e1}
+    #caseModal .modal-risk-actions .danger{background:#fff1f2; color:#be123c; border:1px solid #fecdd3}
+    .confirm-dialog-card{width:min(420px,calc(100vw - 32px)); background:linear-gradient(180deg,#ffffff 0,#f8fbff 100%); border:1px solid #cbd5e1; border-radius:22px; box-shadow:0 24px 60px rgba(15,23,42,.32); padding:18px}
+    .confirm-dialog-title{font-size:20px; font-weight:1000; color:#0f172a; margin-bottom:8px}
+    .confirm-dialog-text{font-size:14px; line-height:1.7; color:#334155; white-space:pre-wrap; margin-bottom:16px}
+    .confirm-dialog-actions{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap}
+    .confirm-yes-btn{background:#dc2626; color:#fff; font-weight:1000}
+    .confirm-no-btn{background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:1000}
 
     .case-note-label{font-size:13px; font-weight:800; color:#334155}
     .reward-modal-card{width:min(1480px,calc(100vw - 24px))}
@@ -417,7 +439,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V16 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V24 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -434,7 +456,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V16：以 V15 為基底，新增物件／輸入視窗開啟會自動跳到最頂端；輸入物件改為自動存檔＋自動上傳雲端，不再需要紅色存檔按鈕。</div>
+        <div class="tiny" style="margin-bottom:10px;">V24：封存/刪除改成確認視窗，點「是」才執行，點「否」取消。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -488,7 +510,6 @@
               <th style="width:200px">目前缺少動作</th>
               <th style="width:120px">完成率</th>
               <th style="width:90px">操作</th>
-              <th style="width:240px">記事欄</th>
             </tr>
           </thead>
           <tbody id="pendingTableBody"></tbody>
@@ -617,33 +638,30 @@
         <div class="modal-head-main">
           <div>
             <div class="modal-title" id="modalTitle">案件操作</div>
-            <div class="tiny" id="modalSub">點選欄位即可編修，修改會自動存檔並同步雲端；目前編輯中的案件不會被舊雲端進度拉低</div>
+            <div class="tiny" id="modalSub">點選欄位即可編修，修改會自動存檔並同步雲端；狀態篩選固定在右上方</div>
           </div>
-          <div class="top-actions">
+          <div class="top-actions modal-head-actions">
             <button class="modal-top-btn" id="modalScrollTopBtn">頂端</button>
+            <div class="chips modal-head-status-filter" id="statusFilterChips" aria-label="狀態篩選"></div>
+            <div class="modal-risk-actions" aria-label="封存與刪除">
+              <button class="archive-soft" id="modalArchiveBtn" title="封存此案件">封存</button>
+              <button class="danger" id="modalDeleteBtn" title="刪除前會再次確認">刪除案件</button>
+            </div>
             <button class="modal-close-btn" id="modalCloseBtn">關閉</button>
           </div>
         </div>
         <div class="modal-progress-row">
-          <div class="modal-progress-panel" id="modalProgressPanel" title="目前案件完成進度">
-            <div class="modal-progress-label"><span>目前進度</span><strong id="modalProgressText">0%</strong></div>
-            <div class="modal-progress-track"><span id="modalProgressBar"></span></div>
+          <div class="modal-progress-stack">
+            <div class="modal-progress-panel" id="modalProgressPanel" title="目前案件完成進度">
+              <div class="modal-progress-label"><span>目前進度</span><strong id="modalProgressText">0%</strong></div>
+              <div class="modal-progress-track"><span id="modalProgressBar"></span></div>
+            </div>
+            <label class="modal-note-inline">記事欄：<input id="modalCaseNoteInput" class="modal-note-input" type="text" placeholder="這筆案件的記事..."></label>
           </div>
           <span class="save-status" id="modalSaveStatus">本機最後存檔：—</span>
         </div>
       </div>
       <div class="modal-body">
-        <div class="case-note-row">
-          <div class="case-note-label">記事欄</div>
-          <input id="modalCaseNoteInput" class="field-input" type="text" placeholder="這筆案件的記事...">
-        </div>
-        
-
-        <div class="action-toolbar">
-          <div class="chips" id="statusFilterChips"></div>
-          <div class="tiny">篩選保留：全部 / 未做 / 已做 / 完成</div>
-        </div>
-
         <div class="action-table">
           <table>
             <thead>
@@ -659,10 +677,19 @@
           </table>
         </div>
 
-        <div class="modal-footer-actions">
-          <button class="archive-soft" id="modalArchiveBtn">封存</button>
-          <button class="danger" id="modalDeleteBtn">刪除案件</button>
-        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="actionConfirmModal" class="modal">
+    <div class="confirm-dialog-card">
+      <div class="confirm-dialog-title" id="actionConfirmTitle">確認動作</div>
+      <div class="confirm-dialog-text" id="actionConfirmText">確定要執行嗎？</div>
+      <div class="confirm-dialog-actions">
+        <button class="confirm-no-btn" id="actionConfirmNoBtn">否，取消</button>
+        <button class="confirm-yes-btn" id="actionConfirmYesBtn">是，執行</button>
       </div>
     </div>
   </div>
@@ -777,7 +804,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V17';
+    const APP_VERSION = 'V24';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1258,7 +1285,7 @@
     }
 
     function canApplyRemoteRow(forceApply=false){
-      // V17：不讓雲端舊資料在剛編輯後立刻套回，避免 100% 先掉到 92% 又跳回 100%。
+      // V19：不讓雲端舊資料在剛編輯後立刻套回，避免 100% 先掉到 92% 又跳回 100%。
       if(activeModalCaseId) return false;
       if(saveTimer || remoteSaveTimer) return false;
       const idleEnough = Date.now() - lastLocalEditAt > REMOTE_APPLY_IDLE_MS;
@@ -2267,7 +2294,7 @@
 
       tbody.innerHTML = '';
       if(!rows.length){
-        tbody.innerHTML = '<tr><td colspan="9"><div class="empty">目前沒有符合的未完成物件</div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8"><div class="empty">目前沒有符合的未完成物件</div></td></tr>';
         return;
       }
       rows.forEach(({c, missing}) => {
@@ -2281,9 +2308,8 @@
           <td>${escapeHtml(caseNameOf(c))}</td>
           <td>${escapeHtml(fieldText(c,'developer') || '—')}</td>
           <td class="tiny">${escapeHtml(missing.slice(0,4).join('、') || '—')}${missing.length > 4 ? ` 等 ${missing.length} 項` : ''}</td>
-          <td><div>${s.progress}%</div><div class="progress"><span style="width:${s.progress}%"></span></div></td>
+          <td><div>${s.progress}%</div><div class="progress"><span style="width:${s.progress}%"></span></div>${String(c.caseNote || '').trim() ? `<div class="progress-note-mini">記事欄：${escapeHtml(String(c.caseNote || '').trim())}</div>` : ''}</td>
           <td><button class="soft open-case-btn" data-id="${escapeAttr(c.id)}">操作</button></td>
-          <td class="tiny">${escapeHtml(String(c.caseNote || '').trim() || '—')}</td>
         `;
         tr.onclick = e => { if(e.target.closest('button')) return; openModal(c.id); };
         tr.querySelector('.open-case-btn').onclick = e => { e.stopPropagation(); openModal(c.id); };
@@ -3886,11 +3912,16 @@
     }
 
     function scrollCaseModalToTop(options={}){
+      const behavior = options.smooth ? 'smooth' : 'auto';
       const card = document.querySelector('#caseModal .modal-card');
-      if(card) card.scrollTo({ top: 0, behavior: options.smooth ? 'smooth' : 'auto' });
+      if(card) card.scrollTo({ top: 0, behavior });
       const modalBody = document.querySelector('#caseModal .modal-body');
       if(modalBody) modalBody.scrollTop = 0;
-      window.scrollTo({ top: 0, behavior: options.smooth ? 'smooth' : 'auto' });
+      const actionTable = document.querySelector('#caseModal .action-table');
+      if(actionTable) actionTable.scrollTo({ top: 0, left: 0, behavior });
+      const firstInput = document.querySelector('#modalActionsBody input, #modalActionsBody select, #modalActionsBody textarea, #modalActionsBody button');
+      if(firstInput && options.focusFirst) setTimeout(() => firstInput.focus({ preventScroll:true }), options.smooth ? 180 : 0);
+      window.scrollTo({ top: 0, behavior });
     }
 
     function openModal(caseId){
@@ -4083,7 +4114,7 @@
         app: 'NEW本製作',
         appId: SYNC_APP_ID,
         exportedAt: new Date().toISOString(),
-        version: 'V16_reward-json-v1',
+        version: 'V24_reward-json-v1',
         data: state
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json;charset=utf-8;' });
@@ -4324,6 +4355,26 @@
       openModal(newCase.id);
     }
 
+    let pendingConfirmAction = null;
+
+    function openActionConfirm(title, text, onYes, yesLabel='是，執行'){
+      pendingConfirmAction = typeof onYes === 'function' ? onYes : null;
+      const modal = document.getElementById('actionConfirmModal');
+      const titleEl = document.getElementById('actionConfirmTitle');
+      const textEl = document.getElementById('actionConfirmText');
+      const yesBtn = document.getElementById('actionConfirmYesBtn');
+      if(titleEl) titleEl.textContent = title || '確認動作';
+      if(textEl) textEl.textContent = text || '確定要執行嗎？';
+      if(yesBtn) yesBtn.textContent = yesLabel;
+      if(modal) modal.classList.add('show');
+    }
+
+    function closeActionConfirm(){
+      const modal = document.getElementById('actionConfirmModal');
+      if(modal) modal.classList.remove('show');
+      pendingConfirmAction = null;
+    }
+
     function deleteCurrentCase(){
       const targetId = activeModalCaseId || currentCaseId;
       if(!targetId) return;
@@ -4332,12 +4383,18 @@
         return;
       }
       const c = getCaseById(targetId);
-      if(!confirm(`確定刪除「${caseNameOf(c)}」嗎？`)) return;
-      state.cases = state.cases.filter(x => x.id !== targetId);
-      currentCaseId = state.cases[0]?.id || null;
-      autoSaveNow();
-      closeModal({ save:false });
-      renderAll();
+      openActionConfirm(
+        '確定是否要刪除？',
+        `案件：${caseNameOf(c)}\n\n點選「是」會刪除案件。\n點選「否」會取消動作。`,
+        () => {
+          state.cases = state.cases.filter(x => x.id !== targetId);
+          currentCaseId = state.cases[0]?.id || null;
+          autoSaveNow();
+          closeModal({ save:false });
+          renderAll();
+        },
+        '是，刪除'
+      );
     }
 
     function addAssistant(){
@@ -4575,15 +4632,38 @@
         renderSummaryMonthCounts();
       });
     }
-    document.getElementById('modalArchiveBtn').onclick = () => { if(activeModalCaseId) { syncCurrentModalInputsToState({ normalizeDates:true }); const c = getCaseById(activeModalCaseId); toggleArchiveCase(activeModalCaseId, !c.archived); if(c.archived) closeModal({ save:false }); else renderModalActions(c); } };
+    document.getElementById('modalArchiveBtn').onclick = () => {
+      if(!activeModalCaseId) return;
+      syncCurrentModalInputsToState({ normalizeDates:true });
+      const c = getCaseById(activeModalCaseId);
+      if(!c) return;
+      const willArchive = !c.archived;
+      openActionConfirm(
+        willArchive ? '確定是否要封存？' : '確定是否要取消封存？',
+        `案件：${caseNameOf(c)}\n\n點選「是」會${willArchive ? '封存案件' : '取消封存'}。\n點選「否」會取消動作。`,
+        () => {
+          toggleArchiveCase(activeModalCaseId, willArchive);
+          if(willArchive) closeModal({ save:false });
+          else renderModalActions(c);
+        },
+        willArchive ? '是，封存' : '是，取消封存'
+      );
+    };
     document.getElementById('modalScrollTopBtn').onclick = () => {
-      scrollCaseModalToTop({ smooth:true });
-      const noteInput = document.getElementById('modalCaseNoteInput');
-      if(noteInput) noteInput.focus();
+      const current = getCaseById(activeModalCaseId);
+      modalStatusFilter = 'all';
+      if(current) renderModalActions(current);
+      requestAnimationFrame(() => scrollCaseModalToTop({ smooth:true, focusFirst:true }));
     };
     const modalManualSaveBtn = document.getElementById('modalManualSaveBtn');
     if(modalManualSaveBtn) modalManualSaveBtn.onclick = manualSaveCurrentModal;
     document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
+    document.getElementById('actionConfirmNoBtn').onclick = closeActionConfirm;
+    document.getElementById('actionConfirmYesBtn').onclick = () => {
+      const action = pendingConfirmAction;
+      closeActionConfirm();
+      if(action) action();
+    };
     document.getElementById('modalCloseBtn').onclick = requestModalClose;
     document.getElementById('rewardCloseBtn').onclick = closeRewardModal;
     document.getElementById('rewardCloseBtnBottom').onclick = closeRewardModal;
