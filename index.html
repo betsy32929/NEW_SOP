@@ -171,6 +171,10 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
+    /* V17：輸入視窗內記事欄與狀態篩選固定浮動 */
+    #caseModal .case-note-row{position:sticky; top:112px; z-index:5; padding:10px 0; background:linear-gradient(180deg,#f8fbff 0,#ffffff 100%); border-bottom:1px solid #dbeafe}
+    #caseModal .action-toolbar{position:sticky; top:190px; z-index:5; box-shadow:0 8px 16px rgba(15,23,42,.08)}
+
     .case-note-label{font-size:13px; font-weight:800; color:#334155}
     .reward-modal-card{width:min(1480px,calc(100vw - 24px))}
     .reward-setting-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; align-items:end}
@@ -421,8 +425,8 @@
           <button class="soft" id="importJsonBtn">匯入JSON</button>
           <input id="importJsonInput" type="file" accept=".json,application/json" style="display:none">
           <button class="soft" id="openRewardBtn" onclick="openRewardModal()">開發月獎勵統計</button>
-          <span class="save-status" id="globalSaveStatus">最後更新存檔時間：—</span>
-          <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">最後同步時間：—</span>
+          <span class="save-status" id="globalSaveStatus">本機最後存檔：—</span>
+          <span class="tiny" id="lastSyncTimeTopText" style="font-weight:700;">雲端最後同步：—</span>
         </div>
       </div>
     </section>
@@ -613,7 +617,7 @@
         <div class="modal-head-main">
           <div>
             <div class="modal-title" id="modalTitle">案件操作</div>
-            <div class="tiny" id="modalSub">點選欄位即可編修，修改會自動存檔並同步雲端</div>
+            <div class="tiny" id="modalSub">點選欄位即可編修，修改會自動存檔並同步雲端；目前編輯中的案件不會被舊雲端進度拉低</div>
           </div>
           <div class="top-actions">
             <button class="modal-top-btn" id="modalScrollTopBtn">頂端</button>
@@ -625,7 +629,7 @@
             <div class="modal-progress-label"><span>目前進度</span><strong id="modalProgressText">0%</strong></div>
             <div class="modal-progress-track"><span id="modalProgressBar"></span></div>
           </div>
-          <span class="save-status" id="modalSaveStatus">最後更新存檔時間：—</span>
+          <span class="save-status" id="modalSaveStatus">本機最後存檔：—</span>
         </div>
       </div>
       <div class="modal-body">
@@ -773,11 +777,11 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V16';
+    const APP_VERSION = 'V17';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
-    const REMOTE_APPLY_IDLE_MS = 12000; // 本機停止操作 12 秒後，才允許套用其他電腦更新
+    const REMOTE_APPLY_IDLE_MS = 60000; // 本機停止操作 60 秒後，才允許套用其他電腦更新，避免 100%/92% 來回跳
     const ROC_YEAR = new Date().getFullYear() - 1911;
     const STATUS_TEXT = ['未做','已做','完成','完全完成'];
     const EDITABLE_TYPE_OPTIONS = [
@@ -1254,11 +1258,13 @@
     }
 
     function canApplyRemoteRow(forceApply=false){
-      // 輸入視窗開著時，不直接把雲端整包套回來，避免使用者剛點到 100% 又被舊資料拉回 86%。
+      // V17：不讓雲端舊資料在剛編輯後立刻套回，避免 100% 先掉到 92% 又跳回 100%。
       if(activeModalCaseId) return false;
-      if(forceApply) return true;
       if(saveTimer || remoteSaveTimer) return false;
-      return Date.now() - lastLocalEditAt > REMOTE_APPLY_IDLE_MS;
+      const idleEnough = Date.now() - lastLocalEditAt > REMOTE_APPLY_IDLE_MS;
+      if(!idleEnough) return false;
+      if(forceApply) return true;
+      return true;
     }
 
     function holdRemoteRow(row, reason){
@@ -1291,6 +1297,11 @@
 
     function applyRemoteRow(row, silent=false){
       if(!row || !row.data) return;
+      if(!canApplyRemoteRow(false)){
+        pendingRemoteRow = row;
+        setSyncStatus('warn', '雲端有更新，但本機剛編輯過，先暫停套用，避免完成率 100%/92% 來回跳。');
+        return;
+      }
       const incoming = row.data;
       if(!incoming.assistants) incoming.assistants = defaultAssistants();
       if(!incoming.customActions) incoming.customActions = [];
@@ -1694,7 +1705,7 @@
 
     function setLastSyncTimeText(value){
       const el = document.getElementById('lastSyncTimeTopText');
-      if(el) el.textContent = `最後同步時間：${value || '—'}`;
+      if(el) el.textContent = `雲端最後同步：${value || '—'}`;
     }
 
     function fmtTime(iso){
@@ -1802,7 +1813,7 @@
     }
 
     function setSaveStatus(text, pending=false){
-      const displayText = pending ? text : `最後更新存檔時間：${formatLocalSaveTime(state?.lastSavedAt || '')}`;
+      const displayText = pending ? text : `本機最後存檔：${formatLocalSaveTime(state?.lastSavedAt || '')}`;
       ['globalSaveStatus','modalSaveStatus'].forEach(id => {
         const el = document.getElementById(id);
         if(!el) return;
