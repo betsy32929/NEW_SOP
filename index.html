@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEW本製作</title>
+  <title>V15_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -413,7 +413,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V15 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -430,7 +430,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">這版以 V14 為基底，改成兩台可共用同一份資料。</div>
+        <div class="tiny" style="margin-bottom:10px;">V15：以 V14 為基底，修正輸入視窗完成率 100% 被舊雲端資料拉回 86% 的問題；兩台仍共用同一份雲端資料。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -774,9 +774,11 @@
   </div>
 
   <script>
+    const APP_VERSION = 'V15';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
-    const SYNC_APP_ID = 'newbook_v14';
+    const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
+    const REMOTE_APPLY_IDLE_MS = 12000; // 本機停止操作 12 秒後，才允許套用其他電腦更新
     const ROC_YEAR = new Date().getFullYear() - 1911;
     const STATUS_TEXT = ['未做','已做','完成','完全完成'];
     const EDITABLE_TYPE_OPTIONS = [
@@ -1183,6 +1185,10 @@
       document.getElementById('syncDisconnectBtn').onclick = disconnectSupabase;
       document.getElementById('syncNowBtn').onclick = async () => {
         const box = document.getElementById('syncDebugBox');
+        if(activeModalCaseId){
+          syncCurrentModalInputsToState({ normalizeDates:false });
+          saveState();
+        }
         if(box){
           box.style.display = 'block';
           box.textContent = '診斷：手動同步中…';
@@ -1248,6 +1254,28 @@
       setSyncStatus('off', '已中斷雲端同步，目前只保留本機快取。');
     }
 
+    function canApplyRemoteRow(forceApply=false){
+      // 輸入視窗開著時，不直接把雲端整包套回來，避免使用者剛點到 100% 又被舊資料拉回 86%。
+      if(activeModalCaseId) return false;
+      if(forceApply) return true;
+      if(saveTimer || remoteSaveTimer) return false;
+      return Date.now() - lastLocalEditAt > REMOTE_APPLY_IDLE_MS;
+    }
+
+    function holdRemoteRow(row, reason){
+      pendingRemoteRow = row;
+      setSyncStatus('warn', reason || '另一台電腦有更新；本機正在編輯，先暫停套用以避免覆蓋目前輸入。');
+    }
+
+    function flushPendingRemoteIfSafe(){
+      if(!pendingRemoteRow) return false;
+      if(!canApplyRemoteRow(false)) return false;
+      const row = pendingRemoteRow;
+      pendingRemoteRow = null;
+      applyRemoteRow(row);
+      return true;
+    }
+
     async function ensureRemoteRow(){
       const { data, error } = await syncClient.from('app_state').select('app_id,data,revision,updated_at').eq('app_id', SYNC_APP_ID).maybeSingle();
       if(error) throw error;
@@ -1300,18 +1328,19 @@
         const row = rowRes.data;
         const changed = String(row.updated_at || '') !== String(remoteUpdatedAt || '') || Number(row.revision || 0) !== Number(remoteRevision || 0);
         if(!changed){
-          if(pendingRemoteRow && Date.now() - lastLocalEditAt > 2500){
-            applyRemoteRow(pendingRemoteRow);
-            pendingRemoteRow = null;
-          }
+          flushPendingRemoteIfSafe();
           return;
         }
-        if(forceApply || Date.now() - lastLocalEditAt > 2500){
+        if(canApplyRemoteRow(forceApply)){
           applyRemoteRow(row);
           pendingRemoteRow = null;
         } else {
-          pendingRemoteRow = row;
-          setSyncStatus('warn', '另一台有更新，等你這邊停下後會自動套用。');
+          holdRemoteRow(
+            row,
+            activeModalCaseId
+              ? '另一台電腦有更新；目前輸入視窗開啟中，先不套用，避免 100% 被舊資料覆蓋。請先按紅色「存檔」。'
+              : '另一台電腦有更新；等本機自動存檔完成後再套用。'
+          );
         }
       } catch(err){
         console.error(err);
@@ -1323,6 +1352,12 @@
       if(!syncClient) return;
       clearTimeout(remoteSaveTimer);
       try {
+        if(activeModalCaseId){
+          syncCurrentModalInputsToState({ normalizeDates:false });
+        }
+        state.lastSavedAt = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
         const payload = {
           app_id: SYNC_APP_ID,
           data: state,
@@ -1333,6 +1368,7 @@
         if(res.error) throw res.error;
         remoteRevision = Number(res.data?.revision || payload.revision);
         remoteUpdatedAt = res.data?.updated_at || payload.updated_at;
+        pendingRemoteRow = null;
         setLastSyncTimeText(fmtTime(remoteUpdatedAt));
         setSyncStatus('ok', '已同步到雲端。');
       } catch(err){
@@ -3808,6 +3844,7 @@
         if(syncClient){
           await remoteSaveNow();
         }
+        pendingRemoteRow = null;
 
         modalManualSavedSinceOpen = true;
         refreshCloseButtonState();
@@ -3872,6 +3909,9 @@
       modalManualSavedSinceOpen = false;
       refreshCloseButtonState();
       document.getElementById('caseModal').classList.remove('show');
+      setTimeout(() => {
+        if(pendingRemoteRow) flushPendingRemoteIfSafe();
+      }, 0);
     }
 
     function requestModalClose(){
@@ -4035,7 +4075,7 @@
         app: 'NEW本製作',
         appId: SYNC_APP_ID,
         exportedAt: new Date().toISOString(),
-        version: 'reward-json-v1',
+        version: 'V15_reward-json-v1',
         data: state
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type:'application/json;charset=utf-8;' });
