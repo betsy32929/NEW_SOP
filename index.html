@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V24_NEW本製作</title>
+  <title>V25_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V24：狀態篩選固定；封存/刪除在標題列第一排；封存刪除需二次確認 */
+    /* V25：編輯案件的「列印土增」新增「租件」按鈕 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -439,7 +439,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V24 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V25 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -456,7 +456,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V24：封存/刪除改成確認視窗，點「是」才執行，點「否」取消。</div>
+        <div class="tiny" style="margin-bottom:10px;">V25：編輯案件的「列印土增」新增「租件」按鈕。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -804,7 +804,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V24';
+    const APP_VERSION = 'V25';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -828,6 +828,11 @@
     ];
     const FIELD_DEFS = [{"group": "基本資料", "key": "clipNo", "label": "夾子", "type": "text", "placeholder": "例如：夾 12 號 / 夾子編號"}, {"group": "基本資料", "key": "entryDate", "label": "進案日期", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "基本資料", "key": "developer", "label": "開發", "type": "text", "placeholder": "業務名字"}, {"group": "基本資料", "key": "caseName", "label": "案名", "type": "text", "placeholder": "案件名稱"}, {"group": "基本資料", "key": "wangReview", "label": "王總審核", "type": "assistant"}, {"group": "基本資料", "key": "listPrice", "label": "開價", "type": "text", "placeholder": "例如：988萬"}, {"group": "基本資料", "key": "basePrice", "label": "底價", "type": "text", "placeholder": "例如：938萬"}, {"group": "基本資料", "key": "mainContractNo", "label": "主約編號", "type": "text", "placeholder": "契約編號"}, {"group": "基本資料", "key": "changeContractNo", "label": "契變編號", "type": "text", "placeholder": "契約編號 / 無"}, {"group": "基本資料", "key": "contractType", "label": "契種", "type": "select", "options": ["", "一般約", "專約"]}, {"group": "基本資料", "key": "percent", "label": "%數", "type": "text", "placeholder": "例如：4%"}, {"group": "基本資料", "key": "entrustStart", "label": "委託開始", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "基本資料", "key": "entrustEnd", "label": "委託結束", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "影像 / 圖資 / 謄本", "key": "photoNas", "label": "照片存檔Nas原檔", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "photoAnimation", "label": "照片動畫", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "mosaicBrightness", "label": "馬賽克&亮度", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "naming1234", "label": "命名1234", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "watermark", "label": "浮水印", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "aiFloorplan", "label": "繪AI格局圖", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "convertImages", "label": "轉存圖片", "type": "assistant"}, {"group": "影像 / 圖資 / 謄本", "key": "cadastralMap", "label": "地籍圖", "type": "assistantOrOption", "specialOptions": ["進案附", "大樓", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "buildingResult", "label": "建物成果圖", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "buildingTranscript", "label": "建物謄本", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "影像 / 圖資 / 謄本", "key": "landTranscript", "label": "土地謄本", "type": "assistantOrOption", "specialOptions": ["進案附", "無"]}, {"group": "內容整理 / 上傳", "key": "notebookFilenameEdit", "label": "記事本檔名編輯", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "currentA4", "label": "現況縮A4", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "contractContent", "label": "契約書內容", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "clientAdd", "label": "客戶新增", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "ckBuilding", "label": "CK建坪", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "ckLand", "label": "CK地坪", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "buildingUse", "label": "建物主要登記用途", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "keyPropertyData", "label": "Key物件資料", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "keyPropertyFeatures", "label": "Key物件特色", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "uploadPhotos", "label": "上傳照片", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "uploadFloorplan", "label": "上傳格局圖", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "websitePublic", "label": "官網上網", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "websiteInternal", "label": "內網上網", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "deedScan", "label": "契據掃描", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "contractNaming", "label": "契約命名", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "deedUpload", "label": "契據上傳", "type": "assistant"}, {"group": "內容整理 / 上傳", "key": "edManage", "label": "ED房管", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "內容整理 / 上傳", "key": "edUpload", "label": "ED上傳", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "printOwnership", "label": "列印產權", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printOwnershipNote", "label": "列印產權相關注意事項", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printLandTax", "label": "列印土增", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printNearby", "label": "列印周遭設施", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printDealPrice", "label": "列印成交行情", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "printCurrentSurvey", "label": "列印現詢調", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "goldExposure", "label": "黃金曝光", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "lineBossConfirm", "label": "LINE王總確認", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "goStrong", "label": "上強打", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "goHousefun", "label": "上好房", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "po591", "label": "PO591", "type": "assistantOrOption", "specialOptions": ["一般約", "王總說不用", "無"]}, {"group": "列印 / 曝光 / 後續", "key": "printColor", "label": "印彩色", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "addMasterList", "label": "新增總表", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "copyAdd", "label": "複製新增", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "summarySheet", "label": "統整表", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "newCover", "label": "新進封面", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "middlemanAmount", "label": "中人金額", "type": "text", "placeholder": "例如：1%、10萬、無"}, {"group": "列印 / 曝光 / 後續", "key": "middlemanNote", "label": "中人總表備註", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "companyNo", "label": "公司＃", "type": "text", "placeholder": "例如：公司#53、無"}, {"group": "列印 / 曝光 / 後續", "key": "labelPrint", "label": "標籤列印", "type": "assistantOrOption", "specialOptions": ["無"]}, {"group": "列印 / 曝光 / 後續", "key": "pptMake", "label": "PPT製作", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "pptLayout", "label": "PPT格局圖", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "pptAnimation", "label": "PPT動畫", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "applyZone", "label": "申請分區", "type": "optionOnly", "specialOptions": ["需申請", "土地標", "房屋"]}, {"group": "列印 / 曝光 / 後續", "key": "applyDate", "label": "申請日期", "type": "text", "placeholder": "例如：115/3/17", "dateAuto": true}, {"group": "列印 / 曝光 / 後續", "key": "companyArchive", "label": "公司物件存檔", "type": "triChecklist", "subitems": ["新進封面/草稿", "正", "反", "彩色", "A4簽名", "分區", "地籍圖", "建物成果圖", "謄本", "土增", "產權", "實價", "周遭設施", "現詢調", "權狀", "授權書"]}, {"group": "列印 / 曝光 / 後續", "key": "paperMainContract", "label": "紙本主約", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "paperChangeContract", "label": "紙本契變", "type": "assistant"}, {"group": "列印 / 曝光 / 後續", "key": "bookShelfLocation", "label": "物件本位置架上", "type": "locationInfo"}, {"group": "列印 / 曝光 / 後續", "key": "bookSide5Location", "label": "物件本位置旁5", "type": "locationInfo"}, {"group": "列印 / 曝光 / 後續", "key": "backCover", "label": "封背", "type": "assistant"}];
 
+    const printLandTaxDef = FIELD_DEFS.find(def => def.key === 'printLandTax');
+    if(printLandTaxDef){
+      printLandTaxDef.type = 'assistantOrOption';
+      printLandTaxDef.specialOptions = ['租件'];
+    }
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
     let state = loadState();
     mergeCustomActions();
