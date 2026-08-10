@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V26_NEW本製作</title>
+  <title>V27_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V26：編輯案件新增「銷售本製作」，排序在「公司物件存檔」下一個 */
+    /* V27：115/7/8 前進案的案件，「銷售本製作」自動記錄完成 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -439,7 +439,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V26 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V27 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -456,7 +456,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V26：編輯案件新增「銷售本製作」，排序在「公司物件存檔」下一個。</div>
+        <div class="tiny" style="margin-bottom:10px;">V27：115/7/8 前進案的案件，「銷售本製作」自動記錄完成。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -804,7 +804,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V26';
+    const APP_VERSION = 'V27';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -839,7 +839,8 @@
         group: '列印 / 曝光 / 後續',
         key: 'salesBookProduction',
         label: '銷售本製作',
-        type: 'assistant'
+        type: 'assistantOrOption',
+        specialOptions: ['自動完成']
       });
     }
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
@@ -1631,6 +1632,29 @@
       });
       if(typeof c.archived !== 'boolean') c.archived = false;
       if(typeof c.archivedAt !== 'string') c.archivedAt = '';
+      applySalesBookAutoCompletion(c);
+    }
+
+    function applySalesBookAutoCompletion(c){
+      const item = c?.items?.salesBookProduction;
+      if(!item) return false;
+      const entryParts = parseRocDateParts(fieldText(c, 'entryDate'));
+      const entryNumber = entryParts ? entryParts.rocYear * 10000 + entryParts.month * 100 + entryParts.day : 0;
+      const shouldAutoComplete = entryNumber > 0 && entryNumber < 1150708;
+      if(shouldAutoComplete){
+        if(String(item.assistant || '').trim() || String(item.option || '').trim()) return false;
+        item.option = '自動完成';
+        item.status = 2;
+        item.updatedAt = item.updatedAt || c.createdAt || new Date().toISOString();
+        return true;
+      }
+      if(item.option === '自動完成'){
+        item.option = '';
+        item.status = 0;
+        item.updatedAt = '';
+        return true;
+      }
+      return false;
     }
 
     function defaultItem(def){
@@ -3566,9 +3590,11 @@
           syncStatusWithContent(def, item);
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, true);
+          const salesBookAutoCompleted = key === 'entryDate' && applySalesBookAutoCompletion(c);
           touch(item);
           updateRowState(key);
           renderModalSummary(c);
+          if(salesBookAutoCompleted) renderModalActions(c);
           autoSaveNow();
           renderStats(); renderPendingTable(); renderSummaryTable();
         });
@@ -3850,6 +3876,7 @@
         syncStatusWithContent(def, item);
         touch(item);
       });
+      if(changedKeys.has('entryDate') && applySalesBookAutoCompletion(c)) changed = true;
       return changed;
     }
 
