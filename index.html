@@ -205,6 +205,7 @@
     .team-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
     .team-summary-card{padding:16px;border-radius:20px;border:2px solid var(--team-color,#93c5fd);background:linear-gradient(180deg,#fff 0%,var(--team-soft,#eff6ff) 100%)}
     .team-summary-card.winner{box-shadow:0 12px 28px rgba(245,158,11,.25);border-color:#f59e0b}
+    .team-summary-card.grand-total{--team-color:#7c3aed;--team-soft:#f3e8ff}
     .team-summary-card .team-name{font-size:20px;font-weight:1000}.team-summary-card .team-total{font-size:34px;font-weight:1000;margin:8px 0}.team-summary-card .team-split{font-size:13px;color:#475569;font-weight:800}
     .team-winner-banner{padding:16px 20px;border-radius:20px;background:linear-gradient(135deg,#fef3c7 0%,#ffedd5 100%);border:2px solid #fbbf24;color:#92400e;font-size:20px;font-weight:1000;text-align:center}
     .team-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -942,7 +943,8 @@
     const TEAM_DEFAULT_ROSTER = {
       A:[['黃文成','組長'],['買淑玲','組員'],['林顯昌','組員'],['楊巧甄','組員'],['田庭宇','組員'],['陳珮菁','組員'],['柯育婷','組員'],['阮氏金水','組員']],
       B:[['宋喜輝','組長'],['陳信良','組員'],['陳帝元','組員'],['王俞云','組員'],['林俊嘉','組員'],['張小曼','組員'],['謝馨儀','組員'],['林志銘','組員']],
-      C:[['劉勝仁','組長'],['吳佩玲','組員'],['李亭曄','組員'],['林姿岑','組員'],['郭建佑','組員'],['余沛臻','組員'],['葉翊緁','組員']]
+      C:[['劉勝仁','組長'],['吳佩玲','組員'],['李亭曄','組員'],['林姿岑','組員'],['郭建佑','組員'],['余沛臻','組員'],['葉翊緁','組員']],
+      D:[['蔡宇育','組長']]
     };
 
     function dateToRocText(date){ return `${date.getFullYear()-1911}/${date.getMonth()+1}/${date.getDate()}`; }
@@ -962,8 +964,9 @@
       if(!cfg.startDate) cfg.startDate = week.start;
       if(!cfg.endDate) cfg.endDate = week.end;
       if(!cfg.teams || typeof cfg.teams !== 'object') cfg.teams = cloneTeamDefaultRoster();
+      if(!Array.isArray(cfg.teams.D)) cfg.teams.D = cloneTeamDefaultRoster().D;
       if(!cfg.teamNames || typeof cfg.teamNames !== 'object') cfg.teamNames = {A:'A組',B:'B組',C:'C組'};
-      ['A','B','C'].forEach(team => {
+      ['A','B','C','D'].forEach(team => {
         if(!Array.isArray(cfg.teams[team])) cfg.teams[team] = [];
         const leaderIndex=cfg.teams[team].findIndex(member=>member.role==='組長');
         if(leaderIndex<0 && cfg.teams[team].length) cfg.teams[team][0].role='組長';
@@ -984,7 +987,7 @@
     function computeTeamStats(){
       const cfg = ensureTeamStatsConfig();
       const memberMap = new Map();
-      ['A','B','C'].forEach(team => cfg.teams[team].forEach(member => { const name=canonicalDeveloperName(member.name); if(name) memberMap.set(name,{team,role:member.role==='組長'?'組長':'組員',name}); }));
+      ['A','B','C','D'].forEach(team => cfg.teams[team].forEach(member => { const name=canonicalDeveloperName(member.name); if(name) memberMap.set(name,{team,role:member.role==='組長'?'組長':'組員',name}); }));
       const people = new Map(); memberMap.forEach(info => people.set(info.name,{...info,a:0,g:0,total:0}));
       const details = [];
       allCases().forEach(c => {
@@ -1000,10 +1003,11 @@
           details.push({entryDate,team:info.team,role:info.role,name,caseName:caseNameOf(c),contractNo,type,share});
         });
       });
-      const teamRows=['A','B','C'].map(team => {
+      const teamRows=['A','B','C','D'].map(team => {
         const rows=[...people.values()].filter(x=>x.team===team); return {team,a:rows.reduce((n,x)=>n+x.a,0),g:rows.reduce((n,x)=>n+x.g,0),total:rows.reduce((n,x)=>n+x.total,0)};
       });
-      const max=Math.max(...teamRows.map(x=>x.total),0), winners=max>0?teamRows.filter(x=>x.total===max).map(x=>x.team):[];
+      const visibleTeamRows=teamRows.filter(x=>x.team!=='D');
+      const max=Math.max(...visibleTeamRows.map(x=>x.total),0), winners=max>0?visibleTeamRows.filter(x=>x.total===max).map(x=>x.team):[];
       return {cfg,people:[...people.values()].sort((a,b)=>a.team.localeCompare(b.team)||(a.role==='組長'?-1:b.role==='組長'?1:0)||b.total-a.total),teamRows,details:details.sort((a,b)=>compareRocDateDesc(a.entryDate,b.entryDate)),winners,max};
     }
     function renderTeamRosterEditor(data){
@@ -1020,9 +1024,12 @@
       const data=computeTeamStats(), setVal=(id,v)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v;}; setVal('teamStartDateInput',data.cfg.startDate);setVal('teamEndDateInput',data.cfg.endDate);
       const hint=document.getElementById('teamPeriodHint'); if(hint) hint.textContent=`統計期間：${data.cfg.startDate} ～ ${data.cfg.endDate}`;
       const banner=document.getElementById('teamWinnerBanner'); if(banner) banner.textContent=data.winners.length?`🏆 目前最高：${data.winners.map(x=>getTeamDisplayName(x,data.cfg)).join('、')}（${formatTeamCount(data.max)} 件）`:'目前尚無件數';
-      const summary=document.getElementById('teamSummaryGrid'); if(summary) summary.innerHTML=data.teamRows.map(row=>{const t=TEAM_COLORS[row.team];return `<div class="team-summary-card ${data.winners.includes(row.team)?'winner':''}" style="--team-color:${t.color};--team-soft:${t.soft}"><div class="team-name">${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</div><div class="team-total">${formatTeamCount(row.total)} 件</div><div class="team-split">專簽 A：${formatTeamCount(row.a)} 件　一般約 G：${formatTeamCount(row.g)} 件</div></div>`;}).join('');
-      const personBody=document.getElementById('teamPersonTableBody'); if(personBody) personBody.innerHTML=data.people.length?data.people.map(row=>`<tr><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td class="team-type-a">${formatTeamCount(row.a)}</td><td class="team-type-g">${formatTeamCount(row.g)}</td><td><strong>${formatTeamCount(row.total)}</strong></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">尚未設定組員</div></td></tr>';
-      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=data.details.length?data.details.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
+      const visibleTeamRows=data.teamRows.filter(row=>row.team!=='D'), grandTotal=data.teamRows.reduce((sum,row)=>sum+row.total,0), grandA=data.teamRows.reduce((sum,row)=>sum+row.a,0), grandG=data.teamRows.reduce((sum,row)=>sum+row.g,0);
+      const summary=document.getElementById('teamSummaryGrid'); if(summary) summary.innerHTML=visibleTeamRows.map(row=>{const t=TEAM_COLORS[row.team];return `<div class="team-summary-card ${data.winners.includes(row.team)?'winner':''}" style="--team-color:${t.color};--team-soft:${t.soft}"><div class="team-name">${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</div><div class="team-total">${formatTeamCount(row.total)} 件</div><div class="team-split">專簽 A：${formatTeamCount(row.a)} 件　一般約 G：${formatTeamCount(row.g)} 件</div></div>`;}).join('')+`<div class="team-summary-card grand-total"><div class="team-name">總計（含 D 組）</div><div class="team-total">${formatTeamCount(grandTotal)} 件</div><div class="team-split">專簽 A：${formatTeamCount(grandA)} 件　一般約 G：${formatTeamCount(grandG)} 件</div></div>`;
+      const visiblePeople=data.people.filter(row=>row.team!=='D');
+      const personBody=document.getElementById('teamPersonTableBody'); if(personBody) personBody.innerHTML=visiblePeople.length?visiblePeople.map(row=>`<tr><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td class="team-type-a">${formatTeamCount(row.a)}</td><td class="team-type-g">${formatTeamCount(row.g)}</td><td><strong>${formatTeamCount(row.total)}</strong></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">尚未設定組員</div></td></tr>';
+      const visibleDetails=data.details.filter(row=>row.team!=='D');
+      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=visibleDetails.length?visibleDetails.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
       renderTeamRosterEditor(data);
     }
     function readTeamDateInputs(){ const cfg=ensureTeamStatsConfig(); cfg.startDate=normalizeRocDate(document.getElementById('teamStartDateInput')?.value||cfg.startDate);cfg.endDate=normalizeRocDate(document.getElementById('teamEndDateInput')?.value||cfg.endDate);cfg.autoWeek=false;scheduleAutoSave();renderTeamStats(); }
