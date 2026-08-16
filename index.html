@@ -208,8 +208,8 @@
     .team-summary-card .team-name{font-size:20px;font-weight:1000}.team-summary-card .team-total{font-size:34px;font-weight:1000;margin:8px 0}.team-summary-card .team-split{font-size:13px;color:#475569;font-weight:800}
     .team-winner-banner{padding:16px 20px;border-radius:20px;background:linear-gradient(135deg,#fef3c7 0%,#ffedd5 100%);border:2px solid #fbbf24;color:#92400e;font-size:20px;font-weight:1000;text-align:center}
     .team-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .team-roster-card{border:2px solid var(--team-color,#93c5fd);border-radius:18px;overflow:hidden;background:#fff}.team-roster-head{padding:10px 12px;background:var(--team-soft,#eff6ff);font-size:18px;font-weight:1000;display:flex;justify-content:space-between;align-items:center}.team-roster-body{padding:10px;display:grid;gap:8px}
-    .team-member-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:6px}.team-member-row input,.team-member-row select{min-width:0}.team-member-row button{padding:6px}
+    .team-roster-card{border:2px solid var(--team-color,#93c5fd);border-radius:18px;overflow:hidden;background:#fff}.team-roster-head{padding:10px 12px;background:var(--team-soft,#eff6ff);font-size:18px;font-weight:1000;display:flex;justify-content:space-between;align-items:center;gap:8px}.team-roster-title{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.team-roster-title .field-input{min-width:0;font-weight:1000;background:#fff}.team-roster-total{white-space:nowrap;padding:7px 10px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:13px;font-weight:1000}
+    .team-roster-body{padding:10px;display:grid;gap:8px}.team-member-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:6px;padding:6px;border-radius:12px}.team-member-row.is-leader{background:linear-gradient(135deg,#fff4c4 0%,#ffedd5 100%);border:1px solid #fbbf24}.team-member-row input,.team-member-row select{min-width:0}.team-member-row button{padding:6px}
     .team-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px}.team-table-wrap table{min-width:760px}.team-type-a{color:#b91c1c;font-weight:1000}.team-type-g{color:#1d4ed8;font-weight:1000}
     @media(max-width:900px){.team-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.team-roster-grid{grid-template-columns:1fr}}
     @media(max-width:560px){.team-summary-grid{grid-template-columns:1fr}.team-date-bar label{min-width:100%;flex:1}.team-winner-banner{font-size:17px}}
@@ -839,8 +839,8 @@
           <div id="teamRosterGrid" class="team-roster-grid" style="margin-top:12px"></div>
           <div class="top-actions" style="margin-top:10px"><button type="button" class="ghost" id="teamResetRosterBtn">恢復照片預設名單</button></div>
         </details>
-        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>個人件數</span><span class="tiny">同一案件有多位開發時，每位各計 1 件</span></div><div class="team-table-wrap"><table><thead><tr><th>組別</th><th>身分</th><th>姓名</th><th>專簽 A</th><th>一般約 G</th><th>合計</th></tr></thead><tbody id="teamPersonTableBody"></tbody></table></div></div>
-        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>契約明細</span><span class="tiny">只列出期間內、契約編號含 A 或 G 的案件</span></div><div class="team-table-wrap"><table><thead><tr><th>進案日期</th><th>組別</th><th>身分</th><th>開發</th><th>案名</th><th>契約編號</th><th>契約類型</th></tr></thead><tbody id="teamCaseTableBody"></tbody></table></div></div>
+        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>個人件數</span><span class="tiny">同一案件依共同開發人數平均分配，例如 2 人各計 0.5 件</span></div><div class="team-table-wrap"><table><thead><tr><th>組別</th><th>身分</th><th>姓名</th><th>專簽 A</th><th>一般約 G</th><th>合計</th></tr></thead><tbody id="teamPersonTableBody"></tbody></table></div></div>
+        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>契約明細</span><span class="tiny">只列出期間內、契約編號含 A 或 G 的案件</span></div><div class="team-table-wrap"><table><thead><tr><th>進案日期</th><th>組別</th><th>身分</th><th>開發</th><th>案名</th><th>契約編號</th><th>契約類型</th><th>計入件數</th></tr></thead><tbody id="teamCaseTableBody"></tbody></table></div></div>
         <div class="top-actions" style="justify-content:flex-end"><button class="ghost" id="teamStatsCloseBtnBottom">關閉</button></div>
       </div>
     </div>
@@ -962,9 +962,19 @@
       if(!cfg.startDate) cfg.startDate = week.start;
       if(!cfg.endDate) cfg.endDate = week.end;
       if(!cfg.teams || typeof cfg.teams !== 'object') cfg.teams = cloneTeamDefaultRoster();
-      ['A','B','C'].forEach(team => { if(!Array.isArray(cfg.teams[team])) cfg.teams[team] = []; });
+      if(!cfg.teamNames || typeof cfg.teamNames !== 'object') cfg.teamNames = {A:'A組',B:'B組',C:'C組'};
+      ['A','B','C'].forEach(team => {
+        if(!Array.isArray(cfg.teams[team])) cfg.teams[team] = [];
+        const leaderIndex=cfg.teams[team].findIndex(member=>member.role==='組長');
+        if(leaderIndex<0 && cfg.teams[team].length) cfg.teams[team][0].role='組長';
+        else if(leaderIndex>0) cfg.teams[team].unshift(cfg.teams[team].splice(leaderIndex,1)[0]);
+        cfg.teams[team].forEach((member,index)=>member.role=index===0?'組長':'組員');
+        if(!String(cfg.teamNames[team]||'').trim()) cfg.teamNames[team]=`${team}組`;
+      });
       return cfg;
     }
+    function getTeamDisplayName(team,cfg=ensureTeamStatsConfig()){ return String(cfg.teamNames?.[team]||`${team}組`).trim(); }
+    function formatTeamCount(value){ const rounded=Math.round(Number(value||0)*100)/100; return Number.isInteger(rounded)?String(rounded):String(rounded); }
     function getTeamContractType(contractNo){
       const value = String(contractNo || '').toUpperCase();
       if(value.includes('A')) return 'A';
@@ -982,34 +992,38 @@
         if(!entryDate || !isRocDateBetween(entryDate,cfg.startDate,cfg.endDate)) return;
         const contractNo = fieldText(c,'mainContractNo');
         const type = getTeamContractType(contractNo); if(!type) return;
-        getRewardDeveloperList(fieldText(c,'developer')).forEach(rawName => {
+        const developerList=getRewardDeveloperList(fieldText(c,'developer'));
+        const share=developerList.length?1/developerList.length:0;
+        developerList.forEach(rawName => {
           const name=canonicalDeveloperName(rawName), info=memberMap.get(name); if(!info) return;
-          const row=people.get(name); row[type.toLowerCase()] += 1; row.total += 1;
-          details.push({entryDate,team:info.team,role:info.role,name,caseName:caseNameOf(c),contractNo,type});
+          const row=people.get(name); row[type.toLowerCase()] += share; row.total += share;
+          details.push({entryDate,team:info.team,role:info.role,name,caseName:caseNameOf(c),contractNo,type,share});
         });
       });
       const teamRows=['A','B','C'].map(team => {
         const rows=[...people.values()].filter(x=>x.team===team); return {team,a:rows.reduce((n,x)=>n+x.a,0),g:rows.reduce((n,x)=>n+x.g,0),total:rows.reduce((n,x)=>n+x.total,0)};
       });
       const max=Math.max(...teamRows.map(x=>x.total),0), winners=max>0?teamRows.filter(x=>x.total===max).map(x=>x.team):[];
-      return {cfg,people:[...people.values()].sort((a,b)=>a.team.localeCompare(b.team)||a.role.localeCompare(b.role)||b.total-a.total),teamRows,details:details.sort((a,b)=>compareRocDateDesc(a.entryDate,b.entryDate)),winners,max};
+      return {cfg,people:[...people.values()].sort((a,b)=>a.team.localeCompare(b.team)||(a.role==='組長'?-1:b.role==='組長'?1:0)||b.total-a.total),teamRows,details:details.sort((a,b)=>compareRocDateDesc(a.entryDate,b.entryDate)),winners,max};
     }
-    function renderTeamRosterEditor(){
-      const cfg=ensureTeamStatsConfig(), host=document.getElementById('teamRosterGrid'); if(!host) return;
-      host.innerHTML=['A','B','C'].map(team=>{ const theme=TEAM_COLORS[team]; return `<div class="team-roster-card" style="--team-color:${theme.color};--team-soft:${theme.soft}"><div class="team-roster-head"><span>${team} 組</span><button type="button" class="soft" onclick="addTeamMember('${team}')">＋新增</button></div><div class="team-roster-body">${cfg.teams[team].map((m,i)=>`<div class="team-member-row"><input class="field-input" value="${escapeAttr(m.name||'')}" placeholder="姓名" onchange="updateTeamMember('${team}',${i},'name',this.value)"><select class="field-select" onchange="updateTeamMember('${team}',${i},'role',this.value)"><option ${m.role==='組長'?'selected':''}>組長</option><option ${m.role!=='組長'?'selected':''}>組員</option></select><button type="button" class="ghost" title="移除" onclick="removeTeamMember('${team}',${i})">×</button></div>`).join('')}</div></div>`; }).join('');
+    function renderTeamRosterEditor(data){
+      const cfg=data?.cfg||ensureTeamStatsConfig(), host=document.getElementById('teamRosterGrid'); if(!host) return;
+      const totals=new Map((data?.teamRows||[]).map(row=>[row.team,row.total]));
+      host.innerHTML=['A','B','C'].map(team=>{ const theme=TEAM_COLORS[team]; return `<div class="team-roster-card" style="--team-color:${theme.color};--team-soft:${theme.soft}"><div class="team-roster-head"><div class="team-roster-title"><span>${team}</span><input class="field-input" value="${escapeAttr(getTeamDisplayName(team,cfg))}" placeholder="輸入組別名稱" onchange="updateTeamName('${team}',this.value)"><span class="team-roster-total">共 ${formatTeamCount(totals.get(team)||0)} 件</span></div><button type="button" class="soft" onclick="addTeamMember('${team}')">＋新增</button></div><div class="team-roster-body">${cfg.teams[team].map((m,i)=>`<div class="team-member-row ${m.role==='組長'?'is-leader':''}"><input class="field-input" value="${escapeAttr(m.name||'')}" placeholder="姓名" onchange="updateTeamMember('${team}',${i},'name',this.value)"><select class="field-select" onchange="updateTeamMember('${team}',${i},'role',this.value)"><option ${m.role==='組長'?'selected':''}>組長</option><option ${m.role!=='組長'?'selected':''}>組員</option></select><button type="button" class="ghost" title="移除" onclick="removeTeamMember('${team}',${i})">×</button></div>`).join('')}</div></div>`; }).join('');
     }
-    function updateTeamMember(team,index,key,value){ const cfg=ensureTeamStatsConfig(); if(cfg.teams[team]?.[index]) cfg.teams[team][index][key]=key==='name'?String(value).trim():value; scheduleAutoSave(); renderTeamStats(); }
+    function updateTeamName(team,value){ const cfg=ensureTeamStatsConfig(); cfg.teamNames[team]=String(value||'').trim()||`${team}組`; scheduleAutoSave(); renderTeamStats(); }
+    function updateTeamMember(team,index,key,value){ const cfg=ensureTeamStatsConfig(); const member=cfg.teams[team]?.[index]; if(!member)return; if(key==='role'&&value==='組長'){cfg.teams[team].forEach(item=>item.role='組員');member.role='組長';cfg.teams[team].unshift(cfg.teams[team].splice(index,1)[0]);}else member[key]=key==='name'?String(value).trim():value;scheduleAutoSave();renderTeamStats(); }
     function addTeamMember(team){ const cfg=ensureTeamStatsConfig(); cfg.teams[team].push({name:'',role:'組員'}); scheduleAutoSave(); renderTeamStats(); }
     function removeTeamMember(team,index){ const cfg=ensureTeamStatsConfig(); cfg.teams[team].splice(index,1); scheduleAutoSave(); renderTeamStats(); }
     function resetTeamRoster(){ if(!confirm('確定要恢復照片中的 A／B／C 組預設名單嗎？')) return; ensureTeamStatsConfig().teams=cloneTeamDefaultRoster(); scheduleAutoSave(); renderTeamStats(); }
     function renderTeamStats(){
       const data=computeTeamStats(), setVal=(id,v)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v;}; setVal('teamStartDateInput',data.cfg.startDate);setVal('teamEndDateInput',data.cfg.endDate);
       const hint=document.getElementById('teamPeriodHint'); if(hint) hint.textContent=`統計期間：${data.cfg.startDate} ～ ${data.cfg.endDate}`;
-      const banner=document.getElementById('teamWinnerBanner'); if(banner) banner.textContent=data.winners.length?`🏆 目前最高：${data.winners.map(x=>x+'組').join('、')}（${data.max} 件）`:'目前尚無件數';
-      const summary=document.getElementById('teamSummaryGrid'); if(summary) summary.innerHTML=data.teamRows.map(row=>{const t=TEAM_COLORS[row.team];return `<div class="team-summary-card ${data.winners.includes(row.team)?'winner':''}" style="--team-color:${t.color};--team-soft:${t.soft}"><div class="team-name">${row.team} 組</div><div class="team-total">${row.total} 件</div><div class="team-split">專簽 A：${row.a} 件　一般約 G：${row.g} 件</div></div>`;}).join('');
-      const personBody=document.getElementById('teamPersonTableBody'); if(personBody) personBody.innerHTML=data.people.length?data.people.map(row=>`<tr><td><strong>${row.team}組</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td class="team-type-a">${row.a}</td><td class="team-type-g">${row.g}</td><td><strong>${row.total}</strong></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">尚未設定組員</div></td></tr>';
-      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=data.details.length?data.details.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${row.team}組</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td></tr>`).join(''):'<tr><td colspan="7"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
-      renderTeamRosterEditor();
+      const banner=document.getElementById('teamWinnerBanner'); if(banner) banner.textContent=data.winners.length?`🏆 目前最高：${data.winners.map(x=>getTeamDisplayName(x,data.cfg)).join('、')}（${formatTeamCount(data.max)} 件）`:'目前尚無件數';
+      const summary=document.getElementById('teamSummaryGrid'); if(summary) summary.innerHTML=data.teamRows.map(row=>{const t=TEAM_COLORS[row.team];return `<div class="team-summary-card ${data.winners.includes(row.team)?'winner':''}" style="--team-color:${t.color};--team-soft:${t.soft}"><div class="team-name">${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</div><div class="team-total">${formatTeamCount(row.total)} 件</div><div class="team-split">專簽 A：${formatTeamCount(row.a)} 件　一般約 G：${formatTeamCount(row.g)} 件</div></div>`;}).join('');
+      const personBody=document.getElementById('teamPersonTableBody'); if(personBody) personBody.innerHTML=data.people.length?data.people.map(row=>`<tr><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td class="team-type-a">${formatTeamCount(row.a)}</td><td class="team-type-g">${formatTeamCount(row.g)}</td><td><strong>${formatTeamCount(row.total)}</strong></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">尚未設定組員</div></td></tr>';
+      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=data.details.length?data.details.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
+      renderTeamRosterEditor(data);
     }
     function readTeamDateInputs(){ const cfg=ensureTeamStatsConfig(); cfg.startDate=normalizeRocDate(document.getElementById('teamStartDateInput')?.value||cfg.startDate);cfg.endDate=normalizeRocDate(document.getElementById('teamEndDateInput')?.value||cfg.endDate);cfg.autoWeek=false;scheduleAutoSave();renderTeamStats(); }
     function setTeamThisWeek(){ const week=getCurrentWeekRange(),cfg=ensureTeamStatsConfig();cfg.startDate=week.start;cfg.endDate=week.end;cfg.weekKey=week.start;cfg.autoWeek=true;scheduleAutoSave();renderTeamStats(); }
