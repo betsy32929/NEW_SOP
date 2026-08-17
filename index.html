@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V28_NEW本製作</title>
+  <title>V29_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V28：組別件數統計改為 A／B／C 組員件數橫向對照表 */
+    /* V29：移除重複個人件數表，放大組別件數並強化最高組別呈現 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -212,19 +212,23 @@
     .team-comparison-table th,.team-comparison-table td{padding:10px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
     .team-comparison-table tr:last-child td{border-bottom:0}.team-comparison-table th:last-child,.team-comparison-table td:last-child{border-right:0}
     .team-comparison-table .team-group-head{font-size:20px;font-weight:1000;background:var(--team-soft,#eff6ff);color:#0f172a;border-top:4px solid var(--team-color,#93c5fd)}
-    .team-comparison-table .team-group-head .team-head-total{display:block;margin-top:3px;font-size:12px;color:#475569}
+    .team-comparison-table .team-group-head .team-head-total{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:18px;line-height:1.2;font-weight:1000;color:#0f172a}
     .team-comparison-table .team-sub-head{font-size:14px;font-weight:1000;background:#f8fafc}
     .team-comparison-table .team-member-name{text-align:left;font-weight:900}.team-comparison-table .team-member-count{font-size:18px;font-weight:1000}
     .team-comparison-table .team-grand-head{width:150px;background:#ede9fe;border-top:4px solid #7c3aed;font-size:20px;font-weight:1000}
     .team-comparison-table .team-grand-total{background:linear-gradient(180deg,#f5f3ff 0%,#ede9fe 100%);color:#5b21b6;font-size:36px;font-weight:1000;vertical-align:middle}
     .team-comparison-table .team-grand-total small{display:block;margin-top:6px;color:#6d28d9;font-size:12px}
-    .team-winner-banner{padding:16px 20px;border-radius:20px;background:linear-gradient(135deg,#fef3c7 0%,#ffedd5 100%);border:2px solid #fbbf24;color:#92400e;font-size:20px;font-weight:1000;text-align:center}
+    .team-winner-banner{position:relative;overflow:hidden;display:grid;gap:5px;padding:20px 24px;border-radius:24px;background:linear-gradient(135deg,#fff7cc 0%,#ffd86b 48%,#ffb94e 100%);border:3px solid #f59e0b;color:#78350f;text-align:center;box-shadow:0 14px 34px rgba(245,158,11,.32)}
+    .team-winner-banner::before,.team-winner-banner::after{content:'✦';position:absolute;color:rgba(255,255,255,.72);font-size:42px;line-height:1}.team-winner-banner::before{left:18px;top:10px}.team-winner-banner::after{right:18px;bottom:8px}
+    .team-winner-banner.is-empty{display:block;padding:16px 20px;background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 100%);border:2px solid #cbd5e1;color:#64748b;box-shadow:none;font-size:18px;font-weight:1000}
+    .team-winner-banner.is-empty::before,.team-winner-banner.is-empty::after{display:none}
+    .team-winner-kicker{font-size:17px;font-weight:1000;letter-spacing:.12em}.team-winner-name{font-size:28px;line-height:1.25;font-weight:1000;word-break:break-word;text-shadow:0 1px 0 rgba(255,255,255,.8)}.team-winner-count{justify-self:center;padding:5px 16px;border-radius:999px;background:rgba(255,255,255,.82);border:2px solid rgba(180,83,9,.3);font-size:20px;font-weight:1000}
     .team-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
     .team-roster-card{border:2px solid var(--team-color,#93c5fd);border-radius:18px;overflow:hidden;background:#fff}.team-roster-head{padding:10px 12px;background:var(--team-soft,#eff6ff);font-size:18px;font-weight:1000;display:flex;justify-content:space-between;align-items:center;gap:8px}.team-roster-title{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.team-roster-title .field-input{min-width:0;font-weight:1000;background:#fff}.team-roster-total{white-space:nowrap;padding:7px 10px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:13px;font-weight:1000}
     .team-roster-body{padding:10px;display:grid;gap:8px}.team-member-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:6px;padding:6px;border-radius:12px}.team-member-row.is-leader{background:linear-gradient(135deg,#fff4c4 0%,#ffedd5 100%);border:1px solid #fbbf24}.team-member-row input,.team-member-row select{min-width:0}.team-member-row button{padding:6px}
     .team-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px}.team-table-wrap table{min-width:760px}.team-type-a{color:#b91c1c;font-weight:1000}.team-type-g{color:#1d4ed8;font-weight:1000}
     @media(max-width:900px){.team-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.team-roster-grid{grid-template-columns:1fr}}
-    @media(max-width:560px){.team-summary-grid{grid-template-columns:1fr}.team-date-bar label{min-width:100%;flex:1}.team-winner-banner{font-size:17px}}
+    @media(max-width:560px){.team-summary-grid{grid-template-columns:1fr}.team-date-bar label{min-width:100%;flex:1}.team-winner-name{font-size:22px}.team-winner-count{font-size:18px}}
     .reward-setting-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; align-items:end}
     .reward-summary-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
     .reward-metric{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f5f9ff 100%)}
@@ -465,7 +469,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V28 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V29 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -483,7 +487,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V28：組別件數統計改為 A／B／C 組員件數橫向對照表。</div>
+        <div class="tiny" style="margin-bottom:10px;">V29：移除重複個人件數表，放大組別件數並強化最高組別呈現。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -851,7 +855,6 @@
           <div id="teamRosterGrid" class="team-roster-grid" style="margin-top:12px"></div>
           <div class="top-actions" style="margin-top:10px"><button type="button" class="ghost" id="teamResetRosterBtn">恢復照片預設名單</button></div>
         </details>
-        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>個人件數</span><span class="tiny">同一案件依共同開發人數平均分配，例如 2 人各計 0.5 件</span></div><div class="team-table-wrap"><table><thead><tr><th>組別</th><th>身分</th><th>姓名</th><th>專簽 A</th><th>一般約 G</th><th>合計</th></tr></thead><tbody id="teamPersonTableBody"></tbody></table></div></div>
         <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>契約明細</span><span class="tiny">只列出期間內、契約編號含 A 或 G 的案件</span></div><div class="team-table-wrap"><table><thead><tr><th>進案日期</th><th>組別</th><th>身分</th><th>開發</th><th>案名</th><th>契約編號</th><th>契約類型</th><th>計入件數</th></tr></thead><tbody id="teamCaseTableBody"></tbody></table></div></div>
         <div class="top-actions" style="justify-content:flex-end"><button class="ghost" id="teamStatsCloseBtnBottom">關閉</button></div>
       </div>
@@ -859,7 +862,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V28';
+    const APP_VERSION = 'V29';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1057,12 +1060,16 @@
     function renderTeamStats(){
       const data=computeTeamStats(), setVal=(id,v)=>{const el=document.getElementById(id);if(el&&document.activeElement!==el)el.value=v;}; setVal('teamStartDateInput',data.cfg.startDate);setVal('teamEndDateInput',data.cfg.endDate);
       const hint=document.getElementById('teamPeriodHint'); if(hint) hint.textContent=`統計期間：${data.cfg.startDate} ～ ${data.cfg.endDate}`;
-      const banner=document.getElementById('teamWinnerBanner'); if(banner) banner.textContent=data.winners.length?`🏆 目前最高：${data.winners.map(x=>getTeamDisplayName(x,data.cfg)).join('、')}（${formatTeamCount(data.max)} 件）`:'目前尚無件數';
+      const banner=document.getElementById('teamWinnerBanner');
+      if(banner){
+        banner.classList.toggle('is-empty', !data.winners.length);
+        banner.innerHTML=data.winners.length
+          ? `<div class="team-winner-kicker">🏆 目前最高</div><div class="team-winner-name">${data.winners.map(x=>escapeHtml(getTeamDisplayName(x,data.cfg))).join('、')}</div><div class="team-winner-count">${formatTeamCount(data.max)} 件</div>`
+          : '目前尚無件數';
+      }
       const grandTotal=data.teamRows.reduce((sum,row)=>sum+row.total,0);
       const summary=document.getElementById('teamSummaryGrid');
       if(summary) summary.innerHTML=renderTeamComparisonTable(data, grandTotal);
-      const visiblePeople=data.people.filter(row=>row.team!=='D');
-      const personBody=document.getElementById('teamPersonTableBody'); if(personBody) personBody.innerHTML=visiblePeople.length?visiblePeople.map(row=>`<tr><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td class="team-type-a">${formatTeamCount(row.a)}</td><td class="team-type-g">${formatTeamCount(row.g)}</td><td><strong>${formatTeamCount(row.total)}</strong></td></tr>`).join(''):'<tr><td colspan="6"><div class="empty">尚未設定組員</div></td></tr>';
       const visibleDetails=data.details.filter(row=>row.team!=='D');
       const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=visibleDetails.length?visibleDetails.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
       renderTeamRosterEditor(data);
