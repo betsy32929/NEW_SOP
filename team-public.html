@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>組別件數統計公開版</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{--line:#cbd5e1}
+    body{margin:0;min-height:100vh;padding:18px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;color:#172033;background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 48%,#dcfce7 100%)}
+    .toolbar{width:min(1320px,100%);margin:0 auto 12px;display:flex;justify-content:flex-end}
+    .print-btn{padding:10px 22px;border:0;border-radius:999px;background:#1d4ed8;color:#fff;font-size:16px;font-weight:1000;cursor:pointer;box-shadow:0 8px 18px rgba(29,78,216,.25)}
+    .wrap{width:min(1320px,100%);margin:0 auto;display:grid;gap:16px}
+    .winner{position:relative;overflow:hidden;display:grid;gap:6px;padding:20px 24px;border:3px solid #f59e0b;border-radius:24px;text-align:center;background:linear-gradient(135deg,#fff7cc 0%,#ffd86b 48%,#ffb94e 100%);color:#78350f;box-shadow:0 14px 34px rgba(245,158,11,.3)}
+    .winner::before,.winner::after{content:'✦';position:absolute;color:rgba(255,255,255,.72);font-size:42px}.winner::before{left:18px;top:8px}.winner::after{right:18px;bottom:7px}
+    .winner-kicker{font-size:18px;font-weight:1000;letter-spacing:.12em}.winner-name{font-size:30px;line-height:1.22;font-weight:1000;word-break:break-word;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+    .winner.empty{display:block;background:#f8fafc;border-color:#cbd5e1;color:#64748b;font-size:18px;font-weight:1000;box-shadow:none}.winner.empty::before,.winner.empty::after{display:none}
+    .comparison-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,.1)}
+    table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0;table-layout:fixed}
+    th,td{padding:9px 11px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}tr:last-child td{border-bottom:0}th:last-child,td:last-child{border-right:0}
+    .team-group-head{font-size:19px;font-weight:1000;background:var(--team-soft,#eff6ff);color:#0f172a;border-top:4px solid var(--team-color,#93c5fd)}
+    .team-head-name{min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.25;word-break:break-word}
+    .team-head-total{display:inline-block;margin-top:7px;padding:4px 12px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:17px;line-height:1.2;font-weight:1000;white-space:nowrap}
+    .team-sub-head{font-size:14px;font-weight:1000;background:#f8fafc}.team-member-name{text-align:center;font-weight:900}.team-member-count{font-size:18px;font-weight:1000}
+    .team-leader-badge{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:999px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-size:10px;line-height:1.2;font-weight:1000;vertical-align:middle;white-space:nowrap}
+    .team-grand-head{width:150px;background:#ede9fe;border-top:4px solid #7c3aed;font-size:20px;font-weight:1000}.team-grand-total{background:linear-gradient(180deg,#f5f3ff 0%,#ede9fe 100%);color:#5b21b6;font-size:36px;font-weight:1000;vertical-align:middle}
+    .error{padding:30px;border-radius:20px;background:#fff;color:#b91c1c;text-align:center;font-size:18px;font-weight:1000}
+    @media(max-width:760px){body{padding:10px}.winner-name{font-size:24px}}
+    @page{size:A4 landscape;margin:7mm}
+    @media print{
+      html,body{width:297mm;height:210mm;min-height:0;background:#fff}
+      body{padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      .toolbar{display:none!important}.wrap{width:100%;max-width:none;gap:3mm}
+      .winner{padding:3.5mm 5mm;border-width:.8mm;border-radius:5mm;box-shadow:none}.winner::before,.winner::after{font-size:8mm}.winner-kicker{font-size:4mm}.winner-name{font-size:6.3mm;line-height:1.15}
+      .comparison-wrap{overflow:visible;border-radius:4mm;box-shadow:none}table{min-width:0}th,td{padding:1.5mm 2mm}.team-group-head{font-size:4.2mm;border-top-width:1mm}.team-head-name{min-height:9mm}.team-head-total{margin-top:1mm;padding:1mm 3mm;font-size:3.8mm;border-width:.5mm}.team-sub-head{font-size:3.3mm}.team-member-name{font-size:3.6mm}.team-member-count{font-size:4mm}.team-leader-badge{font-size:2.3mm;padding:.4mm 1.2mm;margin-left:1mm}.team-grand-head{width:30mm;font-size:4.3mm}.team-grand-total{font-size:8mm}
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar"><button class="print-btn" type="button" onclick="window.print()">列印</button></div>
+  <main class="wrap" id="publicContent"></main>
+  <script>
+    const THEMES={A:{color:'#ef5b2a',soft:'#fff1eb'},B:{color:'#3b68e8',soft:'#eef2ff'},C:{color:'#35a853',soft:'#edf9f0'}};
+    const host=document.getElementById('publicContent');
+    const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const formatCount=value=>{const rounded=Math.round(Number(value||0)*100)/100;return Number.isInteger(rounded)?String(rounded):String(rounded);};
+    function decodePayload(){
+      const encoded=location.hash.slice(1).replace(/-/g,'+').replace(/_/g,'/');
+      if(!encoded) throw new Error('missing payload');
+      const padded=encoded+'='.repeat((4-encoded.length%4)%4);
+      const binary=atob(padded), bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    }
+    function render(payload){
+      const teams=Array.isArray(payload.teams)?payload.teams:[];
+      const rowCount=Math.max(1,...teams.map(team=>Array.isArray(team.members)?team.members.length:0));
+      const winner=Array.isArray(payload.winners)&&payload.winners.length
+        ? `<section class="winner"><div class="winner-kicker">${escapeHtml(payload.winnerTitle||'🏆 本周進案數最高')}</div><div class="winner-name">${payload.winners.map(escapeHtml).join('、')}</div></section>`
+        : '<section class="winner empty">目前尚無件數</section>';
+      const heads=teams.map(team=>{const theme=THEMES[team.team]||THEMES.A;return `<th class="team-group-head" colspan="2" style="--team-color:${theme.color};--team-soft:${theme.soft}"><span class="team-head-name">${escapeHtml(team.name)}</span><span class="team-head-total">共 ${formatCount(team.total)} 件</span></th>`;}).join('');
+      const subheads=teams.map(()=>'<th class="team-sub-head">組員</th><th class="team-sub-head">件數</th>').join('');
+      const rows=Array.from({length:rowCount},(_,index)=>{
+        const memberCells=teams.map(team=>{const member=(team.members||[])[index];return member?`<td class="team-member-name">${escapeHtml(member.name)}${member.role==='組長'?'<span class="team-leader-badge">組長</span>':''}</td><td class="team-member-count">${formatCount(member.total)}</td>`:'<td class="team-member-name">—</td><td class="team-member-count">—</td>';}).join('');
+        const totalCell=index===0?`<td class="team-grand-total" rowspan="${rowCount}">${formatCount(payload.grandTotal)} 件</td>`:'';
+        return `<tr>${memberCells}${totalCell}</tr>`;
+      }).join('');
+      const table=`<section class="comparison-wrap"><table><thead><tr>${heads}<th class="team-grand-head" rowspan="2">總件數</th></tr><tr>${subheads}</tr></thead><tbody>${rows}</tbody></table></section>`;
+      host.innerHTML=winner+table;
+    }
+    try{render(decodePayload());}catch(error){host.innerHTML='<div class="error">公開版網址缺少有效資料，請回到管理頁重新按「預覽公開版」。</div>';}
+  </script>
+</body>
+</html>
