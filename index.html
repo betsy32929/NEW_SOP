@@ -929,7 +929,7 @@
       makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
       makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管'],requiredOption:'標籤製作',noneOption:'無公司控管'}),
       makeNewFieldDef('keyPropertyFeatures',{group:'房管'}), makeNewFieldDef('uploadPhotos',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('uploadFloorplan',{group:'房管'}), makeNewFieldDef('websitePublic',{group:'房管'}),
-      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
+      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管',optionSpacer:'業務上傳'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
       makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printOwnershipNote',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
       makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('goStrong',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}),
 
@@ -3745,6 +3745,8 @@
       }
       if(def.type === 'assistantOrOption') {
         return `<div class="chips">${
+          def.optionSpacer ? `<span class="chip-btn" aria-hidden="true" style="visibility:hidden;pointer-events:none;">${escapeHtml(def.optionSpacer)}</span>` : ''
+        }${
           (def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
         }</div>`;
       }
