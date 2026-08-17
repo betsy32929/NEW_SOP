@@ -3712,7 +3712,7 @@
         const isDate = def.type === 'dateText' || def.dateAuto;
         const ph = def.placeholder || (isDate ? '例如：115/3/17' : '');
         if(def.optionalNote){
-          return `<div class="split-2"><input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" data-date-auto="1"><input class="field-input modal-optional-note" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字或數字（選填）"></div>`;
+          return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" data-date-auto="1">`;
         }
         return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${isDate ? 'data-date-auto="1"' : ''}>`;
       }
@@ -3772,6 +3772,9 @@
     }
 
     function renderAssistCell(def, item){
+      if(def.optionalNote){
+        return `<input class="field-input modal-optional-note" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字或數字（選填）">`;
+      }
       if(def.type === 'assistant' || def.type === 'assistantOrOption' || def.type === 'textAssistant' || def.type === 'dateAssistant' || def.type === 'dateTextNoteAssistant') {
         return `<div class="chips">${
           getAssistantChoicesForItem(item).map(entry => `<button type="button" class="chip-btn modal-assistant-btn ${item.assistant === entry.name ? 'active' : ''} ${entry.active === false ? 'inactive-locked' : ''}" data-key="${def.key}" data-name="${escapeAttr(entry.name)}">${escapeHtml(entry.active === false ? `${entry.name}（停用）` : entry.name)}</button>`).join('')
