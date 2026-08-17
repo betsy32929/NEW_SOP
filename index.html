@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V29_NEW本製作</title>
+  <title>V30_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V29：移除重複個人件數表，放大組別件數並強化最高組別呈現 */
+    /* V30：組員設定顯示 D 組蔡宇育，總件數拿掉「含 D 組」文字 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -223,7 +223,7 @@
     .team-winner-banner.is-empty{display:block;padding:16px 20px;background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 100%);border:2px solid #cbd5e1;color:#64748b;box-shadow:none;font-size:18px;font-weight:1000}
     .team-winner-banner.is-empty::before,.team-winner-banner.is-empty::after{display:none}
     .team-winner-kicker{font-size:17px;font-weight:1000;letter-spacing:.12em}.team-winner-name{font-size:28px;line-height:1.25;font-weight:1000;word-break:break-word;text-shadow:0 1px 0 rgba(255,255,255,.8)}.team-winner-count{justify-self:center;padding:5px 16px;border-radius:999px;background:rgba(255,255,255,.82);border:2px solid rgba(180,83,9,.3);font-size:20px;font-weight:1000}
-    .team-roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .team-roster-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
     .team-roster-card{border:2px solid var(--team-color,#93c5fd);border-radius:18px;overflow:hidden;background:#fff}.team-roster-head{padding:10px 12px;background:var(--team-soft,#eff6ff);font-size:18px;font-weight:1000;display:flex;justify-content:space-between;align-items:center;gap:8px}.team-roster-title{display:flex;align-items:center;gap:8px;min-width:0;flex:1}.team-roster-title .field-input{min-width:0;font-weight:1000;background:#fff}.team-roster-total{white-space:nowrap;padding:7px 10px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:13px;font-weight:1000}
     .team-roster-body{padding:10px;display:grid;gap:8px}.team-member-row{display:grid;grid-template-columns:minmax(0,1fr) 92px 38px;gap:6px;padding:6px;border-radius:12px}.team-member-row.is-leader{background:linear-gradient(135deg,#fff4c4 0%,#ffedd5 100%);border:1px solid #fbbf24}.team-member-row input,.team-member-row select{min-width:0}.team-member-row button{padding:6px}
     .team-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px}.team-table-wrap table{min-width:760px}.team-type-a{color:#b91c1c;font-weight:1000}.team-type-g{color:#1d4ed8;font-weight:1000}
@@ -469,7 +469,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V29 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V30 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -487,7 +487,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V29：移除重複個人件數表，放大組別件數並強化最高組別呈現。</div>
+        <div class="tiny" style="margin-bottom:10px;">V30：組員設定顯示 D 組蔡宇育，總件數拿掉「含 D 組」文字。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -862,7 +862,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V29';
+    const APP_VERSION = 'V30';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -953,7 +953,7 @@
       });
     }
 
-    const TEAM_COLORS = { A:{ color:'#ef5b2a', soft:'#fff1eb' }, B:{ color:'#3b68e8', soft:'#eef2ff' }, C:{ color:'#35a853', soft:'#edf9f0' } };
+    const TEAM_COLORS = { A:{ color:'#ef5b2a', soft:'#fff1eb' }, B:{ color:'#3b68e8', soft:'#eef2ff' }, C:{ color:'#35a853', soft:'#edf9f0' }, D:{ color:'#8b5cf6', soft:'#f5f3ff' } };
     const TEAM_DEFAULT_ROSTER = {
       A:[['黃文成','組長'],['買淑玲','組員'],['林顯昌','組員'],['楊巧甄','組員'],['田庭宇','組員'],['陳珮菁','組員'],['柯育婷','組員'],['阮氏金水','組員']],
       B:[['宋喜輝','組長'],['陳信良','組員'],['陳帝元','組員'],['王俞云','組員'],['林俊嘉','組員'],['張小曼','組員'],['謝馨儀','組員'],['林志銘','組員']],
@@ -1027,13 +1027,13 @@
     function renderTeamRosterEditor(data){
       const cfg=data?.cfg||ensureTeamStatsConfig(), host=document.getElementById('teamRosterGrid'); if(!host) return;
       const totals=new Map((data?.teamRows||[]).map(row=>[row.team,row.total]));
-      host.innerHTML=['A','B','C'].map(team=>{ const theme=TEAM_COLORS[team]; return `<div class="team-roster-card" style="--team-color:${theme.color};--team-soft:${theme.soft}"><div class="team-roster-head"><div class="team-roster-title"><span>${team}</span><input class="field-input" value="${escapeAttr(getTeamDisplayName(team,cfg))}" placeholder="輸入組別名稱" onchange="updateTeamName('${team}',this.value)"><span class="team-roster-total">共 ${formatTeamCount(totals.get(team)||0)} 件</span></div><button type="button" class="soft" onclick="addTeamMember('${team}')">＋新增</button></div><div class="team-roster-body">${cfg.teams[team].map((m,i)=>`<div class="team-member-row ${m.role==='組長'?'is-leader':''}"><input class="field-input" value="${escapeAttr(m.name||'')}" placeholder="姓名" onchange="updateTeamMember('${team}',${i},'name',this.value)"><select class="field-select" onchange="updateTeamMember('${team}',${i},'role',this.value)"><option ${m.role==='組長'?'selected':''}>組長</option><option ${m.role!=='組長'?'selected':''}>組員</option></select><button type="button" class="ghost" title="移除" onclick="removeTeamMember('${team}',${i})">×</button></div>`).join('')}</div></div>`; }).join('');
+      host.innerHTML=['A','B','C','D'].map(team=>{ const theme=TEAM_COLORS[team]; return `<div class="team-roster-card" style="--team-color:${theme.color};--team-soft:${theme.soft}"><div class="team-roster-head"><div class="team-roster-title"><span>${team}</span><input class="field-input" value="${escapeAttr(getTeamDisplayName(team,cfg))}" placeholder="輸入組別名稱" onchange="updateTeamName('${team}',this.value)"><span class="team-roster-total">共 ${formatTeamCount(totals.get(team)||0)} 件</span></div><button type="button" class="soft" onclick="addTeamMember('${team}')">＋新增</button></div><div class="team-roster-body">${cfg.teams[team].map((m,i)=>`<div class="team-member-row ${m.role==='組長'?'is-leader':''}"><input class="field-input" value="${escapeAttr(m.name||'')}" placeholder="姓名" onchange="updateTeamMember('${team}',${i},'name',this.value)"><select class="field-select" onchange="updateTeamMember('${team}',${i},'role',this.value)"><option ${m.role==='組長'?'selected':''}>組長</option><option ${m.role!=='組長'?'selected':''}>組員</option></select><button type="button" class="ghost" title="移除" onclick="removeTeamMember('${team}',${i})">×</button></div>`).join('')}</div></div>`; }).join('');
     }
     function updateTeamName(team,value){ const cfg=ensureTeamStatsConfig(); cfg.teamNames[team]=String(value||'').trim()||`${team}組`; scheduleAutoSave(); renderTeamStats(); }
     function updateTeamMember(team,index,key,value){ const cfg=ensureTeamStatsConfig(); const member=cfg.teams[team]?.[index]; if(!member)return; if(key==='role'&&value==='組長'){cfg.teams[team].forEach(item=>item.role='組員');member.role='組長';cfg.teams[team].unshift(cfg.teams[team].splice(index,1)[0]);}else member[key]=key==='name'?String(value).trim():value;scheduleAutoSave();renderTeamStats(); }
     function addTeamMember(team){ const cfg=ensureTeamStatsConfig(); cfg.teams[team].push({name:'',role:'組員'}); scheduleAutoSave(); renderTeamStats(); }
     function removeTeamMember(team,index){ const cfg=ensureTeamStatsConfig(); cfg.teams[team].splice(index,1); scheduleAutoSave(); renderTeamStats(); }
-    function resetTeamRoster(){ if(!confirm('確定要恢復照片中的 A／B／C 組預設名單嗎？')) return; ensureTeamStatsConfig().teams=cloneTeamDefaultRoster(); scheduleAutoSave(); renderTeamStats(); }
+    function resetTeamRoster(){ if(!confirm('確定要恢復 A／B／C／D 組預設名單嗎？')) return; ensureTeamStatsConfig().teams=cloneTeamDefaultRoster(); scheduleAutoSave(); renderTeamStats(); }
     function renderTeamComparisonTable(data, grandTotal){
       const teams = ['A','B','C'];
       const totals = new Map(data.teamRows.map(row => [row.team, row.total]));
@@ -1051,7 +1051,7 @@
             ? `<td class="team-member-name">${escapeHtml(member.name)}</td><td class="team-member-count">${formatTeamCount(member.total)}</td>`
             : '<td class="team-member-name">—</td><td class="team-member-count">—</td>';
         }).join('');
-        const grandCell = index === 0 ? `<td class="team-grand-total" rowspan="${rowCount}">${formatTeamCount(grandTotal)} 件<small>含 D 組</small></td>` : '';
+        const grandCell = index === 0 ? `<td class="team-grand-total" rowspan="${rowCount}">${formatTeamCount(grandTotal)} 件</td>` : '';
         return `<tr>${memberCells}${grandCell}</tr>`;
       }).join('');
       return `<table class="team-comparison-table"><thead><tr>${teamHeads}<th class="team-grand-head" rowspan="2">總件數</th></tr><tr>${subHeads}</tr></thead><tbody>${rows}</tbody></table>`;
