@@ -915,7 +915,7 @@
       return { ...base, ...overrides, specialOptions:overrides.specialOptions ? [...overrides.specialOptions] : (base.specialOptions ? [...base.specialOptions] : undefined), options:overrides.options ? [...overrides.options] : (base.options ? [...base.options] : undefined), subitems:overrides.subitems ? [...overrides.subitems] : (base.subitems ? [...base.subitems] : undefined) };
     };
     const NEW_EDITOR_FIELD_DEFS = [
-      makeNewFieldDef('entryDate',{group:'基本資料',optionalNote:true}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料'}), makeNewFieldDef('wangReview',{group:'基本資料'}),
+      makeNewFieldDef('entryDate',{group:'基本資料',optionalNote:true}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料',wideInput:true}), makeNewFieldDef('wangReview',{group:'基本資料'}),
       makeNewFieldDef('listPrice',{group:'基本資料'}), makeNewFieldDef('basePrice',{group:'基本資料'}), makeNewFieldDef('mainContractNo',{group:'基本資料'}), makeNewFieldDef('changeContractNo',{group:'基本資料'}),
       makeNewFieldDef('contractType',{group:'基本資料',type:'optionOnly',specialOptions:['一般約','專約']}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
 
@@ -3837,6 +3837,13 @@
             <td colspan="2" class="archive-merged-cell">
               ${renderInputCell(def, item)}
             </td>
+            <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
+            <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
+          `;
+        } else if(def.wideInput) {
+          tr.innerHTML = `
+            <td><strong>${escapeHtml(def.label)}</strong></td>
+            <td colspan="2">${renderInputCell(def, item)}</td>
             <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
             <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
           `;
