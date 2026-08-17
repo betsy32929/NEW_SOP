@@ -929,7 +929,7 @@
       makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
       makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管'],requiredOption:'標籤製作',noneOption:'無公司控管'}),
       makeNewFieldDef('keyPropertyFeatures',{group:'房管'}), makeNewFieldDef('uploadPhotos',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('uploadFloorplan',{group:'房管'}), makeNewFieldDef('websitePublic',{group:'房管'}),
-      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}),
+      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
       makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printOwnershipNote',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
       makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('goStrong',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}),
 
@@ -939,7 +939,7 @@
       makeNewFieldDef('pptMake',{group:'PPT',label:'鎖定PPT版面'}), makeNewFieldDef('pptLayout',{group:'PPT',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'PPT',label:'動畫存PPT資料夾'}),
 
       makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
-      makeNewFieldDef('companyArchive',{group:'後續',subitems:['權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
+      makeNewFieldDef('companyArchive',{group:'後續',subitems:['新進封面','正-草稿','反-草稿','彩色','A4簽名','分區','地籍圖','建物成果圖','謄本','土增','產權','實價','周遭設施','現詢調','權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
       makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true}),
       makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續'})
     ];
