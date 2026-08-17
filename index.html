@@ -915,9 +915,9 @@
       return { ...base, ...overrides, specialOptions:overrides.specialOptions ? [...overrides.specialOptions] : (base.specialOptions ? [...base.specialOptions] : undefined), options:overrides.options ? [...overrides.options] : (base.options ? [...base.options] : undefined), subitems:base.subitems ? [...base.subitems] : undefined };
     };
     const NEW_EDITOR_FIELD_DEFS = [
-      makeNewFieldDef('entryDate',{group:'基本資料'}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料'}), makeNewFieldDef('wangReview',{group:'基本資料'}),
+      makeNewFieldDef('entryDate',{group:'基本資料',optionalNote:true}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料'}), makeNewFieldDef('wangReview',{group:'基本資料'}),
       makeNewFieldDef('listPrice',{group:'基本資料'}), makeNewFieldDef('basePrice',{group:'基本資料'}), makeNewFieldDef('mainContractNo',{group:'基本資料'}), makeNewFieldDef('changeContractNo',{group:'基本資料'}),
-      makeNewFieldDef('contractType',{group:'基本資料'}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
+      makeNewFieldDef('contractType',{group:'基本資料',type:'optionOnly',specialOptions:['一般約','專約']}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
 
       makeNewFieldDef('photoNas',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('photoAnimation',{group:'物件照片／格局圖／謄本',label:'PPT動畫'}), makeNewFieldDef('mosaicBrightness',{group:'物件照片／格局圖／謄本'}),
       makeNewFieldDef('naming1234',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('watermark',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('aiFloorplan',{group:'物件照片／格局圖／謄本'}),
@@ -1918,6 +1918,10 @@
         if(item.assistant == null) item.assistant = '';
         if(item.option == null) item.option = '';
         if(!item.updatedAt) item.updatedAt = '';
+        if(def.optionalNote) {
+          if(!item.extra || typeof item.extra !== 'object') item.extra = { note:'' };
+          if(typeof item.extra.note !== 'string') item.extra.note = '';
+        }
         if(def.type === 'triChecklist') {
           if(!item.subitems || typeof item.subitems !== 'object') item.subitems = {};
           (def.subitems || []).forEach(name => { if(!item.subitems[name]) item.subitems[name] = ''; });
@@ -3707,6 +3711,9 @@
       if(def.type === 'text' || def.type === 'dateText') {
         const isDate = def.type === 'dateText' || def.dateAuto;
         const ph = def.placeholder || (isDate ? '例如：115/3/17' : '');
+        if(def.optionalNote){
+          return `<div class="split-2"><input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" data-date-auto="1"><input class="field-input modal-optional-note" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字或數字（選填）"></div>`;
+        }
         return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${isDate ? 'data-date-auto="1"' : ''}>`;
       }
       if(def.type === 'textOption' || def.type === 'textAssistant' || def.type === 'textRequiredOption') {
@@ -4131,6 +4138,18 @@
         });
       });
 
+      tbody.querySelectorAll('.modal-optional-note').forEach(el => {
+        el.addEventListener('input', e => {
+          const key = e.target.dataset.key;
+          const item = c.items[key];
+          if(!item.extra || typeof item.extra !== 'object') item.extra = {};
+          item.extra.note = e.target.value;
+          touch(item);
+          scheduleAutoSave();
+        });
+        el.addEventListener('blur', () => autoSaveNow());
+      });
+
       tbody.querySelectorAll('.modal-status-btn').forEach(btn => {
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
@@ -4230,6 +4249,13 @@
         const item = c.items[key];
         if(!def || !item) return;
         setExtra(item, 'note', el.value, key);
+      });
+      document.querySelectorAll('#caseModal .modal-optional-note').forEach(el => {
+        const key = el.dataset.key;
+        const item = c.items[key];
+        if(!item) return;
+        if(!item.extra || typeof item.extra !== 'object') item.extra = {};
+        item.extra.note = el.value;
       });
 
       const noteInput = document.getElementById('modalCaseNoteInput');
