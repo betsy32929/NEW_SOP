@@ -940,7 +940,7 @@
 
       makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
       makeNewFieldDef('companyArchive',{group:'後續',subitems:['新進封面','正-草稿','反-草稿','彩色','A4簽名','分區','地籍圖','建物成果圖','謄本','土增','產權','實價','周遭設施','現詢調','權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
-      makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true}),
+      makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true,dateToday:true}),
       makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續'})
     ];
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
@@ -3784,6 +3784,8 @@
       }
       if(def.type === 'textOption' || def.type === 'dateOption' || def.type === 'dateTextNoteOption' || def.type === 'textRequiredOption') {
         return `<div class="chips">${
+          def.type === 'dateOption' && def.dateToday ? `<button type="button" class="chip-btn modal-date-today-btn" data-key="${def.key}">今天</button>` : ''
+        }${
           (def.specialOptions || []).map(opt => {
             const active = item.option === opt;
             const disabled = def.type === 'textOption' && hasTextValue(item.value) && !active
@@ -4138,6 +4140,19 @@
           updateRowState(key);
           scheduleAutoSave(); scheduleMainRefresh();
         });
+      });
+
+      tbody.querySelectorAll('.modal-date-today-btn').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const def = getDef(key);
+          const item = c.items[key];
+          if(!item.extra || typeof item.extra !== 'object') item.extra = {};
+          item.extra.date = dateToRocText(new Date());
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
       });
 
       tbody.querySelectorAll('.modal-optional-note').forEach(el => {
