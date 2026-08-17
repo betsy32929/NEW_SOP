@@ -912,23 +912,18 @@
     const makeNewFieldDef = (key, overrides={}) => {
       const base = FIELD_DEFS.find(def => def.key === key);
       if(!base) throw new Error(`找不到新版欄位：${key}`);
-      return { ...base, ...overrides, specialOptions:overrides.specialOptions ? [...overrides.specialOptions] : (base.specialOptions ? [...base.specialOptions] : undefined), options:overrides.options ? [...overrides.options] : (base.options ? [...base.options] : undefined), subitems:base.subitems ? [...base.subitems] : undefined };
+      return { ...base, ...overrides, specialOptions:overrides.specialOptions ? [...overrides.specialOptions] : (base.specialOptions ? [...base.specialOptions] : undefined), options:overrides.options ? [...overrides.options] : (base.options ? [...base.options] : undefined), subitems:overrides.subitems ? [...overrides.subitems] : (base.subitems ? [...base.subitems] : undefined) };
     };
     const NEW_EDITOR_FIELD_DEFS = [
       makeNewFieldDef('entryDate',{group:'基本資料',optionalNote:true}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料'}), makeNewFieldDef('wangReview',{group:'基本資料'}),
       makeNewFieldDef('listPrice',{group:'基本資料'}), makeNewFieldDef('basePrice',{group:'基本資料'}), makeNewFieldDef('mainContractNo',{group:'基本資料'}), makeNewFieldDef('changeContractNo',{group:'基本資料'}),
       makeNewFieldDef('contractType',{group:'基本資料',type:'optionOnly',specialOptions:['一般約','專約']}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
 
-      makeNewFieldDef('photoNas',{group:'物件照片'}), makeNewFieldDef('mosaicBrightness',{group:'物件照片',label:'馬賽克'}),
-      {group:'物件照片',key:'brightness',label:'亮度',type:'assistant'}, makeNewFieldDef('naming1234',{group:'物件照片'}), makeNewFieldDef('photoAnimation',{group:'物件照片',label:'PPT動畫'}),
-      makeNewFieldDef('aiFloorplan',{group:'格局圖'}), makeNewFieldDef('convertImages',{group:'格局圖'}),
-      makeNewFieldDef('cadastralMap',{group:'謄本／圖資'}), makeNewFieldDef('buildingResult',{group:'謄本／圖資'}),
-      makeNewFieldDef('buildingTranscript',{group:'謄本／圖資'}), makeNewFieldDef('landTranscript',{group:'謄本／圖資'}),
-
-      makeNewFieldDef('notebookFilenameEdit',{group:'總表'}), makeNewFieldDef('addMasterList',{group:'總表'}),
-      makeNewFieldDef('middlemanAmount',{group:'總表',type:'textRequiredOption',label:'中人金額',specialOptions:['總表備註','無'],requiredOption:'總表備註',noneOption:'無'}), makeNewFieldDef('dailyUpdateDisplay',{group:'總表'}),
-      makeNewFieldDef('printColor',{group:'總表',label:'列印彩色'}), makeNewFieldDef('newCover',{group:'總表',label:'列印新進封面'}), makeNewFieldDef('currentA4',{group:'總表'}),
-      makeNewFieldDef('pptMake',{group:'PPT',label:'鎖定PPT版面'}), makeNewFieldDef('pptLayout',{group:'PPT',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'PPT',label:'動畫存PPT資料夾'}),
+      makeNewFieldDef('photoNas',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('mosaicBrightness',{group:'物件照片／格局圖／謄本',label:'馬賽克'}),
+      {group:'物件照片／格局圖／謄本',key:'brightness',label:'亮度',type:'assistant'}, makeNewFieldDef('naming1234',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('photoAnimation',{group:'物件照片／格局圖／謄本',label:'PPT動畫'}),
+      makeNewFieldDef('aiFloorplan',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('convertImages',{group:'物件照片／格局圖／謄本'}),
+      makeNewFieldDef('cadastralMap',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('buildingResult',{group:'物件照片／格局圖／謄本'}),
+      makeNewFieldDef('buildingTranscript',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('landTranscript',{group:'物件照片／格局圖／謄本'}),
 
       makeNewFieldDef('contractContent',{group:'房管'}), makeNewFieldDef('clientAdd',{group:'房管'}), makeNewFieldDef('ckBuilding',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}),
       makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
@@ -938,11 +933,15 @@
       makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printOwnershipNote',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
       makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('goStrong',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}),
 
-      makeNewFieldDef('applyZone',{group:'列印／曝光／後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
-      makeNewFieldDef('companyArchive',{group:'列印／曝光／後續',specialOptions:['切結']}), makeNewFieldDef('deedScan',{group:'列印／曝光／後續'}), makeNewFieldDef('contractNaming',{group:'列印／曝光／後續'}),
-      makeNewFieldDef('salesBookProduction',{group:'列印／曝光／後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('paperMainContract',{group:'列印／曝光／後續'}),
-      makeNewFieldDef('paperChangeContract',{group:'列印／曝光／後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('bookShelfLocation',{group:'列印／曝光／後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true}),
-      makeNewFieldDef('backCover',{group:'列印／曝光／後續'})
+      makeNewFieldDef('notebookFilenameEdit',{group:'總表'}), makeNewFieldDef('addMasterList',{group:'總表'}),
+      makeNewFieldDef('middlemanAmount',{group:'總表',type:'textRequiredOption',label:'中人金額',specialOptions:['總表備註','無'],requiredOption:'總表備註',noneOption:'無'}), makeNewFieldDef('dailyUpdateDisplay',{group:'總表'}),
+      makeNewFieldDef('printColor',{group:'總表',label:'列印彩色'}), makeNewFieldDef('newCover',{group:'總表',label:'列印新進封面'}), makeNewFieldDef('currentA4',{group:'總表'}),
+      makeNewFieldDef('pptMake',{group:'PPT',label:'鎖定PPT版面'}), makeNewFieldDef('pptLayout',{group:'PPT',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'PPT',label:'動畫存PPT資料夾'}),
+
+      makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
+      makeNewFieldDef('companyArchive',{group:'後續',subitems:['權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
+      makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true}),
+      makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續'})
     ];
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
     let state = loadState();
