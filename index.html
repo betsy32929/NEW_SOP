@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V30_NEW本製作</title>
+  <title>V31_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V30：組員設定顯示 D 組蔡宇育，總件數拿掉「含 D 組」文字 */
+    /* V31：組別件數新增公開版預覽與 HTML 匯出，冠軍區不顯示件數 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -212,7 +212,7 @@
     .team-comparison-table th,.team-comparison-table td{padding:10px 12px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
     .team-comparison-table tr:last-child td{border-bottom:0}.team-comparison-table th:last-child,.team-comparison-table td:last-child{border-right:0}
     .team-comparison-table .team-group-head{font-size:20px;font-weight:1000;background:var(--team-soft,#eff6ff);color:#0f172a;border-top:4px solid var(--team-color,#93c5fd)}
-    .team-comparison-table .team-group-head .team-head-total{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:18px;line-height:1.2;font-weight:1000;color:#0f172a}
+    .team-comparison-table .team-group-head .team-head-total{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:18px;line-height:1.2;font-weight:1000;color:#0f172a;white-space:nowrap}
     .team-comparison-table .team-sub-head{font-size:14px;font-weight:1000;background:#f8fafc}
     .team-comparison-table .team-member-name{text-align:left;font-weight:900}.team-comparison-table .team-member-count{font-size:18px;font-weight:1000}
     .team-comparison-table .team-grand-head{width:150px;background:#ede9fe;border-top:4px solid #7c3aed;font-size:20px;font-weight:1000}
@@ -469,7 +469,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V30 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V31 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -487,7 +487,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V30：組員設定顯示 D 組蔡宇育，總件數拿掉「含 D 組」文字。</div>
+        <div class="tiny" style="margin-bottom:10px;">V31：組別件數新增公開版預覽與 HTML 匯出，冠軍區不顯示件數。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -839,7 +839,11 @@
     <div class="modal-card team-modal-card">
       <div class="modal-head">
         <div><div class="modal-title">組別件數統計</div><div class="tiny">依進案日期與主約編號統計：A＝專簽、G＝一般約</div></div>
-        <button class="ghost" id="teamStatsCloseBtn">關閉</button>
+        <div class="top-actions">
+          <button class="soft" id="teamPreviewPublicBtn">預覽公開版</button>
+          <button class="top-strong" id="teamExportPublicBtn">匯出公開版HTML</button>
+          <button class="ghost" id="teamStatsCloseBtn">關閉</button>
+        </div>
       </div>
       <div class="modal-body">
         <div class="team-date-bar">
@@ -862,7 +866,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V30';
+    const APP_VERSION = 'V31';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1064,7 +1068,7 @@
       if(banner){
         banner.classList.toggle('is-empty', !data.winners.length);
         banner.innerHTML=data.winners.length
-          ? `<div class="team-winner-kicker">🏆 目前最高</div><div class="team-winner-name">${data.winners.map(x=>escapeHtml(getTeamDisplayName(x,data.cfg))).join('、')}</div><div class="team-winner-count">${formatTeamCount(data.max)} 件</div>`
+          ? `<div class="team-winner-kicker">🏆 目前最高</div><div class="team-winner-name">${data.winners.map(x=>escapeHtml(getTeamDisplayName(x,data.cfg))).join('、')}</div>`
           : '目前尚無件數';
       }
       const grandTotal=data.teamRows.reduce((sum,row)=>sum+row.total,0);
@@ -1073,6 +1077,44 @@
       const visibleDetails=data.details.filter(row=>row.team!=='D');
       const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=visibleDetails.length?visibleDetails.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
       renderTeamRosterEditor(data);
+    }
+    function buildTeamPublicHtml(){
+      const data=computeTeamStats();
+      const visibleTeams=data.teamRows.filter(row=>row.team!=='D');
+      const grandTotal=data.teamRows.reduce((sum,row)=>sum+row.total,0);
+      const winnerMarkup=data.winners.length
+        ? `<section class="winner"><div class="winner-kicker">🏆 目前最高</div><div class="winner-name">${data.winners.map(team=>escapeHtml(getTeamDisplayName(team,data.cfg))).join('、')}</div></section>`
+        : '<section class="winner empty">目前尚無件數</section>';
+      const teamCards=visibleTeams.map(row=>{
+        const theme=TEAM_COLORS[row.team];
+        return `<article class="team-card" style="--team-color:${theme.color};--team-soft:${theme.soft}"><div class="team-public-name">${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</div><div class="team-public-total">共 ${formatTeamCount(row.total)} 件</div></article>`;
+      }).join('');
+      return `<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>組別件數統計公開版</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px 18px;font-family:"Microsoft JhengHei","PingFang TC",sans-serif;color:#172033;background:linear-gradient(135deg,#fff7cc 0%,#e0f2fe 48%,#dcfce7 100%)}.wrap{width:min(1120px,100%);margin:0 auto;display:grid;gap:22px}.winner{position:relative;overflow:hidden;display:grid;gap:8px;padding:28px 26px;border:4px solid #f59e0b;border-radius:30px;text-align:center;background:linear-gradient(135deg,#fff7cc 0%,#ffd86b 48%,#ffb94e 100%);color:#78350f;box-shadow:0 18px 42px rgba(245,158,11,.3)}.winner:before,.winner:after{content:'✦';position:absolute;color:rgba(255,255,255,.72);font-size:52px}.winner:before{left:20px;top:12px}.winner:after{right:20px;bottom:10px}.winner-kicker{font-size:22px;font-weight:1000;letter-spacing:.12em}.winner-name{font-size:38px;line-height:1.25;font-weight:1000;word-break:break-word;text-shadow:0 2px 0 rgba(255,255,255,.8)}.winner.empty{display:block;background:#f8fafc;border-color:#cbd5e1;color:#64748b;font-size:22px;font-weight:1000;box-shadow:none}.winner.empty:before,.winner.empty:after{display:none}.teams{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.team-card{min-width:0;padding:22px 16px;border-radius:24px;border:3px solid var(--team-color);border-top-width:8px;text-align:center;background:linear-gradient(180deg,#fff 0%,var(--team-soft) 100%);box-shadow:0 12px 28px rgba(15,23,42,.1)}.team-public-name{font-size:23px;line-height:1.3;font-weight:1000;word-break:break-word}.team-public-total{display:inline-block;margin-top:14px;padding:7px 16px;border:2px solid var(--team-color);border-radius:999px;background:#fff;font-size:22px;line-height:1.2;font-weight:1000;white-space:nowrap}.grand{--team-color:#7c3aed;--team-soft:#f3e8ff}.grand .team-public-total{font-size:28px;color:#5b21b6}@media(max-width:760px){body{padding:14px 10px}.winner{padding:22px 18px}.winner-name{font-size:29px}.teams{grid-template-columns:1fr 1fr}.team-public-name{font-size:20px}}@media(max-width:420px){.teams{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="wrap">${winnerMarkup}<section class="teams">${teamCards}<article class="team-card grand"><div class="team-public-name">總件數</div><div class="team-public-total">${formatTeamCount(grandTotal)} 件</div></article></section></main></body>
+</html>`;
+    }
+    function previewTeamPublicHtml(){
+      const win=window.open('','_blank');
+      if(!win){ alert('預覽視窗被瀏覽器阻擋，請允許此網站開啟新視窗。'); return; }
+      win.document.open(); win.document.write(buildTeamPublicHtml()); win.document.close();
+    }
+    function exportTeamPublicHtml(){
+      const html=buildTeamPublicHtml();
+      const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      const cfg=ensureTeamStatsConfig();
+      const safePeriod=`${cfg.startDate}_${cfg.endDate}`.replace(/[\/:*?"<>|\s]+/g,'_');
+      a.href=url; a.download=`組別件數統計公開版_${safePeriod}.html`; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),500);
     }
     function readTeamDateInputs(){ const cfg=ensureTeamStatsConfig(); cfg.startDate=normalizeRocDate(document.getElementById('teamStartDateInput')?.value||cfg.startDate);cfg.endDate=normalizeRocDate(document.getElementById('teamEndDateInput')?.value||cfg.endDate);cfg.autoWeek=false;scheduleAutoSave();renderTeamStats(); }
     function setTeamThisWeek(){ const week=getCurrentWeekRange(),cfg=ensureTeamStatsConfig();cfg.startDate=week.start;cfg.endDate=week.end;cfg.weekKey=week.start;cfg.autoWeek=true;scheduleAutoSave();renderTeamStats(); }
@@ -4946,6 +4988,8 @@
     document.getElementById('rewardModal').addEventListener('click', e => { if(e.target.id === 'rewardModal') closeRewardModal(); });
     document.getElementById('teamStatsCloseBtn').onclick = closeTeamStatsModal;
     document.getElementById('teamStatsCloseBtnBottom').onclick = closeTeamStatsModal;
+    document.getElementById('teamPreviewPublicBtn').onclick = previewTeamPublicHtml;
+    document.getElementById('teamExportPublicBtn').onclick = exportTeamPublicHtml;
     document.getElementById('teamThisWeekBtn').onclick = setTeamThisWeek;
     document.getElementById('teamResetRosterBtn').onclick = resetTeamRoster;
     ['teamStartDateInput','teamEndDateInput'].forEach(id => {
