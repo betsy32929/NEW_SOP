@@ -906,6 +906,43 @@
         specialOptions: ['自動完成']
       });
     }
+    FIELD_DEFS.push({ group:'總表', key:'dailyUpdateDisplay', label:'確認每日更新顯示', type:'assistant' });
+    const NEW_EDITOR_CUTOFF = 1150801;
+    const NEW_EDITOR_VERSION = 'editor-1150801';
+    const makeNewFieldDef = (key, overrides={}) => {
+      const base = FIELD_DEFS.find(def => def.key === key);
+      if(!base) throw new Error(`找不到新版欄位：${key}`);
+      return { ...base, ...overrides, specialOptions:overrides.specialOptions ? [...overrides.specialOptions] : (base.specialOptions ? [...base.specialOptions] : undefined), options:overrides.options ? [...overrides.options] : (base.options ? [...base.options] : undefined), subitems:base.subitems ? [...base.subitems] : undefined };
+    };
+    const NEW_EDITOR_FIELD_DEFS = [
+      makeNewFieldDef('entryDate',{group:'基本資料'}), makeNewFieldDef('developer',{group:'基本資料'}), makeNewFieldDef('caseName',{group:'基本資料'}), makeNewFieldDef('wangReview',{group:'基本資料'}),
+      makeNewFieldDef('listPrice',{group:'基本資料'}), makeNewFieldDef('basePrice',{group:'基本資料'}), makeNewFieldDef('mainContractNo',{group:'基本資料'}), makeNewFieldDef('changeContractNo',{group:'基本資料'}),
+      makeNewFieldDef('contractType',{group:'基本資料'}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
+
+      makeNewFieldDef('photoNas',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('photoAnimation',{group:'物件照片／格局圖／謄本',label:'PPT動畫'}), makeNewFieldDef('mosaicBrightness',{group:'物件照片／格局圖／謄本'}),
+      makeNewFieldDef('naming1234',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('watermark',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('aiFloorplan',{group:'物件照片／格局圖／謄本'}),
+      makeNewFieldDef('convertImages',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('cadastralMap',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('buildingResult',{group:'物件照片／格局圖／謄本'}),
+      makeNewFieldDef('buildingTranscript',{group:'物件照片／格局圖／謄本'}), makeNewFieldDef('landTranscript',{group:'物件照片／格局圖／謄本'}),
+
+      makeNewFieldDef('notebookFilenameEdit',{group:'總表'}), makeNewFieldDef('addMasterList',{group:'總表'}), makeNewFieldDef('dailyUpdateDisplay',{group:'總表'}),
+      makeNewFieldDef('middlemanAmount',{group:'總表',type:'textRequiredOption',label:'中人金額',specialOptions:['總表備註','無'],requiredOption:'總表備註',noneOption:'無'}),
+      makeNewFieldDef('printColor',{group:'總表',label:'列印彩色'}), makeNewFieldDef('newCover',{group:'總表',label:'列印新進封面'}), makeNewFieldDef('currentA4',{group:'總表'}),
+      makeNewFieldDef('pptMake',{group:'總表',label:'鎖定PPT版面'}), makeNewFieldDef('pptLayout',{group:'總表',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'總表',label:'動畫存PPT資料夾'}),
+
+      makeNewFieldDef('contractContent',{group:'房管'}), makeNewFieldDef('clientAdd',{group:'房管'}), makeNewFieldDef('ckBuilding',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}),
+      makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
+      makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管'],requiredOption:'標籤製作',noneOption:'無公司控管'}),
+      makeNewFieldDef('keyPropertyFeatures',{group:'房管'}), makeNewFieldDef('uploadPhotos',{group:'房管'}), makeNewFieldDef('uploadFloorplan',{group:'房管'}), makeNewFieldDef('websitePublic',{group:'房管'}),
+      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管'}), makeNewFieldDef('edManage',{group:'房管'}), makeNewFieldDef('edUpload',{group:'房管'}),
+      makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printOwnershipNote',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
+      makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('goStrong',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}),
+
+      makeNewFieldDef('applyZone',{group:'列印／曝光／後續',label:'分區',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
+      makeNewFieldDef('companyArchive',{group:'列印／曝光／後續'}), makeNewFieldDef('deedScan',{group:'列印／曝光／後續'}), makeNewFieldDef('contractNaming',{group:'列印／曝光／後續'}),
+      makeNewFieldDef('salesBookProduction',{group:'列印／曝光／後續',type:'assistant',specialOptions:[]}), makeNewFieldDef('paperMainContract',{group:'列印／曝光／後續'}),
+      makeNewFieldDef('paperChangeContract',{group:'列印／曝光／後續'}), makeNewFieldDef('bookShelfLocation',{group:'列印／曝光／後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5']}),
+      makeNewFieldDef('backCover',{group:'列印／曝光／後續'})
+    ];
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
     let state = loadState();
     mergeCustomActions();
@@ -1727,6 +1764,27 @@
       return FIELD_DEFS.find(x => x.key === key) || null;
     }
 
+    function isNewEditorCase(c){
+      const parts = parseRocDateParts(fieldText(c,'entryDate'));
+      if(parts){
+        const value = parts.rocYear * 10000 + parts.month * 100 + parts.day;
+        return value >= NEW_EDITOR_CUTOFF;
+      }
+      if(c?.editorVersion === NEW_EDITOR_VERSION) return true;
+      const created = new Date(c?.createdAt || '');
+      return !Number.isNaN(created.getTime()) && created.getTime() >= new Date(2026,7,1).getTime();
+    }
+
+    function getCaseFieldDefs(c){
+      return isNewEditorCase(c)
+        ? NEW_EDITOR_FIELD_DEFS
+        : FIELD_DEFS.filter(def => def.key !== 'dailyUpdateDisplay');
+    }
+
+    function getCaseFieldDef(c,key){
+      return getCaseFieldDefs(c).find(def => def.key === key) || getFieldDefByKey(key);
+    }
+
     function isCustomField(key){
       return !!state.customActions.find(x => x.key === key);
     }
@@ -1880,6 +1938,13 @@
           if(typeof item.extra.note !== 'string') item.extra.note = '';
         }
       });
+      getCaseFieldDefs(c).forEach(def => {
+        const item = c.items[def.key] || (c.items[def.key] = defaultItem(def));
+        if(def.type === 'dateOption' || def.type === 'dateAssistant'){
+          if(!item.extra || typeof item.extra !== 'object') item.extra = {date:''};
+          if(typeof item.extra.date !== 'string') item.extra.date = '';
+        }
+      });
       if(typeof c.archived !== 'boolean') c.archived = false;
       if(typeof c.archivedAt !== 'string') c.archivedAt = '';
       applySalesBookAutoCompletion(c);
@@ -1932,6 +1997,7 @@
       return {
         id:'case_' + Math.random().toString(36).slice(2,10),
         createdAt:new Date().toISOString(),
+        editorVersion: new Date().getTime() >= new Date(2026,7,1).getTime() ? NEW_EDITOR_VERSION : '',
         archived:false,
         archivedAt:'',
         items,
@@ -1973,6 +2039,7 @@
     function contentPresent(def, item){
       if(def.type === 'text' || def.type === 'dateText' || def.type === 'select' || def.type === 'optionOnly') return String(item.value || '').trim() !== '';
       if(def.type === 'textOption') return String(item.value || '').trim() !== '' || String(item.option || '').trim() !== '';
+      if(def.type === 'textRequiredOption') return String(item.value || '').trim() !== '' || String(item.option || '').trim() !== '';
       if(def.type === 'textAssistant') return String(item.value || '').trim() !== '' || String(item.assistant || '').trim() !== '';
       if(def.type === 'dateTextNote') return String(item.extra?.date || '').trim() !== '' || String(item.extra?.note || '').trim() !== '';
       if(def.type === 'dateAssistant') return String(item.extra?.date || '').trim() !== '' || String(item.assistant || '').trim() !== '';
@@ -1987,6 +2054,14 @@
     }
 
     function effectiveStatus(def, item){
+      if(def.type === 'textRequiredOption'){
+        const value = String(item.value || '').trim();
+        const option = String(item.option || '').trim();
+        if(option === def.noneOption && !value) return Math.max(2,item.status || 0);
+        if(value && option === def.requiredOption) return Math.max(2,item.status || 0);
+        if(value || option) return 1;
+        return 0;
+      }
       if(def.type === 'triChecklist'){
         const t = triChecklistState(def, item);
         if(!t.any) return 0;
@@ -2005,13 +2080,14 @@
     }
 
     function getPendingLabels(c){
-      return FIELD_DEFS.filter(def => !isCompleted(def, c.items[def.key])).map(def => def.label);
+      return getCaseFieldDefs(c).filter(def => !isCompleted(def, c.items[def.key])).map(def => def.label);
     }
 
     function getCaseStats(c){
-      const total = FIELD_DEFS.length;
+      const defs = getCaseFieldDefs(c);
+      const total = defs.length;
       let pending = 0, done = 0;
-      FIELD_DEFS.forEach(def => {
+      defs.forEach(def => {
         const s = effectiveStatus(def, c.items[def.key]);
         if(s >= 2) done++; else pending++;
       });
@@ -2048,6 +2124,20 @@
         if(y >= 1912) return `${y - 1911}/${m}/${d}`;
       }
       return v;
+    }
+
+    function normalizeCaseFieldDate(raw,def,c){
+      const original = String(raw || '').trim().replace(/[-.]/g,'/').replace(/\s+/g,'');
+      if(isNewEditorCase(c) && def?.key === 'entrustEnd' && /^\d{1,2}\/\d{1,2}$/.test(original)){
+        const [month,day] = original.split('/').map(Number);
+        const now = new Date();
+        let rocYear = now.getFullYear() - 1911;
+        const enteredNumber = month * 100 + day;
+        const todayNumber = (now.getMonth()+1) * 100 + now.getDate();
+        if(enteredNumber < todayNumber) rocYear += 1;
+        return `${rocYear}/${month}/${day}`;
+      }
+      return normalizeRocDate(raw);
     }
 
     function parseRocDateParts(raw){
@@ -3601,10 +3691,10 @@
         const ph = def.placeholder || (isDate ? '例如：115/3/17' : '');
         return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${isDate ? 'data-date-auto="1"' : ''}>`;
       }
-      if(def.type === 'textOption' || def.type === 'textAssistant') {
+      if(def.type === 'textOption' || def.type === 'textAssistant' || def.type === 'textRequiredOption') {
         const ph = def.placeholder || '文字內容';
-        const disabled = def.type === 'textOption' && hasTextValue(item.option);
-        return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${disabled ? 'disabled title="已選擇選項，若要輸入文字請先取消選項"' : ''}>`;
+        const disabled = (def.type === 'textOption' && hasTextValue(item.option)) || (def.type === 'textRequiredOption' && item.option === def.noneOption);
+        return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${disabled ? 'disabled title="已選擇無，若要輸入文字請先取消無"' : ''}>`;
       }
       if(def.type === 'dateTextNote' || def.type === 'dateTextNoteAssistant') {
         return `<div class="split-2"><input class="field-input modal-date-note-date" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.date || '')}" placeholder="例如：115/3/17" data-date-auto="1"><input class="field-input modal-date-note-text" data-key="${def.key}" type="text" value="${escapeAttr(item.extra?.note || '')}" placeholder="文字內容"></div>`;
@@ -3633,6 +3723,9 @@
           (def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
         }</div>`;
       }
+      if(def.type === 'textRequiredOption') {
+        return `<span class="tiny">輸入後請完成「${escapeHtml(def.requiredOption)}」</span>`;
+      }
       if(def.type === 'triChecklist') {
         return `<div class="inline-checklist">${
           (def.subitems || []).map(name => {
@@ -3658,12 +3751,13 @@
           getAssistantChoicesForItem(item).map(entry => `<button type="button" class="chip-btn modal-assistant-btn ${item.assistant === entry.name ? 'active' : ''} ${entry.active === false ? 'inactive-locked' : ''}" data-key="${def.key}" data-name="${escapeAttr(entry.name)}">${escapeHtml(entry.active === false ? `${entry.name}（停用）` : entry.name)}</button>`).join('')
         }</div>`;
       }
-      if(def.type === 'textOption' || def.type === 'dateOption' || def.type === 'dateTextNoteOption') {
+      if(def.type === 'textOption' || def.type === 'dateOption' || def.type === 'dateTextNoteOption' || def.type === 'textRequiredOption') {
         return `<div class="chips">${
           (def.specialOptions || []).map(opt => {
             const active = item.option === opt;
-            const disabled = def.type === 'textOption' && hasTextValue(item.value) && !active;
-            const title = disabled ? '已有文字內容，若要選項請先清空文字' : '';
+            const disabled = def.type === 'textOption' && hasTextValue(item.value) && !active
+              || def.type === 'textRequiredOption' && opt === def.noneOption && (hasTextValue(item.value) || item.option === def.requiredOption);
+            const title = disabled ? (def.type === 'textRequiredOption' ? '已有輸入或已完成必要項目，不能選無' : '已有文字內容，若要選項請先清空文字') : '';
             return `<button type="button" class="chip-btn modal-option-btn ${active ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}" ${disabled ? 'disabled' : ''} ${title ? `title="${escapeAttr(title)}"` : ''}>${escapeHtml(opt)}</button>`;
           }).join('')
         }</div>`;
@@ -3683,11 +3777,12 @@
     }
 
     function renderModalActions(c){
+      ensureCaseShape(c);
       renderStatusFilters();
       const tbody = document.getElementById('modalActionsBody');
       tbody.innerHTML = '';
       let lastGroup = '';
-      FIELD_DEFS.forEach(def => {
+      getCaseFieldDefs(c).forEach(def => {
         const item = c.items[def.key];
         normalizeExclusiveItem(def, item);
         const s = effectiveStatus(def, item);
@@ -3812,14 +3907,16 @@
 
     function bindModalEvents(c){
       const tbody = document.getElementById('modalActionsBody');
+      const getDef = key => getCaseFieldDef(c,key);
 
       tbody.querySelectorAll('.modal-value-input').forEach(el => {
         el.addEventListener('input', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.value = e.target.value;
           if(def?.type === 'textOption' && hasTextValue(item.value)) item.option = '';
+          if(def?.type === 'textRequiredOption' && hasTextValue(item.value) && item.option === def.noneOption) item.option = '';
           syncStatusWithContent(def, item);
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, false);
@@ -3830,21 +3927,22 @@
         });
         el.addEventListener('blur', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           if(def?.dateAuto){
-            item.value = normalizeRocDate(item.value);
+            item.value = normalizeCaseFieldDate(item.value,def,c);
             e.target.value = item.value;
           }
           if(def?.type === 'textOption' && hasTextValue(item.value)) item.option = '';
           syncStatusWithContent(def, item);
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
+          if(def?.type === 'textRequiredOption') renderModalActions(c);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, true);
           const salesBookAutoCompleted = key === 'entryDate' && applySalesBookAutoCompletion(c);
           touch(item);
           updateRowState(key);
           renderModalSummary(c);
-          if(salesBookAutoCompleted) renderModalActions(c);
+          if(salesBookAutoCompleted || key === 'entryDate') renderModalActions(c);
           autoSaveNow();
           renderStats(); renderPendingTable(); renderSummaryTable();
         });
@@ -3853,7 +3951,7 @@
       tbody.querySelectorAll('.modal-select-input').forEach(el => {
         el.addEventListener('change', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.value = e.target.value;
           syncStatusWithContent(def, item);
@@ -3867,7 +3965,7 @@
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
           const val = e.currentTarget.dataset.value;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.value = item.value === val ? '' : val;
           syncStatusWithContent(def, item);
@@ -3880,7 +3978,7 @@
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
           const name = e.currentTarget.dataset.name;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.assistant = item.assistant === name ? '' : name;
           if(item.assistant) item.option = '';
@@ -3894,13 +3992,15 @@
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
           const opt = e.currentTarget.dataset.option;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           if(def?.type === 'textOption' && hasTextValue(item.value)) return;
+          if(def?.type === 'textRequiredOption' && opt === def.noneOption && (hasTextValue(item.value) || item.option === def.requiredOption)) return;
           item.option = item.option === opt ? '' : opt;
           if(item.option) {
             item.assistant = '';
             if(def?.type === 'textOption') item.value = '';
+            if(def?.type === 'textRequiredOption' && item.option === def.noneOption) item.value = '';
           }
           syncStatusWithContent(def, item);
           touch(item);
@@ -3912,7 +4012,7 @@
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
           const sub = e.currentTarget.dataset.sub;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           const curr = item.subitems[sub] || '';
           item.subitems[sub] = curr === '' ? 'V' : curr === 'V' ? 'X' : '';
@@ -3925,7 +4025,7 @@
       tbody.querySelectorAll('.modal-loc-date').forEach(el => {
         el.addEventListener('input', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.date = e.target.value;
           syncStatusWithContent(def, item);
@@ -3935,7 +4035,7 @@
         });
         el.addEventListener('blur', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.date = normalizeRocDate(item.extra.date);
           e.target.value = item.extra.date;
@@ -3949,7 +4049,7 @@
       tbody.querySelectorAll('.modal-loc-note').forEach(el => {
         el.addEventListener('input', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.note = e.target.value;
           syncStatusWithContent(def, item);
@@ -3962,7 +4062,7 @@
       tbody.querySelectorAll('.modal-loc-none').forEach(btn => {
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.none = !item.extra.none;
           if(item.extra.none) {
@@ -3978,7 +4078,7 @@
       tbody.querySelectorAll('.modal-date-note-date, .modal-date-option-date').forEach(el => {
         el.addEventListener('input', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.date = e.target.value;
           syncStatusWithContent(def, item);
@@ -3988,7 +4088,7 @@
         });
         el.addEventListener('blur', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.date = normalizeRocDate(item.extra.date);
           e.target.value = item.extra.date;
@@ -4002,7 +4102,7 @@
       tbody.querySelectorAll('.modal-date-note-text').forEach(el => {
         el.addEventListener('input', e => {
           const key = e.target.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.extra.note = e.target.value;
           syncStatusWithContent(def, item);
@@ -4015,7 +4115,7 @@
       tbody.querySelectorAll('.modal-status-btn').forEach(btn => {
         btn.onclick = e => {
           const key = e.currentTarget.dataset.key;
-          const def = FIELD_DEFS.find(x => x.key === key);
+          const def = getDef(key);
           const item = c.items[key];
           item.status = ((item.status || 0) + 1) % 4;
           syncStatusWithContent(def, item);
@@ -4027,7 +4127,7 @@
 
     function updateRowState(key){
       const c = getCaseById(activeModalCaseId);
-      const def = FIELD_DEFS.find(x => x.key === key);
+      const def = getCaseFieldDef(c,key);
       const item = c.items[key];
       const tr = document.querySelector(`tr[data-key="${key}"]`);
       if(!tr) return;
@@ -4069,12 +4169,12 @@
 
       document.querySelectorAll('#caseModal .modal-value-input').forEach(el => {
         const key = el.dataset.key;
-        const def = FIELD_DEFS.find(x => x.key === key);
+        const def = getCaseFieldDef(c,key);
         const item = c.items[key];
         if(!def || !item) return;
         let value = el.value;
         if(normalizeDates && (def.dateAuto || el.dataset.dateAuto === '1')){
-          value = normalizeRocDate(value);
+          value = normalizeCaseFieldDate(value,def,c);
           el.value = value;
         }
         setValue(item, 'value', value, key);
@@ -4086,7 +4186,7 @@
 
       document.querySelectorAll('#caseModal .modal-select-input').forEach(el => {
         const key = el.dataset.key;
-        const def = FIELD_DEFS.find(x => x.key === key);
+        const def = getCaseFieldDef(c,key);
         const item = c.items[key];
         if(!def || !item) return;
         setValue(item, 'value', el.value, key);
@@ -4094,7 +4194,7 @@
 
       document.querySelectorAll('#caseModal .modal-loc-date, #caseModal .modal-date-note-date, #caseModal .modal-date-option-date').forEach(el => {
         const key = el.dataset.key;
-        const def = FIELD_DEFS.find(x => x.key === key);
+        const def = getCaseFieldDef(c,key);
         const item = c.items[key];
         if(!def || !item) return;
         let value = el.value;
@@ -4107,7 +4207,7 @@
 
       document.querySelectorAll('#caseModal .modal-loc-note, #caseModal .modal-date-note-text').forEach(el => {
         const key = el.dataset.key;
-        const def = FIELD_DEFS.find(x => x.key === key);
+        const def = getCaseFieldDef(c,key);
         const item = c.items[key];
         if(!def || !item) return;
         setExtra(item, 'note', el.value, key);
@@ -4120,7 +4220,7 @@
       }
 
       changedKeys.forEach(key => {
-        const def = FIELD_DEFS.find(x => x.key === key);
+        const def = getCaseFieldDef(c,key);
         const item = c.items[key];
         if(!def || !item) return;
         syncStatusWithContent(def, item);
