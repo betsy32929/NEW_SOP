@@ -46,10 +46,14 @@
     const formatCount=value=>{const rounded=Math.round(Number(value||0)*100)/100;return Number.isInteger(rounded)?String(rounded):String(rounded);};
     function decodePayload(){
       const encoded=location.hash.slice(1).replace(/-/g,'+').replace(/_/g,'/');
-      if(!encoded) throw new Error('missing payload');
-      const padded=encoded+'='.repeat((4-encoded.length%4)%4);
-      const binary=atob(padded), bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
-      return JSON.parse(new TextDecoder().decode(bytes));
+      if(encoded){
+        const padded=encoded+'='.repeat((4-encoded.length%4)%4);
+        const binary=atob(padded), bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes));
+      }
+      const saved=localStorage.getItem('newbook_team_public_preview');
+      if(!saved) throw new Error('missing payload');
+      return JSON.parse(saved);
     }
     function render(payload){
       const teams=Array.isArray(payload.teams)?payload.teams:[];
