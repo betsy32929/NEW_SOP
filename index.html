@@ -3968,7 +3968,6 @@
           if(def?.type === 'textRequiredOption') renderModalActions(c);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, true);
           const salesBookAutoCompleted = key === 'entryDate' && applySalesBookAutoCompletion(c);
-          touch(item);
           updateRowState(key);
           renderModalSummary(c);
           if(salesBookAutoCompleted || key === 'entryDate') renderModalActions(c);
@@ -4069,7 +4068,6 @@
           item.extra.date = normalizeRocDate(item.extra.date);
           e.target.value = item.extra.date;
           syncStatusWithContent(def, item);
-          touch(item);
           updateRowState(key);
           autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c);
         });
@@ -4122,7 +4120,6 @@
           item.extra.date = normalizeRocDate(item.extra.date);
           e.target.value = item.extra.date;
           syncStatusWithContent(def, item);
-          touch(item);
           updateRowState(key);
           autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c);
         });
