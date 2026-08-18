@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V44_NEW本製作</title>
+  <title>V45_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V44：建物成果圖與建物謄本新增純土地選項 */
+    /* V45：公司＃新增無，調整房管上網欄位 */
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
     #caseModal .modal-head-status-filter .chip-btn{padding:7px 12px; font-weight:900}
@@ -471,7 +471,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V44 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V45 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -489,7 +489,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V44：建物成果圖與建物謄本新增純土地選項。</div>
+        <div class="tiny" style="margin-bottom:10px;">V45：公司＃新增無；上好房移至內網上網下方，取消上強打。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -867,7 +867,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V44';
+    const APP_VERSION = 'V45';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -931,11 +931,11 @@
 
       makeNewFieldDef('contractContent',{group:'房管'}), makeNewFieldDef('clientAdd',{group:'房管'}), makeNewFieldDef('ckBuilding',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}),
       makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
-      makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管'],requiredOption:'標籤製作',noneOption:'無公司控管'}),
+      makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管','無'],requiredOption:'標籤製作',noneOptions:['無公司控管','無']}),
       makeNewFieldDef('keyPropertyFeatures',{group:'房管'}), makeNewFieldDef('uploadPhotos',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('uploadFloorplan',{group:'房管'}), makeNewFieldDef('websitePublic',{group:'房管'}),
-      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管',optionSpacer:'業務上傳'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
+      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管',optionSpacer:'業務上傳'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
       makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printOwnershipNote',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
-      makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('goStrong',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}),
+      makeNewFieldDef('printDealPrice',{group:'房管'}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}),
 
       makeNewFieldDef('notebookFilenameEdit',{group:'總表'}), makeNewFieldDef('addMasterList',{group:'總表'}),
       makeNewFieldDef('middlemanAmount',{group:'總表',type:'textRequiredOption',label:'中人金額',specialOptions:['總表備註','無'],requiredOption:'總表備註',noneOption:'無'}), makeNewFieldDef('dailyUpdateDisplay',{group:'總表'}),
@@ -1782,7 +1782,7 @@
     function getCaseFieldDefs(c){
       return isNewEditorCase(c)
         ? NEW_EDITOR_FIELD_DEFS
-        : FIELD_DEFS.filter(def => def.key !== 'dailyUpdateDisplay');
+        : FIELD_DEFS.filter(def => !['dailyUpdateDisplay','goStrong'].includes(def.key));
     }
 
     function getCaseFieldDef(c,key){
@@ -2061,11 +2061,16 @@
       return false;
     }
 
+    function isTextRequiredNoneOption(def, option){
+      const options = Array.isArray(def?.noneOptions) ? def.noneOptions : [def?.noneOption];
+      return options.filter(Boolean).includes(String(option || '').trim());
+    }
+
     function effectiveStatus(def, item){
       if(def.type === 'textRequiredOption'){
         const value = String(item.value || '').trim();
         const option = String(item.option || '').trim();
-        if(option === def.noneOption && !value) return Math.max(2,item.status || 0);
+        if(isTextRequiredNoneOption(def, option) && !value) return Math.max(2,item.status || 0);
         if(value && option === def.requiredOption) return Math.max(2,item.status || 0);
         if(value || option) return 1;
         return 0;
@@ -3722,7 +3727,7 @@
       }
       if(def.type === 'textOption' || def.type === 'textAssistant' || def.type === 'textRequiredOption') {
         const ph = def.placeholder || '文字內容';
-        const disabled = (def.type === 'textOption' && hasTextValue(item.option)) || (def.type === 'textRequiredOption' && item.option === def.noneOption);
+        const disabled = (def.type === 'textOption' && hasTextValue(item.option)) || (def.type === 'textRequiredOption' && isTextRequiredNoneOption(def, item.option));
         return `<input class="field-input modal-value-input" data-key="${def.key}" type="text" value="${escapeAttr(item.value || '')}" placeholder="${escapeAttr(ph)}" ${disabled ? 'disabled title="已選擇無，若要輸入文字請先取消無"' : ''}>`;
       }
       if(def.type === 'dateTextNote' || def.type === 'dateTextNoteAssistant') {
@@ -3793,7 +3798,7 @@
           (def.specialOptions || []).map(opt => {
             const active = item.option === opt;
             const disabled = def.type === 'textOption' && hasTextValue(item.value) && !active
-              || def.type === 'textRequiredOption' && opt === def.noneOption && (hasTextValue(item.value) || item.option === def.requiredOption);
+              || def.type === 'textRequiredOption' && isTextRequiredNoneOption(def, opt) && (hasTextValue(item.value) || item.option === def.requiredOption);
             const title = disabled ? (def.type === 'textRequiredOption' ? '已有輸入或已完成必要項目，不能選無' : '已有文字內容，若要選項請先清空文字') : '';
             return `<button type="button" class="chip-btn modal-option-btn ${active ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}" ${disabled ? 'disabled' : ''} ${title ? `title="${escapeAttr(title)}"` : ''}>${escapeHtml(opt)}</button>`;
           }).join('')
@@ -3960,7 +3965,7 @@
           const item = c.items[key];
           item.value = e.target.value;
           if(def?.type === 'textOption' && hasTextValue(item.value)) item.option = '';
-          if(def?.type === 'textRequiredOption' && hasTextValue(item.value) && item.option === def.noneOption) item.option = '';
+          if(def?.type === 'textRequiredOption' && hasTextValue(item.value) && isTextRequiredNoneOption(def, item.option)) item.option = '';
           syncStatusWithContent(def, item);
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, false);
@@ -4038,12 +4043,12 @@
           const def = getDef(key);
           const item = c.items[key];
           if(def?.type === 'textOption' && hasTextValue(item.value)) return;
-          if(def?.type === 'textRequiredOption' && opt === def.noneOption && (hasTextValue(item.value) || item.option === def.requiredOption)) return;
+          if(def?.type === 'textRequiredOption' && isTextRequiredNoneOption(def, opt) && (hasTextValue(item.value) || item.option === def.requiredOption)) return;
           item.option = item.option === opt ? '' : opt;
           if(item.option) {
             item.assistant = '';
             if(def?.type === 'textOption') item.value = '';
-            if(def?.type === 'textRequiredOption' && item.option === def.noneOption) item.value = '';
+            if(def?.type === 'textRequiredOption' && isTextRequiredNoneOption(def, item.option)) item.value = '';
           }
           syncStatusWithContent(def, item);
           touch(item);
