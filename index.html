@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V52_NEW本製作</title>
+  <title>V53_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V52：組別件數統計開價低於300萬計半件 */
+    /* V53：組別件數統計預設週期改為星期六至星期五 */
     .contract-ref{display:inline-block;margin-left:8px;color:#1d4ed8;font-weight:900;word-break:break-all}
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
@@ -472,7 +472,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V52 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V53 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -490,7 +490,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V52：組別件數統計開價低於300萬計半件。</div>
+        <div class="tiny" style="margin-bottom:10px;">V53：組別件數統計預設週期改為星期六至星期五。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -851,7 +851,7 @@
         <div class="team-date-bar">
           <label><span class="tiny" style="font-weight:900">計算日期開始</span><input id="teamStartDateInput" class="field-input" type="text" placeholder="例如：115/8/10"></label>
           <label><span class="tiny" style="font-weight:900">計算日期結束</span><input id="teamEndDateInput" class="field-input" type="text" placeholder="例如：115/8/16"></label>
-          <button type="button" class="soft" id="teamThisWeekBtn">回到本週（一～日）</button>
+          <button type="button" class="soft" id="teamThisWeekBtn">回到本週（六～五）</button>
           <span class="tiny" id="teamPeriodHint"></span>
         </div>
         <div id="teamWinnerBanner" class="team-winner-banner">目前尚無件數</div>
@@ -868,7 +868,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V52';
+    const APP_VERSION = 'V53';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1011,9 +1011,9 @@
     function dateToRocText(date){ return `${date.getFullYear()-1911}/${date.getMonth()+1}/${date.getDate()}`; }
     function getCurrentWeekRange(){
       const now = new Date(); now.setHours(12,0,0,0);
-      const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay()+6)%7));
-      const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
-      return { start:dateToRocText(monday), end:dateToRocText(sunday) };
+      const saturday = new Date(now); saturday.setDate(now.getDate() - ((now.getDay()+1)%7));
+      const friday = new Date(saturday); friday.setDate(saturday.getDate()+6);
+      return { start:dateToRocText(saturday), end:dateToRocText(friday) };
     }
     function cloneTeamDefaultRoster(){ return Object.fromEntries(Object.entries(TEAM_DEFAULT_ROSTER).map(([team,rows]) => [team, rows.map(([name,role]) => ({name,role}))])); }
     function ensureTeamStatsConfig(){
