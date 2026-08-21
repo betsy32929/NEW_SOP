@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V53_NEW本製作</title>
+  <title>V54_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V53：組別件數統計預設週期改為星期六至星期五 */
+    /* V54：租件EB與EC開頭的主約編號計半件 */
     .contract-ref{display:inline-block;margin-left:8px;color:#1d4ed8;font-weight:900;word-break:break-all}
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
     #caseModal .modal-head-status-filter{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; padding:4px 6px; border-radius:999px; background:rgba(255,255,255,.58); border:1px solid #bfdbfe}
@@ -472,7 +472,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V53 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V54 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -490,7 +490,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V53：組別件數統計預設週期改為星期六至星期五。</div>
+        <div class="tiny" style="margin-bottom:10px;">V54：租件EB與EC開頭的主約編號計半件。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -841,7 +841,7 @@
   <div id="teamStatsModal" class="modal">
     <div class="modal-card team-modal-card">
       <div class="modal-head">
-        <div><div class="modal-title">組別件數統計</div><div class="tiny">依進案日期與主約編號統計：A＝專簽、G＝一般約；開價低於300萬計0.5件</div></div>
+        <div><div class="modal-title">組別件數統計</div><div class="tiny">依進案日期與主約編號統計：A＝專簽、G＝一般約；開價低於300萬或租件EB／EC計0.5件</div></div>
         <div class="top-actions">
           <button class="soft" id="teamPreviewPublicBtn">預覽公開版</button>
           <button class="ghost" id="teamStatsCloseBtn">關閉</button>
@@ -861,14 +861,14 @@
           <div id="teamRosterGrid" class="team-roster-grid" style="margin-top:12px"></div>
           <div class="top-actions" style="margin-top:10px"><button type="button" class="ghost" id="teamResetRosterBtn">恢復照片預設名單</button></div>
         </details>
-        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>契約明細</span><span class="tiny">只列出期間內、契約編號含 A 或 G 的案件</span></div><div class="team-table-wrap"><table><thead><tr><th>進案日期</th><th>組別</th><th>身分</th><th>開發</th><th>案名</th><th>契約編號</th><th>契約類型</th><th>計入件數</th></tr></thead><tbody id="teamCaseTableBody"></tbody></table></div></div>
+        <div class="setting-card"><div class="section-title" style="margin-bottom:10px"><span>契約明細</span><span class="tiny">只列出期間內，主約編號符合 A、G、EB 或 EC 的案件</span></div><div class="team-table-wrap"><table><thead><tr><th>進案日期</th><th>組別</th><th>身分</th><th>開發</th><th>案名</th><th>契約編號</th><th>契約類型</th><th>計入件數</th></tr></thead><tbody id="teamCaseTableBody"></tbody></table></div></div>
         <div class="top-actions" style="justify-content:flex-end"><button class="ghost" id="teamStatsCloseBtnBottom">關閉</button></div>
       </div>
     </div>
   </div>
 
   <script>
-    const APP_VERSION = 'V53';
+    const APP_VERSION = 'V54';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1052,7 +1052,8 @@
     function getTeamDisplayName(team,cfg=ensureTeamStatsConfig()){ return String(cfg.teamNames?.[team]||`${team}組`).trim(); }
     function formatTeamCount(value){ const rounded=Math.round(Number(value||0)*100)/100; return Number.isInteger(rounded)?String(rounded):String(rounded); }
     function getTeamContractType(contractNo){
-      const value = String(contractNo || '').toUpperCase();
+      const value = String(contractNo || '').trim().toUpperCase();
+      if(value.startsWith('EB') || value.startsWith('EC')) return 'E';
       if(value.includes('A')) return 'A';
       if(value.includes('G')) return 'G';
       return '';
@@ -1061,7 +1062,7 @@
       const cfg = ensureTeamStatsConfig();
       const memberMap = new Map();
       ['A','B','C','D'].forEach(team => cfg.teams[team].forEach(member => { const name=canonicalDeveloperName(member.name); if(name) memberMap.set(name,{team,role:member.role==='組長'?'組長':'組員',name}); }));
-      const people = new Map(); memberMap.forEach(info => people.set(info.name,{...info,a:0,g:0,total:0}));
+      const people = new Map(); memberMap.forEach(info => people.set(info.name,{...info,a:0,g:0,e:0,total:0}));
       const details = [];
       allCases().forEach(c => {
         const entryDate = normalizeRocDate(fieldText(c,'entryDate'));
@@ -1070,7 +1071,7 @@
         const type = getTeamContractType(contractNo); if(!type) return;
         const developerList=getRewardDeveloperList(fieldText(c,'developer'));
         const listPriceWan=parseRewardMoneyToWan(fieldText(c,'listPrice'));
-        const caseCount=listPriceWan>0 && listPriceWan<300 ? 0.5 : 1;
+        const caseCount=type==='E' || (listPriceWan>0 && listPriceWan<300) ? 0.5 : 1;
         const share=developerList.length?caseCount/developerList.length:0;
         developerList.forEach(rawName => {
           const name=canonicalDeveloperName(rawName), info=memberMap.get(name); if(!info) return;
@@ -1132,7 +1133,7 @@
       const summary=document.getElementById('teamSummaryGrid');
       if(summary) summary.innerHTML=renderTeamComparisonTable(data, grandTotal);
       const visibleDetails=data.details.filter(row=>row.team!=='D');
-      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=visibleDetails.length?visibleDetails.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':'一般約 G'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G 編號的契約</div></td></tr>';
+      const caseBody=document.getElementById('teamCaseTableBody'); if(caseBody) caseBody.innerHTML=visibleDetails.length?visibleDetails.map(row=>`<tr><td>${escapeHtml(row.entryDate)}</td><td><strong>${escapeHtml(getTeamDisplayName(row.team,data.cfg))}</strong></td><td>${row.role}</td><td>${escapeHtml(row.name)}</td><td>${escapeHtml(row.caseName)}</td><td>${escapeHtml(row.contractNo)}</td><td class="team-type-${row.type.toLowerCase()}">${row.type==='A'?'專簽 A':row.type==='G'?'一般約 G':'租件 EB／EC'}</td><td><strong>${formatTeamCount(row.share)}</strong></td></tr>`).join(''):'<tr><td colspan="8"><div class="empty">此期間沒有符合 A／G／EB／EC 編號的契約</div></td></tr>';
       renderTeamRosterEditor(data);
     }
     function buildTeamPublicHtml(){
