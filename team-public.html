@@ -21,16 +21,17 @@
     .team-group-head{font-size:19px;font-weight:1000;background:var(--team-soft,#eff6ff);color:#0f172a;border-top:4px solid var(--team-color,#93c5fd)}
     .team-head-name{min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.25;word-break:break-word}
     .team-head-total{display:inline-block;margin-top:7px;padding:4px 12px;border-radius:999px;background:#fff;border:2px solid var(--team-color,#93c5fd);font-size:17px;line-height:1.2;font-weight:1000;white-space:nowrap}
-    .team-sub-head{font-size:14px;font-weight:1000;background:#f8fafc}.team-member-name{text-align:center;font-weight:900}.team-member-count{font-size:18px;font-weight:1000}
+    .team-sub-head{font-size:14px;font-weight:1000;background:#f8fafc}.team-member-name{text-align:center;font-weight:900}.team-member-count{font-size:18px;font-weight:1000}.team-count-btn{border:0;background:transparent;color:#1d4ed8;font:inherit;font-weight:1000;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 12px;border-radius:10px}.team-count-btn:hover{background:#dbeafe}
     .team-leader-badge{display:inline-block;margin-left:6px;padding:2px 6px;border-radius:999px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-size:10px;line-height:1.2;font-weight:1000;vertical-align:middle;white-space:nowrap}
     .team-grand-head{width:150px;background:#ede9fe;border-top:4px solid #7c3aed;font-size:20px;font-weight:1000}.team-grand-total{background:linear-gradient(180deg,#f5f3ff 0%,#ede9fe 100%);color:#5b21b6;font-size:36px;font-weight:1000;vertical-align:middle}
+    .calc-panel{padding:16px 18px;border:2px solid #60a5fa;border-radius:18px;background:#eff6ff;box-shadow:0 10px 24px rgba(29,78,216,.12)}.calc-panel[hidden]{display:none}.calc-title{font-size:20px;font-weight:1000;color:#1d4ed8}.calc-list{display:grid;gap:8px;margin-top:12px}.calc-row{display:grid;grid-template-columns:1fr auto;gap:14px;padding:9px 12px;border-radius:10px;background:#fff}.calc-total{margin-top:12px;text-align:right;font-size:20px;font-weight:1000;color:#1d4ed8}
     .error{padding:30px;border-radius:20px;background:#fff;color:#b91c1c;text-align:center;font-size:18px;font-weight:1000}
     @media(max-width:760px){body{padding:10px}.winner-name{font-size:24px}}
     @page{size:A4 landscape;margin:0 5mm}
     @media print{
       html,body{width:287mm;height:210mm;min-height:0;background:#fff}
       body{padding:0;overflow:hidden;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-      .toolbar{display:none!important}.wrap{position:absolute;inset:0 auto auto 0;display:block;width:287mm;height:198mm;max-width:none;padding:2mm 0;overflow:hidden}
+      .toolbar,.calc-panel{display:none!important}.wrap{position:absolute;inset:0 auto auto 0;display:block;width:287mm;height:198mm;max-width:none;padding:2mm 0;overflow:hidden}
       .winner{height:27mm;margin:0 0 2mm;padding:2.5mm 5mm;border-width:.8mm;border-radius:5mm;box-shadow:none}.winner::before,.winner::after{font-size:9mm}.winner-kicker{font-size:4.6mm}.winner-name{font-size:7mm;line-height:1.08}
       .comparison-wrap{height:165mm;overflow:hidden;border-radius:4mm;box-shadow:none;display:flex}table{min-width:0;width:100%;height:164mm;flex:1;table-layout:fixed}thead{height:36mm}tbody tr{height:16mm}th,td{padding:1mm 1.5mm}.team-group-head{font-size:5mm;border-top-width:1mm}.team-head-name{min-height:10mm}.team-head-total{margin-top:1mm;padding:1mm 3mm;font-size:4.8mm;border-width:.5mm}.team-sub-head{font-size:4.2mm}.team-member-name{font-size:5mm}.team-member-count{font-size:5.5mm}.team-leader-badge{font-size:3mm;padding:.4mm 1.2mm;margin-left:1mm}.team-grand-head{width:30mm;font-size:5.3mm}.team-grand-total{font-size:11mm}
     }
@@ -64,12 +65,23 @@
       const heads=teams.map(team=>{const theme=THEMES[team.team]||THEMES.A;return `<th class="team-group-head" colspan="2" style="--team-color:${theme.color};--team-soft:${theme.soft}"><span class="team-head-name">${escapeHtml(team.name)}</span><span class="team-head-total">共 ${formatCount(team.total)} 件</span></th>`;}).join('');
       const subheads=teams.map(()=>'<th class="team-sub-head">組員</th><th class="team-sub-head">件數</th>').join('');
       const rows=Array.from({length:rowCount},(_,index)=>{
-        const memberCells=teams.map(team=>{const member=(team.members||[])[index];return member?`<td class="team-member-name">${escapeHtml(member.name)}${member.role==='組長'?'<span class="team-leader-badge">組長</span>':''}</td><td class="team-member-count">${formatCount(member.total)}</td>`:'<td class="team-member-name">—</td><td class="team-member-count">—</td>';}).join('');
+        const memberCells=teams.map(team=>{const member=(team.members||[])[index];return member?`<td class="team-member-name">${escapeHtml(member.name)}${member.role==='組長'?'<span class="team-leader-badge">組長</span>':''}</td><td class="team-member-count"><button type="button" class="team-count-btn" data-team="${escapeHtml(team.team)}" data-name="${escapeHtml(member.name)}">${formatCount(member.total)}</button></td>`:'<td class="team-member-name">—</td><td class="team-member-count">—</td>';}).join('');
         const totalCell=index===0?`<td class="team-grand-total" rowspan="${rowCount}">${formatCount(payload.grandTotal)} 件</td>`:'';
         return `<tr>${memberCells}${totalCell}</tr>`;
       }).join('');
       const table=`<section class="comparison-wrap"><table><thead><tr>${heads}<th class="team-grand-head" rowspan="2">總件數</th></tr><tr>${subheads}</tr></thead><tbody>${rows}</tbody></table></section>`;
-      host.innerHTML=winner+table;
+      host.innerHTML=winner+table+'<section class="calc-panel" id="calcPanel" hidden></section>';
+      host.querySelectorAll('.team-count-btn').forEach(button=>button.onclick=()=>showCalculation(payload,button.dataset.team,button.dataset.name));
+    }
+    function showCalculation(payload,teamKey,name){
+      const team=(payload.teams||[]).find(item=>item.team===teamKey);
+      const member=(team?.members||[]).find(item=>item.name===name);
+      const cases=Array.isArray(member?.cases)?member.cases:[];
+      const total=cases.reduce((sum,item)=>sum+Number(item.share||0),0);
+      const panel=document.getElementById('calcPanel'); if(!panel)return;
+      panel.hidden=false;
+      panel.innerHTML=`<div class="calc-title">${escapeHtml(name)}｜件數計算</div><div class="calc-list">${cases.length?cases.map(item=>`<div class="calc-row"><span>${escapeHtml(item.caseName)}｜${escapeHtml(item.contractNo)}</span><strong>${formatCount(item.share)} 件</strong></div>`).join(''):'<div>此期間沒有計入案件</div>'}</div><div class="calc-total">合計：${formatCount(total)} 件</div>`;
+      panel.scrollIntoView({behavior:'smooth',block:'nearest'});
     }
     try{render(decodePayload());}catch(error){host.innerHTML='<div class="error">公開版網址缺少有效資料，請回到管理頁重新按「預覽公開版」。</div>';}
   </script>
