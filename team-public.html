@@ -42,19 +42,29 @@
   <main class="wrap" id="publicContent"></main>
   <script>
     const THEMES={A:{color:'#ef5b2a',soft:'#fff1eb'},B:{color:'#3b68e8',soft:'#eef2ff'},C:{color:'#35a853',soft:'#edf9f0'}};
+    const SUPABASE_URL='https://oiywtmjbasoonfuxemtr.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dhr81918k0zRtar14yepIA_ZWmTKT10';
+    const TEAM_PUBLIC_APP_ID='newbook_team_public';
     const host=document.getElementById('publicContent');
     const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const formatCount=value=>{const rounded=Math.round(Number(value||0)*100)/100;return Number.isInteger(rounded)?String(rounded):String(rounded);};
-    function decodePayload(){
+    async function decodePayload(){
       const encoded=location.hash.slice(1).replace(/-/g,'+').replace(/_/g,'/');
       if(encoded){
         const padded=encoded+'='.repeat((4-encoded.length%4)%4);
         const binary=atob(padded), bytes=Uint8Array.from(binary,char=>char.charCodeAt(0));
         return JSON.parse(new TextDecoder().decode(bytes));
       }
+      try{
+        const endpoint=`${SUPABASE_URL}/rest/v1/app_state?app_id=eq.${encodeURIComponent(TEAM_PUBLIC_APP_ID)}&select=data&limit=1`;
+        const response=await fetch(endpoint,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY}});
+        if(!response.ok) throw new Error(`cloud ${response.status}`);
+        const rows=await response.json();
+        if(rows?.[0]?.data) return rows[0].data;
+      }catch(error){ console.warn('公開統計雲端讀取失敗',error); }
       const saved=localStorage.getItem('newbook_team_public_preview');
-      if(!saved) throw new Error('missing payload');
-      return JSON.parse(saved);
+      if(saved) return JSON.parse(saved);
+      throw new Error('missing payload');
     }
     function render(payload){
       const teams=Array.isArray(payload.teams)?payload.teams:[];
@@ -83,7 +93,7 @@
       panel.innerHTML=`<div class="calc-title">${escapeHtml(name)}｜件數計算</div><div class="calc-list">${cases.length?cases.map(item=>`<div class="calc-row"><span>${escapeHtml(item.caseName)}｜${escapeHtml(item.contractNo)}</span><strong>${formatCount(item.share)} 件</strong></div>`).join(''):'<div>此期間沒有計入案件</div>'}</div><div class="calc-total">合計：${formatCount(total)} 件</div>`;
       panel.scrollIntoView({behavior:'smooth',block:'nearest'});
     }
-    try{render(decodePayload());}catch(error){host.innerHTML='<div class="error">公開版網址缺少有效資料，請回到管理頁重新按「預覽公開版」。</div>';}
+    decodePayload().then(render).catch(error=>{host.innerHTML='<div class="error">公開版尚未發布資料，請由管理頁按一次「預覽公開版」。</div>';});
   </script>
 </body>
 </html>

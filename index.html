@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V57_NEW本製作</title>
+  <title>V58_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -171,7 +171,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V57：修正萬元數字超過一萬時被錯誤換算 */
+    /* V58：固定公開網址可直接讀取最新組別統計快照 */
     .contract-ref{display:inline-block;margin-left:8px;color:#1d4ed8;font-weight:900;word-break:break-all}
     .team-count-btn{border:0;background:transparent;color:#1d4ed8;font:inherit;font-weight:1000;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 10px;border-radius:10px}.team-count-btn:hover{background:#dbeafe}.team-member-calc-panel{margin-top:12px;padding:14px;border:2px solid #60a5fa;border-radius:16px;background:#eff6ff}.team-member-calc-panel[hidden]{display:none}.team-member-calc-title{font-size:18px;font-weight:1000;color:#1d4ed8}.team-member-calc-list{display:grid;gap:7px;margin-top:10px}.team-member-calc-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 10px;border-radius:10px;background:#fff}.team-member-calc-total{margin-top:10px;text-align:right;font-size:18px;font-weight:1000;color:#1d4ed8}
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
@@ -473,7 +473,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V57 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V58 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -491,7 +491,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V57：修正萬元數字超過一萬時被錯誤換算。</div>
+        <div class="tiny" style="margin-bottom:10px;">V58：固定公開網址可直接讀取最新組別統計快照。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -870,10 +870,11 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V57';
+    const APP_VERSION = 'V58';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
+    const TEAM_PUBLIC_APP_ID = 'newbook_team_public';
     const REMOTE_APPLY_IDLE_MS = 60000; // 本機停止操作 60 秒後，才允許套用其他電腦更新，避免 100%/92% 來回跳
     const ROC_YEAR = new Date().getFullYear() - 1911;
     const STATUS_TEXT = ['未做','已做','完成','完全完成'];
@@ -1191,13 +1192,23 @@
       bytes.forEach(byte=>{ binary+=String.fromCharCode(byte); });
       return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
     }
-    function previewTeamPublicHtml(){
+    async function publishTeamPublicSnapshot(){
+      if(!syncClient) return false;
+      const now=new Date().toISOString();
+      const payload={...buildTeamPublicPayload(),publishedAt:now};
+      const res=await syncClient.from('app_state').upsert({app_id:TEAM_PUBLIC_APP_ID,data:payload,revision:Date.now(),updated_at:now},{onConflict:'app_id'}).select('app_id').single();
+      if(res.error) throw res.error;
+      return true;
+    }
+    async function previewTeamPublicHtml(){
       const url=new URL('team-public.html',window.location.href);
       localStorage.setItem('newbook_team_public_preview',JSON.stringify(buildTeamPublicPayload()));
       url.search='';
       url.hash='';
-      const win=window.open(url.href,'_blank');
+      const win=window.open('about:blank','_blank');
       if(!win){ alert('預覽視窗被瀏覽器阻擋，請允許此網站開啟新視窗。'); return; }
+      try{ await publishTeamPublicSnapshot(); }catch(error){ console.error(error); }
+      win.location.href=url.href;
     }
     function readTeamDateInputs(){ const cfg=ensureTeamStatsConfig(); cfg.startDate=normalizeRocDate(document.getElementById('teamStartDateInput')?.value||cfg.startDate);cfg.endDate=normalizeRocDate(document.getElementById('teamEndDateInput')?.value||cfg.endDate);cfg.autoWeek=false;scheduleAutoSave();renderTeamStats(); }
     function setTeamThisWeek(){ const week=getCurrentWeekRange(),cfg=ensureTeamStatsConfig();cfg.startDate=week.start;cfg.endDate=week.end;cfg.weekKey=week.start;cfg.autoWeek=true;scheduleAutoSave();renderTeamStats(); }
@@ -1729,6 +1740,7 @@
         if(res.error) throw res.error;
         remoteRevision = Number(res.data?.revision || payload.revision);
         remoteUpdatedAt = res.data?.updated_at || payload.updated_at;
+        await publishTeamPublicSnapshot();
         pendingRemoteRow = null;
         setLastSyncTimeText(fmtTime(remoteUpdatedAt));
         setSyncStatus('ok', '已同步到雲端。');
