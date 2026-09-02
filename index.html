@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V60_NEW本製作</title>
+  <title>V61_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -101,6 +101,8 @@
     .tri-btn .s{display:inline-flex; min-width:18px; justify-content:center; margin-right:4px; font-weight:800}
     .tri-btn.v{background:var(--green-soft); border-color:#bbf7d0}
     .tri-btn.x{background:var(--red-soft); border-color:#fecaca}
+    .tri-btn.no-need{background:#eef2f7; color:#475569; border-color:#cbd5e1}
+    .tri-btn.no-need .s{min-width:27px; font-size:10px; font-weight:800}
     .tri-btn.missing{background:#fff7d6; color:#92400e; border-color:#fbbf24}
     .split-2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
     .sync-panel{padding:14px 16px; background:linear-gradient(135deg,#d7f0ec 0,#eefcf9 50%,#ffffff 100%)}
@@ -172,7 +174,7 @@
     .summary-mini .v{font-size:19px; font-weight:800; line-height:1.2; word-break:break-word}
     .action-toolbar{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:linear-gradient(135deg,#d8e7ff 0,#edf4ff 55%,#ffffff 100%)}
     .case-note-row{display:grid; gap:6px}
-    /* V60：公司物件存檔增加「缺」，並視為完成 */
+    /* V61：公司物件存檔以小字「無需」取代 X */
     .contract-ref{display:inline-block;margin-left:8px;color:#1d4ed8;font-weight:900;word-break:break-all}
     .team-count-btn{border:0;background:transparent;color:#1d4ed8;font:inherit;font-weight:1000;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 10px;border-radius:10px}.team-count-btn:hover{background:#dbeafe}.team-member-calc-panel{margin-top:12px;padding:14px;border:2px solid #60a5fa;border-radius:16px;background:#eff6ff}.team-member-calc-panel[hidden]{display:none}.team-member-calc-title{font-size:18px;font-weight:1000;color:#1d4ed8}.team-member-calc-list{display:grid;gap:7px;margin-top:10px}.team-member-calc-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 10px;border-radius:10px;background:#fff}.team-member-calc-total{margin-top:10px;text-align:right;font-size:18px;font-weight:1000;color:#1d4ed8}
     #caseModal .modal-head-actions{display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap}
@@ -474,7 +476,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V60 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V61 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -492,7 +494,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V60：公司物件存檔增加「缺」，並視為完成。</div>
+        <div class="tiny" style="margin-bottom:10px;">V61：公司物件存檔以小字「無需」取代 X。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -871,7 +873,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V60';
+    const APP_VERSION = 'V61';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2076,8 +2078,8 @@
 
     function triChecklistState(def, item){
       const vals = (def.subitems || []).map(name => item.subitems?.[name] || '');
-      const all = vals.every(v => v === 'V' || v === 'X' || v === '缺');
-      const any = vals.some(v => v === 'V' || v === 'X' || v === '缺');
+      const all = vals.every(v => v === 'V' || v === 'X' || v === '無需' || v === '缺');
+      const any = vals.some(v => v === 'V' || v === 'X' || v === '無需' || v === '缺');
       return { any, all };
     }
 
@@ -3827,8 +3829,8 @@
         return `<div class="inline-checklist">${
           (def.subitems || []).map(name => {
             const st = item.subitems?.[name] || '';
-            const cls = st === 'V' ? 'v' : st === 'X' ? 'x' : st === '缺' ? 'missing' : '';
-            const mark = st || '□';
+            const cls = st === 'V' ? 'v' : (st === 'X' || st === '無需') ? 'no-need' : st === '缺' ? 'missing' : '';
+            const mark = st === 'X' ? '無需' : (st || '□');
             return `<button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}"><span class="s">${mark}</span>${escapeHtml(name)}</button>`;
           }).join('')
         }${(def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
@@ -4125,7 +4127,7 @@
           const def = getDef(key);
           const item = c.items[key];
           const curr = item.subitems[sub] || '';
-          item.subitems[sub] = curr === '' ? 'V' : curr === 'V' ? 'X' : curr === 'X' ? '缺' : '';
+          item.subitems[sub] = curr === '' ? 'V' : curr === 'V' ? '無需' : (curr === 'X' || curr === '無需') ? '缺' : '';
           syncStatusWithContent(def, item);
           touch(item);
           autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
