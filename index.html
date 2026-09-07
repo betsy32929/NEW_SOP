@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V74_NEW本製作</title>
+  <title>V75_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -63,6 +63,8 @@
     .manual-save-btn{background:linear-gradient(135deg,#ef4444 0,#dc2626 100%); color:#fff; font-weight:900; box-shadow:0 8px 18px rgba(220,38,38,.28)}
     .manual-save-btn:hover{box-shadow:0 10px 22px rgba(220,38,38,.34)}
     .modal-top-btn{background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe; font-weight:900}
+    .modal-reminder-btn{background:linear-gradient(135deg,#fb923c 0,#ea580c 100%);color:#fff;border:2px solid #c2410c;font-weight:1000;box-shadow:0 7px 16px rgba(234,88,12,.3);font-size:15px;padding:9px 16px}
+    .modal-reminder-btn:hover{box-shadow:0 9px 20px rgba(234,88,12,.38)}
     .modal-close-btn{background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-weight:900}
     .modal-close-btn:disabled{opacity:.55; cursor:not-allowed; transform:none !important}
     .modal-footer-actions{display:flex; justify-content:flex-start; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 0 0}
@@ -197,8 +199,8 @@
     #caseModal .modal-risk-actions button{padding:6px 10px; font-size:12px; font-weight:900; border-radius:999px; white-space:nowrap; transform:none}
     #caseModal .modal-risk-actions .archive-soft{background:#f8fafc; color:#64748b; border:1px solid #cbd5e1}
     #caseModal .modal-risk-actions .danger{background:#fff1f2; color:#be123c; border:1px solid #fecdd3}
-    .case-reminder-panel{display:grid;gap:12px;padding:15px 16px;border:2px solid #f59e0b;border-radius:18px;background:linear-gradient(135deg,#fff7ed 0%,#ffffff 100%);box-shadow:0 10px 24px rgba(245,158,11,.12)}
-    .case-reminder-panel[hidden]{display:none}.case-reminder-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.case-reminder-title{font-size:19px;font-weight:1000;color:#9a3412}.case-reminder-case{padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #fed7aa;color:#7c2d12;font-weight:900;line-height:1.6;overflow-wrap:anywhere}.case-reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.case-reminder-option{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border:1px solid #fdba74;border-radius:12px;background:#fff;font-weight:900;line-height:1.45;cursor:pointer}.case-reminder-option input{width:18px;height:18px;margin:1px 0 0;flex:0 0 auto;accent-color:#ea580c}.case-reminder-output{width:100%;min-height:145px;padding:12px 14px;border:2px solid #93c5fd;border-radius:14px;background:#fff;color:#172033;font:900 16px/1.7 "Microsoft JhengHei","PingFang TC",sans-serif;resize:vertical}.case-reminder-copy-status{font-size:13px;font-weight:900;color:#15803d}
+    .case-reminder-modal{z-index:1100}.case-reminder-dialog{width:min(900px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:18px;border:2px solid #f59e0b;border-radius:22px;background:linear-gradient(135deg,#fff7ed 0%,#ffffff 100%);box-shadow:0 24px 65px rgba(124,45,18,.3)}
+    .case-reminder-panel{display:grid;gap:12px}.case-reminder-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.case-reminder-title{font-size:22px;font-weight:1000;color:#9a3412}.case-reminder-case{padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #fed7aa;color:#7c2d12;font-weight:900;line-height:1.6;overflow-wrap:anywhere}.case-reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.case-reminder-option{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border:1px solid #fdba74;border-radius:12px;background:#fff;font-weight:900;line-height:1.45;cursor:pointer}.case-reminder-option input{width:18px;height:18px;margin:1px 0 0;flex:0 0 auto;accent-color:#ea580c}.case-reminder-output{width:100%;min-height:145px;padding:12px 14px;border:2px solid #93c5fd;border-radius:14px;background:#fff;color:#172033;font:900 16px/1.7 "Microsoft JhengHei","PingFang TC",sans-serif;resize:vertical}.case-reminder-copy-status{font-size:13px;font-weight:900;color:#15803d}
     @media(max-width:760px){.case-reminder-grid{grid-template-columns:1fr}}
     .confirm-dialog-card{width:min(420px,calc(100vw - 32px)); background:linear-gradient(180deg,#ffffff 0,#f8fbff 100%); border:1px solid #cbd5e1; border-radius:22px; box-shadow:0 24px 60px rgba(15,23,42,.32); padding:18px}
     .confirm-dialog-title{font-size:20px; font-weight:1000; color:#0f172a; margin-bottom:8px}
@@ -481,7 +483,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V74 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V75 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -499,7 +501,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V74：提醒文字改為數字條列並自動顯示未完成項目總數。</div>
+        <div class="tiny" style="margin-bottom:10px;">V75：提醒按鈕改為醒目彈出視窗，新增提醒內容設定。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -673,6 +675,17 @@
       </div>
     </details>
 
+    <details class="card assist-panel">
+      <summary>提醒內容設定（隱藏）</summary>
+      <div class="assist-body">
+        <div class="tiny" style="margin-bottom:8px;">一行一個提醒項目。可直接新增、修改或刪除文字；要調整順序時，把整行移到想要的位置，最後按「套用設定」。</div>
+        <textarea id="reminderConfigInput" class="field-input" style="min-height:220px; resize:vertical;"></textarea>
+        <div class="toolbar" style="margin-top:10px;">
+          <button class="soft" id="saveReminderConfigBtn">套用設定</button>
+        </div>
+      </div>
+    </details>
+
   </div>
 
   <div id="caseModal" class="modal">
@@ -685,7 +698,7 @@
           </div>
           <div class="top-actions modal-head-actions">
             <button class="modal-top-btn" id="modalScrollTopBtn">頂端</button>
-            <button class="modal-top-btn" id="modalReminderBtn">提醒</button>
+            <button class="modal-reminder-btn" id="modalReminderBtn">提醒</button>
             <div class="chips modal-head-status-filter" id="statusFilterChips" aria-label="狀態篩選"></div>
             <div class="modal-risk-actions" aria-label="封存與刪除">
               <button class="archive-soft" id="modalArchiveBtn" title="封存此案件">封存</button>
@@ -706,13 +719,6 @@
         </div>
       </div>
       <div class="modal-body">
-        <section id="caseReminderPanel" class="case-reminder-panel" hidden>
-          <div class="case-reminder-head"><div class="case-reminder-title">提醒內容</div><button type="button" class="ghost" id="closeReminderPanelBtn">收起</button></div>
-          <div id="caseReminderCase" class="case-reminder-case"></div>
-          <div id="caseReminderOptions" class="case-reminder-grid"></div>
-          <textarea id="caseReminderOutput" class="case-reminder-output" readonly aria-label="提醒文字"></textarea>
-          <div class="toolbar"><button type="button" class="primary" id="copyReminderBtn">複製提醒文字</button><span id="copyReminderStatus" class="case-reminder-copy-status"></span></div>
-        </section>
         <div class="action-table">
           <table>
             <thead>
@@ -729,6 +735,18 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <div id="caseReminderModal" class="modal case-reminder-modal" role="dialog" aria-modal="true" aria-labelledby="caseReminderTitle">
+    <div class="case-reminder-dialog">
+      <section class="case-reminder-panel">
+        <div class="case-reminder-head"><div class="case-reminder-title" id="caseReminderTitle">提醒內容</div><button type="button" class="modal-close-btn" id="closeReminderPanelBtn">關閉</button></div>
+        <div id="caseReminderCase" class="case-reminder-case"></div>
+        <div id="caseReminderOptions" class="case-reminder-grid"></div>
+        <textarea id="caseReminderOutput" class="case-reminder-output" readonly aria-label="提醒文字"></textarea>
+        <div class="toolbar"><button type="button" class="primary" id="copyReminderBtn">複製提醒文字</button><span id="copyReminderStatus" class="case-reminder-copy-status"></span></div>
+      </section>
     </div>
   </div>
 
@@ -886,7 +904,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V74';
+    const APP_VERSION = 'V75';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -894,7 +912,7 @@
     const REMOTE_APPLY_IDLE_MS = 60000; // 本機停止操作 60 秒後，才允許套用其他電腦更新，避免 100%/92% 來回跳
     const ROC_YEAR = new Date().getFullYear() - 1911;
     const STATUS_TEXT = ['未做','已做','完成','完全完成'];
-    const CASE_REMINDER_OPTIONS = [
+    const DEFAULT_CASE_REMINDER_OPTIONS = [
       '請申請成果圖',
       '地籍圖格局圖請標示面寬深度',
       '請提供房屋格局圖',
@@ -1697,6 +1715,7 @@
       if(!incoming.assistants) incoming.assistants = defaultAssistants();
       if(!incoming.customActions) incoming.customActions = [];
       if(!incoming.fieldSettings) incoming.fieldSettings = {};
+      if(!Array.isArray(incoming.reminderOptions)) incoming.reminderOptions = [...DEFAULT_CASE_REMINDER_OPTIONS];
       if(!incoming.cases || !Array.isArray(incoming.cases)) incoming.cases = [createEmptyCase()];
       state = incoming;
       ensureAssistantsState();
@@ -1793,6 +1812,7 @@
           if(parsed && Array.isArray(parsed.cases) && Array.isArray(parsed.assistants)) {
             if(!Array.isArray(parsed.customActions)) parsed.customActions = [];
             if(!Array.isArray(parsed.companyArchiveItems)) parsed.companyArchiveItems = [];
+            if(!Array.isArray(parsed.reminderOptions)) parsed.reminderOptions = [...DEFAULT_CASE_REMINDER_OPTIONS];
             if(!parsed.fieldSettings || typeof parsed.fieldSettings !== 'object') parsed.fieldSettings = {};
             if(!parsed.lastSavedAt) parsed.lastSavedAt = '';
             parsed.assistants = normalizeAssistants(parsed.assistants);
@@ -1801,7 +1821,7 @@
           }
         } catch(err) {}
       }
-      return { assistants:defaultAssistants(), customActions:[], fieldSettings:{}, companyArchiveItems:[], lastSavedAt:'', cases:[createEmptyCase()] };
+      return { assistants:defaultAssistants(), customActions:[], fieldSettings:{}, companyArchiveItems:[], reminderOptions:[...DEFAULT_CASE_REMINDER_OPTIONS], lastSavedAt:'', cases:[createEmptyCase()] };
     }
 
     function mergeCustomActions(){
@@ -1810,6 +1830,7 @@
       if(!Array.isArray(state.customActions)) state.customActions = [];
       if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
       if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
+      if(!Array.isArray(state.reminderOptions)) state.reminderOptions = [...DEFAULT_CASE_REMINDER_OPTIONS];
       state.customActions.forEach(def => {
         if(def && def.key && !FIELD_DEFS.some(x => x.key === def.key)){
           FIELD_DEFS.push(def);
@@ -3779,7 +3800,7 @@
       if(progressPanel) progressPanel.title = `目前完成 ${stats.done} 項，尚未完成 ${stats.pending} 項`;
       const archiveBtn = document.getElementById('modalArchiveBtn');
       if(archiveBtn) archiveBtn.textContent = c.archived ? '解除封存' : '封存';
-      if(!document.getElementById('caseReminderPanel')?.hidden) renderCaseReminder(c);
+      if(document.getElementById('caseReminderModal')?.classList.contains('show')) renderCaseReminder(c);
     }
 
     function getCaseReminderIdentity(c){
@@ -3790,9 +3811,13 @@
       return normalize(caseName).includes(normalize(developer)) ? caseName : `${caseName}-${developer}`;
     }
 
+    function getCaseReminderOptions(){
+      return Array.isArray(state.reminderOptions) ? state.reminderOptions : DEFAULT_CASE_REMINDER_OPTIONS;
+    }
+
     function getCaseReminderText(c){
       const entryDate = fieldText(c,'entryDate') || '未填進案日期';
-      const selected = CASE_REMINDER_OPTIONS.filter(item => caseReminderSelections.has(item));
+      const selected = getCaseReminderOptions().filter(item => caseReminderSelections.has(item));
       const missingLines = selected.length ? `\n缺：\n${selected.map((item,index) => `${index + 1}.${item}`).join('\n')}\n` : '\n';
       return `${entryDate}進案物件:${getCaseReminderIdentity(c)}${missingLines}\n以上共${selected.length}項尚未完成動作，請盡速補齊，完成後請告知以利後續作業。`;
     }
@@ -3802,11 +3827,12 @@
       const optionsEl = document.getElementById('caseReminderOptions');
       const outputEl = document.getElementById('caseReminderOutput');
       if(!caseEl || !optionsEl || !outputEl) return;
+      const reminderOptions = getCaseReminderOptions();
       caseEl.textContent = `${fieldText(c,'entryDate') || '未填進案日期'}進案物件:${getCaseReminderIdentity(c)}`;
-      optionsEl.innerHTML = CASE_REMINDER_OPTIONS.map((item,index) => `<label class="case-reminder-option"><input type="checkbox" data-reminder-index="${index}" ${caseReminderSelections.has(item)?'checked':''}><span>${escapeHtml(item)}</span></label>`).join('');
+      optionsEl.innerHTML = reminderOptions.map((item,index) => `<label class="case-reminder-option"><input type="checkbox" data-reminder-index="${index}" ${caseReminderSelections.has(item)?'checked':''}><span>${escapeHtml(item)}</span></label>`).join('');
       optionsEl.querySelectorAll('[data-reminder-index]').forEach(input => {
         input.onchange = () => {
-          const item = CASE_REMINDER_OPTIONS[Number(input.dataset.reminderIndex)];
+          const item = reminderOptions[Number(input.dataset.reminderIndex)];
           if(input.checked) caseReminderSelections.add(item); else caseReminderSelections.delete(item);
           outputEl.value = getCaseReminderText(c);
           document.getElementById('copyReminderStatus').textContent = '';
@@ -3817,16 +3843,15 @@
 
     function showCaseReminder(){
       const c = getCaseById(activeModalCaseId);
-      const panel = document.getElementById('caseReminderPanel');
-      if(!c || !panel) return;
-      panel.hidden = false;
+      const modal = document.getElementById('caseReminderModal');
+      if(!c || !modal) return;
       renderCaseReminder(c);
-      panel.scrollIntoView({behavior:'smooth',block:'start'});
+      modal.classList.add('show');
     }
 
     function hideCaseReminder(){
-      const panel = document.getElementById('caseReminderPanel');
-      if(panel) panel.hidden = true;
+      const modal = document.getElementById('caseReminderModal');
+      if(modal) modal.classList.remove('show');
     }
 
     async function copyCaseReminderText(){
@@ -4581,6 +4606,7 @@
         if(syncClient) remoteSaveNow();
       }
       activeModalCaseId = null;
+      hideCaseReminder();
       modalManualSavedSinceOpen = false;
       refreshCloseButtonState();
       document.getElementById('caseModal').classList.remove('show');
@@ -4785,6 +4811,7 @@
       if(!Array.isArray(state.customActions)) state.customActions = [];
       if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
       if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
+      if(!Array.isArray(state.reminderOptions)) state.reminderOptions = [...DEFAULT_CASE_REMINDER_OPTIONS];
       ensureAssistantsState();
       ensureRewardConfig();
       mergeCustomActions();
@@ -5133,6 +5160,30 @@
       alert('公司物件存檔項目已更新。');
     }
 
+    function renderReminderConfigEditor(){
+      const el = document.getElementById('reminderConfigInput');
+      if(el) el.value = getCaseReminderOptions().join('\n');
+    }
+
+    function saveReminderConfig(){
+      const el = document.getElementById('reminderConfigInput');
+      if(!el) return;
+      const list = el.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      if(!list.length){
+        alert('請至少保留 1 個提醒項目。');
+        return;
+      }
+      state.reminderOptions = [...new Set(list)];
+      caseReminderSelections = new Set([...caseReminderSelections].filter(item => state.reminderOptions.includes(item)));
+      autoSaveNow();
+      renderReminderConfigEditor();
+      if(document.getElementById('caseReminderModal')?.classList.contains('show')){
+        const c = getCaseById(activeModalCaseId);
+        if(c) renderCaseReminder(c);
+      }
+      alert('提醒內容與順序已更新。');
+    }
+
     function renderAll(){
       renderStats();
       renderPendingFilterOptions();
@@ -5144,6 +5195,7 @@
       renderAssistantList();
       renderCustomActionList();
       renderArchiveConfigEditor();
+      renderReminderConfigEditor();
       renderRewardDashboard();
       setLastSyncTimeText(remoteUpdatedAt ? fmtTime(remoteUpdatedAt) : '—');
       setSaveStatus('已自動存檔', false);
@@ -5170,6 +5222,8 @@
     document.getElementById('addCustomActionBtn').onclick = addCustomAction;
     const saveArchiveConfigBtn = document.getElementById('saveArchiveConfigBtn');
     if(saveArchiveConfigBtn) saveArchiveConfigBtn.onclick = saveArchiveConfig;
+    const saveReminderConfigBtn = document.getElementById('saveReminderConfigBtn');
+    if(saveReminderConfigBtn) saveReminderConfigBtn.onclick = saveReminderConfig;
     const customTypeEl = document.getElementById('customActionTypeInput');
     const customOptionsEl = document.getElementById('customActionOptionsInput');
     function syncCustomOptionsInput(){
