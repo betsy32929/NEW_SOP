@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V82_NEW本製作</title>
+  <title>V83_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V82 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V83 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V82：「照片存檔Nas原檔」新增「舊有」按鈕，點選後視為完成。</div>
+        <div class="tiny" style="margin-bottom:10px;">V83：馬賽克、亮度、命名1234、PPT動畫及浮水印皆新增「舊有」按鈕。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V82';
+    const APP_VERSION = 'V83';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -973,8 +973,8 @@
       makeNewFieldDef('listPrice',{group:'基本資料'}), makeNewFieldDef('basePrice',{group:'基本資料'}), makeNewFieldDef('mainContractNo',{group:'基本資料'}), makeNewFieldDef('changeContractNo',{group:'基本資料',type:'textOption',specialOptions:['無ED']}),
       makeNewFieldDef('contractType',{group:'基本資料',type:'optionOnly',specialOptions:['一般約','專約']}), makeNewFieldDef('percent',{group:'基本資料'}), makeNewFieldDef('entrustStart',{group:'基本資料'}), makeNewFieldDef('entrustEnd',{group:'基本資料',placeholder:'例如：6/30 會自動判斷年度'}),
 
-      makeNewFieldDef('photoNas',{group:'物件照片',type:'assistantOrOption',specialOptions:['舊有']}), makeNewFieldDef('mosaicBrightness',{group:'物件照片',label:'馬賽克'}),
-      {group:'物件照片',key:'brightness',label:'亮度',type:'assistant'}, makeNewFieldDef('naming1234',{group:'物件照片'}), makeNewFieldDef('photoAnimation',{group:'物件照片',label:'PPT動畫'}), makeNewFieldDef('watermark',{group:'物件照片'}),
+      makeNewFieldDef('photoNas',{group:'物件照片',type:'assistantOrOption',specialOptions:['舊有']}), makeNewFieldDef('mosaicBrightness',{group:'物件照片',label:'馬賽克',type:'assistantOrOption',specialOptions:['舊有']}),
+      {group:'物件照片',key:'brightness',label:'亮度',type:'assistantOrOption',specialOptions:['舊有']}, makeNewFieldDef('naming1234',{group:'物件照片',type:'assistantOrOption',specialOptions:['舊有']}), makeNewFieldDef('photoAnimation',{group:'物件照片',label:'PPT動畫',type:'assistantOrOption',specialOptions:['舊有']}), makeNewFieldDef('watermark',{group:'物件照片',type:'assistantOrOption',specialOptions:['舊有']}),
       makeNewFieldDef('aiFloorplan',{group:'格局圖'}), makeNewFieldDef('convertImages',{group:'格局圖'}),
       makeNewFieldDef('cadastralMap',{group:'謄本'}), makeNewFieldDef('buildingResult',{group:'謄本'}),
       makeNewFieldDef('buildingTranscript',{group:'謄本'}), makeNewFieldDef('landTranscript',{group:'謄本'}),
@@ -1864,6 +1864,13 @@
         photoNasDef.type = 'assistantOrOption';
         photoNasDef.specialOptions = ['舊有'];
       }
+      ['mosaicBrightness','naming1234','photoAnimation','watermark'].forEach(key => {
+        const def = FIELD_DEFS.find(x => x.key === key);
+        if(def){
+          def.type = 'assistantOrOption';
+          def.specialOptions = ['舊有'];
+        }
+      });
       const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
       if(archiveDef) archiveDef.label = '內附文件';
       if(archiveDef && state.companyArchiveItems.length){
