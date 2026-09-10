@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V77_NEW本製作</title>
+  <title>V78_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -485,7 +485,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V77 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V78 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -503,7 +503,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V77：「列印成交行情」新增「進案附」按鈕，點選後視為完成。</div>
+        <div class="tiny" style="margin-bottom:10px;">V78：組別件數統計的專簽 A 改為 2 件。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -878,7 +878,7 @@
   <div id="teamStatsModal" class="modal">
     <div class="modal-card team-modal-card">
       <div class="modal-head">
-        <div><div class="modal-title">組別件數統計</div><div class="tiny">依進案日期與主約編號統計：A＝專簽、G＝一般約；開價低於300萬或租件EB／EC計0.5件</div></div>
+        <div><div class="modal-title">組別件數統計</div><div class="tiny">依進案日期與主約編號統計：A＝專簽2件、G＝一般約1件；開價低於300萬或租件EB／EC計0.5件</div></div>
         <div class="top-actions">
           <button class="soft" id="teamPreviewPublicBtn">預覽公開版</button>
           <button class="ghost" id="teamStatsCloseBtn">關閉</button>
@@ -906,7 +906,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V77';
+    const APP_VERSION = 'V78';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1123,7 +1123,7 @@
         const type = getTeamContractType(contractNo); if(!type) return;
         const developerList=getRewardDeveloperList(fieldText(c,'developer'));
         const listPriceWan=parseRewardMoneyToWan(fieldText(c,'listPrice'));
-        const caseCount=type==='E' || (listPriceWan>0 && listPriceWan<300) ? 0.5 : 1;
+        const caseCount=type==='E' || (listPriceWan>0 && listPriceWan<300) ? 0.5 : type==='A' ? 2 : 1;
         const share=developerList.length?caseCount/developerList.length:0;
         developerList.forEach(rawName => {
           const name=canonicalDeveloperName(rawName), info=memberMap.get(name); if(!info) return;
