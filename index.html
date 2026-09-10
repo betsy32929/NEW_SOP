@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V79_NEW本製作</title>
+  <title>V80_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -485,7 +485,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V79 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V80 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -503,7 +503,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V79：麻豆港子尾鄉村風湖光大地坪雙車墅共 8 戶只計 1 次，歸入最早進案日期。</div>
+        <div class="tiny" style="margin-bottom:10px;">V80：「公司物件存檔」改為「內附文件」，下方新增「掃描物件本」，既有案件同步套用。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -667,7 +667,7 @@
     </div>
 
     <details class="card assist-panel">
-      <summary>公司物件存檔設定（隱藏）</summary>
+      <summary>內附文件設定（隱藏）</summary>
       <div class="assist-body">
         <div class="tiny" style="margin-bottom:8px;">一行一個項目。改完按「套用設定」。同名項目會保留原本勾選，改名後視為新項目。</div>
         <textarea id="archiveConfigInput" class="field-input" style="min-height:170px; resize:vertical;"></textarea>
@@ -906,7 +906,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V79';
+    const APP_VERSION = 'V80';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -954,13 +954,10 @@
     });
     const companyArchiveIndex = FIELD_DEFS.findIndex(def => def.key === 'companyArchive');
     if(companyArchiveIndex >= 0){
-      FIELD_DEFS.splice(companyArchiveIndex + 1, 0, {
-        group: '列印 / 曝光 / 後續',
-        key: 'salesBookProduction',
-        label: '銷售本製作',
-        type: 'assistantOrOption',
-        specialOptions: ['自動完成']
-      });
+      FIELD_DEFS.splice(companyArchiveIndex + 1, 0,
+        { group:'列印 / 曝光 / 後續', key:'scanPropertyBook', label:'掃描物件本', type:'assistant' },
+        { group:'列印 / 曝光 / 後續', key:'salesBookProduction', label:'銷售本製作', type:'assistantOrOption', specialOptions:['自動完成'] }
+      );
     }
     FIELD_DEFS.push({ group:'總表', key:'dailyUpdateDisplay', label:'確認每日更新顯示', type:'assistant' });
     const NEW_EDITOR_CUTOFF = 1150801;
@@ -995,7 +992,7 @@
       makeNewFieldDef('pptMake',{group:'PPT',label:'鎖定PPT版面'}), makeNewFieldDef('pptLayout',{group:'PPT',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'PPT',label:'動畫存PPT資料夾'}),
 
       makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
-      makeNewFieldDef('companyArchive',{group:'後續',subitems:['新進封面','正-草稿','反-草稿','彩色','A4簽名','分區','地籍圖','建物成果圖','謄本','土增','產權','實價','周遭設施','現詢調','權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
+      makeNewFieldDef('companyArchive',{group:'後續',label:'內附文件',subitems:['新進封面','正-草稿','反-草稿','彩色','A4簽名','分區','地籍圖','建物成果圖','謄本','土增','產權','實價','周遭設施','現詢調','權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('scanPropertyBook',{group:'後續'}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續'}),
       makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true,dateToday:true}),
       makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續'})
     ];
@@ -1862,6 +1859,7 @@
         printDealPriceDef.specialOptions = ['進案附'];
       }
       const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
+      if(archiveDef) archiveDef.label = '內附文件';
       if(archiveDef && state.companyArchiveItems.length){
         archiveDef.subitems = [...state.companyArchiveItems];
       }
@@ -4713,7 +4711,7 @@
         if(def.key === 'companyArchive'){
           (def.subitems || []).forEach(name => {
             columns.push({
-              header:`公司物件存檔-${name}`,
+              header:`內附文件-${name}`,
               get:c => c.items[def.key]?.subitems?.[name] || ''
             });
           });
@@ -4974,7 +4972,7 @@
       FIELD_DEFS.forEach(def => {
         if(def.key === 'companyArchive'){
           (def.subitems || []).forEach(name => {
-            const header = `公司物件存檔-${name}`;
+            const header = row[`內附文件-${name}`] != null ? `內附文件-${name}` : `公司物件存檔-${name}`;
             if(row[header] != null) c.items[def.key].subitems[name] = String(row[header] || '').trim();
           });
           syncStatusWithContent(def, c.items[def.key]);
@@ -5187,7 +5185,7 @@
         const c = getCaseById(activeModalCaseId);
         if(c) renderModalActions(c);
       }
-      alert('公司物件存檔項目已更新。');
+      alert('內附文件項目已更新。');
     }
 
     function renderReminderConfigEditor(){
