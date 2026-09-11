@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V85_NEW本製作</title>
+  <title>V86_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V85 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V86 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V85：地籍圖新增「宇育」經手選項。</div>
+        <div class="tiny" style="margin-bottom:10px;">V86：內網上網新增「強制上網」按鈕。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V85';
+    const APP_VERSION = 'V86';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -953,6 +953,11 @@
       const def = FIELD_DEFS.find(item => item.key === key);
       if(def) def.specialOptions = ['進案附','無','純土地'];
     });
+    const websiteInternalBaseDef = FIELD_DEFS.find(def => def.key === 'websiteInternal');
+    if(websiteInternalBaseDef){
+      websiteInternalBaseDef.type = 'assistantOrOption';
+      websiteInternalBaseDef.specialOptions = ['強制上網'];
+    }
     const companyArchiveIndex = FIELD_DEFS.findIndex(def => def.key === 'companyArchive');
     if(companyArchiveIndex >= 0){
       FIELD_DEFS.splice(companyArchiveIndex + 1, 0,
@@ -983,7 +988,7 @@
       makeNewFieldDef('ckLand',{group:'房管'}), makeNewFieldDef('buildingUse',{group:'房管',type:'assistantOrOption',specialOptions:['土地']}), makeNewFieldDef('keyPropertyData',{group:'房管'}),
       makeNewFieldDef('companyNo',{group:'房管',type:'textRequiredOption',specialOptions:['標籤製作','無公司控管','無'],requiredOption:'標籤製作',noneOptions:['無公司控管','無']}),
       makeNewFieldDef('keyPropertyFeatures',{group:'房管'}), makeNewFieldDef('uploadPhotos',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('uploadFloorplan',{group:'房管'}), makeNewFieldDef('websitePublic',{group:'房管',type:'assistantOrOption',specialOptions:['暫不上網']}),
-      makeNewFieldDef('websiteInternal',{group:'房管'}), makeNewFieldDef('goHousefun',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管',optionSpacer:'業務上傳'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
+      makeNewFieldDef('websiteInternal',{group:'房管',type:'assistantOrOption',specialOptions:['強制上網']}), makeNewFieldDef('goHousefun',{group:'房管'}), makeNewFieldDef('deedUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳']}), makeNewFieldDef('edManage',{group:'房管',optionSpacer:'業務上傳'}), makeNewFieldDef('edUpload',{group:'房管',type:'assistantOrOption',specialOptions:['業務上傳','無']}),
       makeNewFieldDef('printOwnership',{group:'房管'}), makeNewFieldDef('printLandTax',{group:'房管'}), makeNewFieldDef('printNearby',{group:'房管'}),
       makeNewFieldDef('printDealPrice',{group:'房管',type:'assistantOrOption',specialOptions:['進案附']}), makeNewFieldDef('printCurrentSurvey',{group:'房管'}), makeNewFieldDef('currentA4',{group:'房管'}),
 
@@ -1875,6 +1880,11 @@
       if(websitePublicDef){
         websitePublicDef.type = 'assistantOrOption';
         websitePublicDef.specialOptions = ['暫不上網'];
+      }
+      const websiteInternalDef = FIELD_DEFS.find(x => x.key === 'websiteInternal');
+      if(websiteInternalDef){
+        websiteInternalDef.type = 'assistantOrOption';
+        websiteInternalDef.specialOptions = ['強制上網'];
       }
       const archiveDef = FIELD_DEFS.find(x => x.key === 'companyArchive');
       if(archiveDef) archiveDef.label = '內附文件';
