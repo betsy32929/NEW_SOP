@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V87_NEW本製作</title>
+  <title>V88_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V87 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V88 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V87：內網上網的「強制上網」移至麗卉前方。</div>
+        <div class="tiny" style="margin-bottom:10px;">V88：提醒內容新增「權狀？或切結？」選項。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V87';
+    const APP_VERSION = 'V88';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -925,7 +925,8 @@
       '土地坪數有不同請確認後回覆',
       '契變照片尚未上傳系統',
       '現尋調尚未完成',
-      '契約照片尚未上傳系統'
+      '契約照片尚未上傳系統',
+      '權狀？或切結？'
     ];
     const EDITABLE_TYPE_OPTIONS = [
       ['assistant','助理點選'],
@@ -1853,6 +1854,11 @@
       if(!state.fieldSettings || typeof state.fieldSettings !== 'object') state.fieldSettings = {};
       if(!Array.isArray(state.companyArchiveItems)) state.companyArchiveItems = [];
       if(!Array.isArray(state.reminderOptions)) state.reminderOptions = [...DEFAULT_CASE_REMINDER_OPTIONS];
+      if(!state.dataMigrations || typeof state.dataMigrations !== 'object') state.dataMigrations = {};
+      if(!state.dataMigrations.reminderOptionV88){
+        if(!state.reminderOptions.includes('權狀？或切結？')) state.reminderOptions.push('權狀？或切結？');
+        state.dataMigrations.reminderOptionV88 = true;
+      }
       state.customActions.forEach(def => {
         if(def && def.key && !FIELD_DEFS.some(x => x.key === def.key)){
           FIELD_DEFS.push(def);
