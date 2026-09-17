@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V88_NEW本製作</title>
+  <title>V89_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V88 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V89 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V88：提醒內容新增「權狀？或切結？」選項。</div>
+        <div class="tiny" style="margin-bottom:10px;">V89：提醒內容下方文字欄可自行編輯。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -747,7 +747,7 @@
         <div class="case-reminder-head"><div class="case-reminder-title" id="caseReminderTitle">提醒內容</div><button type="button" class="modal-close-btn" id="closeReminderPanelBtn">關閉</button></div>
         <div id="caseReminderCase" class="case-reminder-case"></div>
         <div id="caseReminderOptions" class="case-reminder-grid"></div>
-        <textarea id="caseReminderOutput" class="case-reminder-output" readonly aria-label="提醒文字"></textarea>
+        <textarea id="caseReminderOutput" class="case-reminder-output" aria-label="提醒文字（可自行編輯）"></textarea>
         <div class="toolbar"><button type="button" class="primary" id="copyReminderBtn">複製提醒文字</button><span id="copyReminderStatus" class="case-reminder-copy-status"></span></div>
       </section>
     </div>
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V88';
+    const APP_VERSION = 'V89';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -3899,6 +3899,9 @@
         };
       });
       outputEl.value = getCaseReminderText(c);
+      outputEl.oninput = () => {
+        document.getElementById('copyReminderStatus').textContent = '';
+      };
     }
 
     function showCaseReminder(){
