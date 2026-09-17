@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V89_NEW本製作</title>
+  <title>V90_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V89 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V90 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V89：提醒內容下方文字欄可自行編輯。</div>
+        <div class="tiny" style="margin-bottom:10px;">V90：保留提醒文字最後修改內容，再勾選時恢復預設格式。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V89';
+    const APP_VERSION = 'V90';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -3894,13 +3894,18 @@
         input.onchange = () => {
           const item = reminderOptions[Number(input.dataset.reminderIndex)];
           if(input.checked) caseReminderSelections.add(item); else caseReminderSelections.delete(item);
+          c.caseReminderSelections = [...caseReminderSelections];
+          c.caseReminderCustomText = null;
           outputEl.value = getCaseReminderText(c);
           document.getElementById('copyReminderStatus').textContent = '';
+          scheduleAutoSave();
         };
       });
-      outputEl.value = getCaseReminderText(c);
+      outputEl.value = typeof c.caseReminderCustomText === 'string' ? c.caseReminderCustomText : getCaseReminderText(c);
       outputEl.oninput = () => {
+        c.caseReminderCustomText = outputEl.value;
         document.getElementById('copyReminderStatus').textContent = '';
+        scheduleAutoSave();
       };
     }
 
@@ -4663,15 +4668,18 @@
     function openModal(caseId){
       currentCaseId = caseId;
       activeModalCaseId = caseId;
+      const c = getCaseById(caseId);
+      if(!c) return;
       modalManualSavedSinceOpen = false;
       refreshCloseButtonState();
       modalStatusFilter = 'all';
-      caseReminderSelections = new Set();
+      caseReminderSelections = new Set(
+        (Array.isArray(c?.caseReminderSelections) ? c.caseReminderSelections : [])
+          .filter(item => getCaseReminderOptions().includes(item))
+      );
       hideCaseReminder();
       const reminderStatus = document.getElementById('copyReminderStatus');
       if(reminderStatus) reminderStatus.textContent = '';
-      const c = getCaseById(caseId);
-      if(!c) return;
       setSaveStatus('', false);
       renderModalSummary(c);
       renderModalActions(c);
