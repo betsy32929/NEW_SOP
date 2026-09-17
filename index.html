@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V90_NEW本製作</title>
+  <title>V91_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V90 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V91 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V90：保留提醒文字最後修改內容，再勾選時恢復預設格式。</div>
+        <div class="tiny" style="margin-bottom:10px;">V91：提醒內容在「進案物件:」後顯示主約編號。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V90';
+    const APP_VERSION = 'V91';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -3875,11 +3875,16 @@
       return Array.isArray(state.reminderOptions) ? state.reminderOptions : DEFAULT_CASE_REMINDER_OPTIONS;
     }
 
-    function getCaseReminderText(c){
+    function getCaseReminderHeader(c){
       const entryDate = fieldText(c,'entryDate') || '未填進案日期';
+      const mainContractNo = fieldText(c,'mainContractNo');
+      return `${entryDate}進案物件:${mainContractNo}${getCaseReminderIdentity(c)}`;
+    }
+
+    function getCaseReminderText(c){
       const selected = getCaseReminderOptions().filter(item => caseReminderSelections.has(item));
       const missingLines = selected.length ? `\n缺：\n${selected.map((item,index) => `${index + 1}.${item}`).join('\n')}\n` : '\n';
-      return `${entryDate}進案物件:${getCaseReminderIdentity(c)}${missingLines}\n以上共${selected.length}項尚未完成動作，請盡速補齊，完成後請告知以利後續作業。`;
+      return `${getCaseReminderHeader(c)}${missingLines}\n以上共${selected.length}項尚未完成動作，請盡速補齊，完成後請告知以利後續作業。`;
     }
 
     function renderCaseReminder(c){
@@ -3888,7 +3893,7 @@
       const outputEl = document.getElementById('caseReminderOutput');
       if(!caseEl || !optionsEl || !outputEl) return;
       const reminderOptions = getCaseReminderOptions();
-      caseEl.textContent = `${fieldText(c,'entryDate') || '未填進案日期'}進案物件:${getCaseReminderIdentity(c)}`;
+      caseEl.textContent = getCaseReminderHeader(c);
       optionsEl.innerHTML = reminderOptions.map((item,index) => `<label class="case-reminder-option"><input type="checkbox" data-reminder-index="${index}" ${caseReminderSelections.has(item)?'checked':''}><span>${escapeHtml(item)}</span></label>`).join('');
       optionsEl.querySelectorAll('[data-reminder-index]').forEach(input => {
         input.onchange = () => {
