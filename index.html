@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V97_NEW本製作</title>
+  <title>V98_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -493,7 +493,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V97 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V98 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -512,7 +512,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V97：印封背案名改為連續文字，不換行、不加空格。</div>
+        <div class="tiny" style="margin-bottom:10px;">V98：未完成動作篩選只顯示所選動作尚未完成且適用的案件。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -926,7 +926,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V97';
+    const APP_VERSION = 'V98';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2835,11 +2835,24 @@
       `;
     }
 
+    function getPendingFilterDefs(){
+      const defs = [];
+      const seen = new Set();
+      activeCases().forEach(c => {
+        getCaseFieldDefs(c).forEach(def => {
+          if(seen.has(def.key)) return;
+          seen.add(def.key);
+          defs.push(def);
+        });
+      });
+      return defs;
+    }
+
     function renderPendingFilterOptions(){
       const sel = document.getElementById('pendingActionFilter');
       const prev = sel.value || '__ALL__';
       sel.innerHTML = ['<option value="__ALL__">全部尚未完成動作</option>']
-        .concat(FIELD_DEFS.map(def => `<option value="${escapeAttr(def.key)}">${escapeHtml(def.label)}</option>`))
+        .concat(getPendingFilterDefs().map(def => `<option value="${escapeAttr(def.key)}">${escapeHtml(def.label)}</option>`))
         .join('');
       if(Array.from(sel.options).some(o => o.value === prev)) sel.value = prev;
       else sel.value = '__ALL__';
@@ -2866,8 +2879,10 @@
       if(key === '__ALL__') {
         rows = cases.map(c => ({ c, missing:getPendingLabels(c) })).filter(x => x.missing.length > 0);
       } else {
-        const def = FIELD_DEFS.find(d => d.key === key);
-        rows = cases.filter(c => !isCompleted(def, c.items[key])).map(c => ({ c, missing:[def.label] }));
+        rows = cases.map(c => {
+          const def = getCaseFieldDefs(c).find(d => d.key === key);
+          return def && !isCompleted(def,c.items[key]) ? { c, missing:[def.label] } : null;
+        }).filter(Boolean);
       }
 
       const filters = [];
@@ -2878,7 +2893,7 @@
           ? `目前列出${filters.join('、')}的所有尚未完成物件。`
           : '目前列出所有尚未完成的物件。';
       } else {
-        const def = FIELD_DEFS.find(d => d.key === key);
+        const def = getPendingFilterDefs().find(d => d.key === key);
         const prefix = filters.length ? `${filters.join('、')}，且` : '';
         hint.textContent = `目前列出${prefix}「${def ? def.label : ''}」還沒完成的物件。`;
       }
