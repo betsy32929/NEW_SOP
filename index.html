@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V98_NEW本製作</title>
+  <title>V99_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -30,6 +30,7 @@
     button:hover{transform:translateY(-1px)}
     .primary{background:var(--blue); color:#fff}
     .soft{background:#eef2ff; color:#3730a3}
+    .success{background:#16a34a;color:#fff}
     .back-cover-home-btn{background:#f59e0b;color:#78350f;border:2px solid #d97706;box-shadow:0 4px 10px rgba(217,119,6,.2)}
     #exportExcelBtn{background:#16a34a;color:#fff}
     #exportJsonBtn{background:#7c3aed;color:#fff}
@@ -493,7 +494,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V98 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V99 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -512,7 +513,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V98：未完成動作篩選只顯示所選動作尚未完成且適用的案件。</div>
+        <div class="tiny" style="margin-bottom:10px;">V99：印封背新增「列印完成」，可一次完成清單內全部案件的封背。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -767,7 +768,7 @@
         <div class="case-reminder-head"><div class="case-reminder-title" id="backCoverTitle">印封背</div><button type="button" class="modal-close-btn" id="closeBackCoverBtn">關閉</button></div>
         <div id="backCoverCount" class="case-reminder-case"></div>
         <textarea id="backCoverOutput" class="back-cover-output" readonly aria-label="尚未完成封背的案名"></textarea>
-        <div class="toolbar"><button type="button" class="primary" id="copyBackCoverBtn">複製案名</button><span id="copyBackCoverStatus" class="case-reminder-copy-status"></span></div>
+        <div class="toolbar"><button type="button" class="primary" id="copyBackCoverBtn">複製案名</button><button type="button" class="success" id="completeBackCoverBtn">列印完成</button><span id="copyBackCoverStatus" class="case-reminder-copy-status"></span></div>
       </section>
     </div>
   </div>
@@ -926,7 +927,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V98';
+    const APP_VERSION = 'V99';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2249,6 +2250,7 @@
     }
 
     function effectiveStatus(def, item){
+      if(def.key === 'backCover' && String(item.option || '').trim() === '列印完成') return Math.max(2,item.status || 0);
       if(def.type === 'textRequiredOption'){
         const value = String(item.value || '').trim();
         const option = String(item.option || '').trim();
@@ -4005,9 +4007,11 @@
       const countEl = document.getElementById('backCoverCount');
       const outputEl = document.getElementById('backCoverOutput');
       const copyBtn = document.getElementById('copyBackCoverBtn');
+      const completeBtn = document.getElementById('completeBackCoverBtn');
       if(countEl) countEl.textContent = `尚未完成封背：共 ${rows.length} 件`;
       if(outputEl) outputEl.value = rows.map(caseNameOf).join('');
       if(copyBtn) copyBtn.disabled = rows.length === 0;
+      if(completeBtn) completeBtn.disabled = rows.length === 0;
       const status = document.getElementById('copyBackCoverStatus');
       if(status) status.textContent = '';
     }
@@ -4033,6 +4037,28 @@
         const copied = document.execCommand('copy');
         if(status) status.textContent = copied ? '已複製' : '請按 Ctrl+C 複製';
       }
+    }
+
+    function completeAllBackCovers(){
+      const rows = getPendingBackCoverCases();
+      if(!rows.length) return;
+      openActionConfirm(
+        '確定全部列印完成？',
+        `目前印封背清單共 ${rows.length} 件。\n\n點選「是」後，會將清單內全部案件的「封背」標示為完成。`,
+        () => {
+          rows.forEach(c => {
+            const item = c?.items?.backCover;
+            if(!item) return;
+            item.option = '列印完成';
+            item.status = 2;
+            touch(item);
+          });
+          autoSaveNow();
+          renderAll();
+          renderBackCoverList();
+        },
+        '是，全部完成'
+      );
     }
 
     function getPaperContractRef(def,c){
@@ -5539,6 +5565,7 @@
     document.getElementById('copyReminderBtn').onclick = copyCaseReminderText;
     document.getElementById('closeBackCoverBtn').onclick = hideBackCoverList;
     document.getElementById('copyBackCoverBtn').onclick = copyBackCoverNames;
+    document.getElementById('completeBackCoverBtn').onclick = completeAllBackCovers;
     const modalManualSaveBtn = document.getElementById('modalManualSaveBtn');
     if(modalManualSaveBtn) modalManualSaveBtn.onclick = manualSaveCurrentModal;
     document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
