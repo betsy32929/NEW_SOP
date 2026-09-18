@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V92_NEW本製作</title>
+  <title>V93_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -486,7 +486,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V92 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V93 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
@@ -504,7 +504,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V92：契約命名改為主約命名，115/9/17起新案件新增契變命名與無ED。</div>
+        <div class="tiny" style="margin-bottom:10px;">V93：暫停格局圖存PPT資料夾、動畫存PPT資料夾兩個動作，保留既有資料。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -907,7 +907,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V92';
+    const APP_VERSION = 'V93';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -971,6 +971,7 @@
     const NEW_EDITOR_VERSION = 'editor-1150801';
     const CHANGE_CONTRACT_NAMING_CUTOFF = new Date(2026,8,17).getTime();
     const CHANGE_CONTRACT_NAMING_DEF = { group:'後續', key:'changeContractNaming', label:'契變命名', type:'assistantOrOption', specialOptions:['無ED'] };
+    const SUSPENDED_ACTION_KEYS = new Set(['pptLayout','pptAnimation']);
     const makeNewFieldDef = (key, overrides={}) => {
       const base = FIELD_DEFS.find(def => def.key === key);
       if(!base) throw new Error(`找不到新版欄位：${key}`);
@@ -1923,9 +1924,10 @@
     }
 
     function getCaseFieldDefs(c){
-      const defs = isNewEditorCase(c)
+      const defs = (isNewEditorCase(c)
         ? NEW_EDITOR_FIELD_DEFS
-        : FIELD_DEFS.filter(def => !['dailyUpdateDisplay','goStrong'].includes(def.key));
+        : FIELD_DEFS.filter(def => !['dailyUpdateDisplay','goStrong'].includes(def.key)))
+        .filter(def => !SUSPENDED_ACTION_KEYS.has(def.key));
       if(!hasChangeContractNamingAction(c)) return defs;
       const result = [...defs];
       const mainNamingIndex = result.findIndex(def => def.key === 'contractNaming');
