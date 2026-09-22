@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V99_NEW本製作</title>
+  <title>V100_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -31,12 +31,12 @@
     .primary{background:var(--blue); color:#fff}
     .soft{background:#eef2ff; color:#3730a3}
     .success{background:#16a34a;color:#fff}
-    .back-cover-home-btn{background:#f59e0b;color:#78350f;border:2px solid #d97706;box-shadow:0 4px 10px rgba(217,119,6,.2)}
-    #exportExcelBtn{background:#16a34a;color:#fff}
-    #exportJsonBtn{background:#7c3aed;color:#fff}
-    #importJsonBtn{background:#db2777;color:#fff}
-    #openRewardBtn{background:#ca8a04;color:#fff}
-    #openTeamStatsBtn{background:#0891b2;color:#fff}
+    .back-cover-home-btn{background:#ffedd5;color:#9a3412;border:2px solid #fdba74;box-shadow:0 4px 10px rgba(251,146,60,.14)}
+    #exportExcelBtn{background:#dcfce7;color:#166534;border:2px solid #86efac}
+    #exportJsonBtn{background:#ede9fe;color:#5b21b6;border:2px solid #c4b5fd}
+    #importJsonBtn{background:#fce7f3;color:#9d174d;border:2px solid #f9a8d4}
+    #openRewardBtn{background:#fef3c7;color:#92400e;border:2px solid #fcd34d}
+    #openTeamStatsBtn{background:#cffafe;color:#155e75;border:2px solid #67e8f9}
     .ghost{background:#f8fafc; color:var(--text); border:1px solid var(--line)}
     .danger{background:var(--red-soft); color:var(--red)}
     .top-strong{background:linear-gradient(135deg,#2563eb 0,#1d4ed8 100%); color:#fff; box-shadow:0 8px 18px rgba(37,99,235,.26)}
@@ -494,7 +494,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V99 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V100 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -513,7 +513,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V99：印封背新增「列印完成」，可一次完成清單內全部案件的封背。</div>
+        <div class="tiny" style="margin-bottom:10px;">V100：除新增物件外，首頁功能按鈕改為不同淡色底。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -927,7 +927,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V99';
+    const APP_VERSION = 'V100';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
