@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V100_NEW本製作</title>
+  <title>V101_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -84,6 +84,8 @@
     .pill{display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#d3e4ff 0,#eef4ff 100%); color:#1d4ed8; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid #b9d2ff}
     .tiny{font-size:12px; color:var(--muted); line-height:1.6}
     .filter-grid{display:grid; grid-template-columns:minmax(420px,560px) 1fr; gap:12px; align-items:center}
+    .pending-filter-grid{grid-template-columns:1fr}
+    .pending-filter-controls{display:grid;gap:10px;grid-template-columns:auto 250px minmax(360px,1.4fr) minmax(260px,1fr) auto;align-items:center}
     .table-wrap,.action-table{overflow:auto; border:1px solid var(--line); border-radius:16px; background:linear-gradient(180deg,#ffffff 0,#f7faff 100%)}
     table{width:100%; min-width:1000px; border-collapse:collapse}
     th,td{padding:10px 10px; border-bottom:1px solid #edf2f7; text-align:left; vertical-align:middle; line-height:1.45}
@@ -478,6 +480,7 @@
     @media (max-width:1180px){
       .stats-grid,.top-summary,.reward-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .filter-grid,.setting-grid,.reward-setting-grid{grid-template-columns:1fr}
+      .pending-filter-controls{grid-template-columns:1fr 1fr}
     }
     @media (max-width:760px){
       .wrap{padding:12px}
@@ -494,7 +497,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V100 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V101 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -513,7 +516,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V100：除新增物件外，首頁功能按鈕改為不同淡色底。</div>
+        <div class="tiny" style="margin-bottom:10px;">V101：製作中搜尋輸入框加寬，移除操作說明文字。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -543,10 +546,9 @@
     <section class="card section section-amber">
       <div class="section-title">
         <span>製作中</span>
-        <span class="tiny">選一個動作後，只列出還沒完成的物件，點一下就可直接操作</span>
       </div>
-      <div class="filter-grid">
-        <div style="display:grid; gap:10px; grid-template-columns:auto 220px 1fr 1fr auto; align-items:center;">
+      <div class="filter-grid pending-filter-grid">
+        <div class="pending-filter-controls">
           <button type="button" class="ghost" id="clearPendingFilterBtn">清除篩選</button>
           <select id="pendingActionFilter" class="field-select"></select>
           <input id="caseNameFilterInput" class="field-input" type="text" placeholder="案名搜尋，例如：大同路 / 國寶 / 東區">
@@ -927,7 +929,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V100';
+    const APP_VERSION = 'V101';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
