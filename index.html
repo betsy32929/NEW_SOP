@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V101_NEW本製作</title>
+  <title>V102_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -497,7 +497,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V101 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V102 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -516,7 +516,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V101：製作中搜尋輸入框加寬，移除操作說明文字。</div>
+        <div class="tiny" style="margin-bottom:10px;">V102：更新建物成果圖提醒，新增未回覆契變提醒。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -929,7 +929,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V101';
+    const APP_VERSION = 'V102';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -938,7 +938,7 @@
     const ROC_YEAR = new Date().getFullYear() - 1911;
     const STATUS_TEXT = ['未做','已做','完成','完全完成'];
     const DEFAULT_CASE_REMINDER_OPTIONS = [
-      '請申請成果圖',
+      '請申請建物成果圖並列印',
       '地籍圖格局圖請標示面寬深度',
       '請提供房屋格局圖',
       '物件照片尚未上傳系統',
@@ -948,6 +948,7 @@
       '契變照片尚未上傳系統',
       '現尋調尚未完成',
       '契約照片尚未上傳系統',
+      '進案未回覆是否有契變，請回覆',
       '權狀？或切結？'
     ];
     const EDITABLE_TYPE_OPTIONS = [
@@ -1883,6 +1884,25 @@
       if(!state.dataMigrations.reminderOptionV88){
         if(!state.reminderOptions.includes('權狀？或切結？')) state.reminderOptions.push('權狀？或切結？');
         state.dataMigrations.reminderOptionV88 = true;
+      }
+      if(!state.dataMigrations.reminderOptionsV102){
+        const oldResultReminder = '請申請成果圖';
+        const newResultReminder = '請申請建物成果圖並列印';
+        const contractReplyReminder = '進案未回覆是否有契變，請回覆';
+        const oldIndex = state.reminderOptions.indexOf(oldResultReminder);
+        const newIndex = state.reminderOptions.indexOf(newResultReminder);
+        if(oldIndex >= 0){
+          if(newIndex >= 0) state.reminderOptions.splice(oldIndex,1);
+          else state.reminderOptions[oldIndex] = newResultReminder;
+        } else if(newIndex < 0) {
+          state.reminderOptions.unshift(newResultReminder);
+        }
+        if(!state.reminderOptions.includes(contractReplyReminder)) state.reminderOptions.push(contractReplyReminder);
+        (state.cases || []).forEach(c => {
+          if(!Array.isArray(c.caseReminderSelections)) return;
+          c.caseReminderSelections = [...new Set(c.caseReminderSelections.map(item => item === oldResultReminder ? newResultReminder : item))];
+        });
+        state.dataMigrations.reminderOptionsV102 = true;
       }
       state.customActions.forEach(def => {
         if(def && def.key && !FIELD_DEFS.some(x => x.key === def.key)){
