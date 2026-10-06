@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V103_NEW本製作</title>
+  <title>V104_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -498,7 +498,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V103 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V104 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -517,7 +517,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V103：主約命名、契變命名後顯示可點擊複製的契約編號。</div>
+        <div class="tiny" style="margin-bottom:10px;">V104：已有契變編號時，契變命名不能選擇「無ED」。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -930,7 +930,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V103';
+    const APP_VERSION = 'V104';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2240,6 +2240,11 @@
       if(!raw) return '';
       if(raw === '無ED') return '無';
       return raw;
+    }
+
+    function hasActualChangeContractNo(c){
+      const value = String(c?.items?.changeContractNo?.value || '').trim();
+      return value !== '' && value !== '無ED' && value !== '無';
     }
 
     function triChecklistState(def, item){
@@ -4127,7 +4132,26 @@
       });
     }
 
-    function renderInputCell(def, item){
+    function enforceChangeContractNamingNoEd(c){
+      if(!hasActualChangeContractNo(c)) return false;
+      const item = c?.items?.changeContractNaming;
+      if(!item || item.option !== '無ED') return false;
+      item.option = '';
+      syncStatusWithContent(getCaseFieldDef(c,'changeContractNaming'), item);
+      touch(item);
+      return true;
+    }
+
+    function updateChangeContractNamingNoEdButton(c){
+      const disabled = hasActualChangeContractNo(c);
+      const btn = document.querySelector('.modal-option-btn[data-key="changeContractNaming"][data-option="無ED"]');
+      if(!btn) return;
+      btn.disabled = disabled;
+      btn.title = disabled ? '已有契變編號，不能選無ED' : '';
+      if(disabled) btn.classList.remove('active');
+    }
+
+    function renderInputCell(def, item, c){
       if(def.type === 'text' || def.type === 'dateText') {
         const isDate = def.type === 'dateText' || def.dateAuto;
         const ph = def.placeholder || (isDate ? '例如：115/3/17' : '');
@@ -4169,7 +4193,10 @@
         return `<div class="chips">${
           def.optionSpacer ? `<span class="chip-btn" aria-hidden="true" style="visibility:hidden;pointer-events:none;">${escapeHtml(def.optionSpacer)}</span>` : ''
         }${
-          (def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
+          (def.specialOptions || []).map(opt => {
+            const disabled = def.key === 'changeContractNaming' && opt === '無ED' && hasActualChangeContractNo(c);
+            return `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}" ${disabled ? 'disabled title="已有契變編號，不能選無ED"' : ''}>${escapeHtml(opt)}</button>`;
+          }).join('')
         }</div>`;
       }
       if(def.type === 'textRequiredOption') {
@@ -4252,6 +4279,7 @@
 
     function renderModalActions(c){
       ensureCaseShape(c);
+      if(enforceChangeContractNamingNoEd(c)) scheduleAutoSave();
       renderStatusFilters();
       const tbody = document.getElementById('modalActionsBody');
       tbody.innerHTML = '';
@@ -4276,7 +4304,7 @@
           tr.innerHTML = `
             <td>${renderActionLabel(def,c)}</td>
             <td colspan="2" class="archive-merged-cell">
-              ${renderInputCell(def, item)}
+              ${renderInputCell(def, item, c)}
             </td>
             <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
             <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
@@ -4284,14 +4312,14 @@
         } else if(def.wideInput) {
           tr.innerHTML = `
             <td>${renderActionLabel(def,c)}</td>
-            <td colspan="2">${renderInputCell(def, item)}</td>
+            <td colspan="2">${renderInputCell(def, item, c)}</td>
             <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
             <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
           `;
         } else {
           tr.innerHTML = `
             <td>${renderActionLabel(def,c)}</td>
-            <td>${renderInputCell(def, item)}</td>
+            <td>${renderInputCell(def, item, c)}</td>
             <td>${renderAssistCell(def, item)}</td>
             <td class="status-cell"><button type="button" class="status-btn s${s} modal-status-btn" data-key="${def.key}">${STATUS_TEXT[s]}</button></td>
             <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
@@ -4402,6 +4430,11 @@
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, false);
           if(key === 'mainContractNo' || key === 'changeContractNo') updateContractRefBadges(c);
+          if(key === 'changeContractNo') {
+            enforceChangeContractNamingNoEd(c);
+            updateChangeContractNamingNoEdButton(c);
+            updateRowState('changeContractNaming');
+          }
           touch(item);
           updateRowState(key);
           scheduleAutoSave();
@@ -4419,6 +4452,11 @@
           syncStatusWithContent(def, item);
           if(def?.type === 'textOption') refreshExclusiveRowUI(key);
           if(def?.type === 'textRequiredOption') renderModalActions(c);
+          if(key === 'changeContractNo') {
+            enforceChangeContractNamingNoEd(c);
+            updateChangeContractNamingNoEdButton(c);
+            updateRowState('changeContractNaming');
+          }
           if(key === 'caseName') updateCaseNameWarning(c.id, e.target, true);
           const salesBookAutoCompleted = key === 'entryDate' && applySalesBookAutoCompletion(c);
           updateRowState(key);
@@ -4475,6 +4513,7 @@
           const opt = e.currentTarget.dataset.option;
           const def = getDef(key);
           const item = c.items[key];
+          if(key === 'changeContractNaming' && opt === '無ED' && hasActualChangeContractNo(c)) return;
           if(def?.type === 'textOption' && hasTextValue(item.value)) return;
           if(def?.type === 'textRequiredOption' && isTextRequiredNoneOption(def, opt) && (hasTextValue(item.value) || item.option === def.requiredOption)) return;
           item.option = item.option === opt ? '' : opt;
