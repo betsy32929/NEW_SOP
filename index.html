@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V105_NEW本製作</title>
+  <title>V106_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -179,6 +179,9 @@
     .modal-card{width:min(1220px,100%); max-height:calc(100vh - 36px); overflow:auto; background:linear-gradient(180deg,#f8fbff 0,#eef5ff 42%,#ffffff 100%); border-radius:24px; box-shadow:0 30px 70px rgba(2,6,23,.34); border:1px solid rgba(112,139,187,.42)}
     .modal-head{position:sticky; top:0; z-index:6; background:linear-gradient(135deg,#8fc2ff 0,#cfe5ff 42%,#f7fbff 100%); padding:16px 18px; border-bottom:2px solid #8ebdff; box-shadow:0 8px 20px rgba(59,130,246,.16); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
     .modal-title{font-size:24px; font-weight:900; line-height:1.2}
+    .modal-summary-copy{cursor:pointer; border-radius:8px; transition:color .15s, background .15s}
+    .modal-summary-copy:hover,.modal-summary-copy:focus-visible{color:#1d4ed8; background:#eff6ff; outline:none; text-decoration:underline}
+    .modal-main-contract-copy{display:inline; padding:0 3px; border:0; background:transparent; color:#1d4ed8; font:inherit; font-weight:900; box-shadow:none}
     .modal-body{padding:16px 18px 18px; display:grid; gap:16px; background:linear-gradient(180deg,rgba(221,235,255,.62) 0,rgba(255,255,255,.94) 26%,#ffffff 100%)}
     .top-summary{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px}
     .summary-mini{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f4f8ff 100%)}
@@ -498,7 +501,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V105 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V106 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -517,7 +520,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V105：移除「鎖定PPT版面」動作。</div>
+        <div class="tiny" style="margin-bottom:10px;">V106：案件標題案名與主約編號可分別點選複製。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -930,7 +933,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V105';
+    const APP_VERSION = 'V106';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -3929,8 +3932,31 @@
     }
 
     function renderModalSummary(c){
-      document.getElementById('modalTitle').textContent = caseNameOf(c);
-      document.getElementById('modalSub').textContent = `開發:${fieldText(c,'developer')} | 主約編號:${fieldText(c,'mainContractNo')} | 契變編號:${changeContractDisplay(c)}`;
+      const caseName = caseNameOf(c);
+      const mainContractNo = fieldText(c,'mainContractNo');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalSub = document.getElementById('modalSub');
+      modalTitle.textContent = caseName;
+      modalTitle.classList.add('modal-summary-copy');
+      modalTitle.setAttribute('role','button');
+      modalTitle.setAttribute('tabindex','0');
+      modalTitle.title = '點一下複製案名';
+      modalSub.innerHTML = `開發:${escapeHtml(fieldText(c,'developer'))} | 主約編號:${mainContractNo ? `<button type="button" class="modal-summary-copy modal-main-contract-copy" title="點一下複製主約編號">${escapeHtml(mainContractNo)}</button>` : '—'} | 契變編號:${escapeHtml(changeContractDisplay(c) || '—')}`;
+      const copyWithFeedback = async (el, text) => {
+        if(!text) return;
+        const original = el.textContent;
+        if(!await copyShortText(text)) return;
+        el.textContent = '已複製';
+        setTimeout(() => { if(el.isConnected) el.textContent = original; }, 900);
+      };
+      modalTitle.onclick = () => copyWithFeedback(modalTitle, caseName);
+      modalTitle.onkeydown = e => {
+        if(e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        copyWithFeedback(modalTitle, caseName);
+      };
+      const mainContractCopy = modalSub.querySelector('.modal-main-contract-copy');
+      if(mainContractCopy) mainContractCopy.onclick = () => copyWithFeedback(mainContractCopy, mainContractNo);
       document.getElementById('modalCaseNoteInput').value = c.caseNote || '';
       const stats = getCaseStats(c);
       const progressText = document.getElementById('modalProgressText');
