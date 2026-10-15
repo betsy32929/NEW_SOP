@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V107_NEW本製作</title>
+  <title>V108_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -104,8 +104,8 @@
     .chip-btn.inactive-locked{background:#eef2f7; border-color:#cbd5e1; color:#64748b}
     .group-row td{background:#f6f9ff !important; color:#1d4ed8; font-weight:800; font-size:13px; border-bottom:1px solid #dbeafe}
     .group-row-content{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .no-photo-toggle{padding:5px 12px; border-radius:999px; border:1px solid #94a3b8; background:#fff; color:#475569; font-size:12px; font-weight:900; box-shadow:none}
-    .no-photo-toggle.active{background:#64748b; border-color:#475569; color:#fff}
+    .group-lock-toggle{padding:5px 12px; border-radius:999px; border:1px solid #94a3b8; background:#fff; color:#475569; font-size:12px; font-weight:900; box-shadow:none}
+    .group-lock-toggle.active{background:#64748b; border-color:#475569; color:#fff}
     tr.group-locked-row td{background:#e5e7eb !important; color:#6b7280 !important}
     tr.group-locked-row button,tr.group-locked-row input,tr.group-locked-row select,tr.group-locked-row textarea{filter:grayscale(1); opacity:.62; cursor:not-allowed}
     .empty{text-align:center; color:var(--muted); padding:18px; border:1px dashed var(--line); border-radius:16px; background:#fff}
@@ -506,7 +506,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V107 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V108 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +525,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V107：物件照片新增「無照片」，可鎖定整區並視為完成。</div>
+        <div class="tiny" style="margin-bottom:10px;">V108：格局圖新增「無提供格局圖」，可鎖定整區並視為完成。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +938,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V107';
+    const APP_VERSION = 'V108';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2120,6 +2120,7 @@
       if(!c.items) c.items = {};
       if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
       if(typeof c.groupOptions.noPhotos !== 'boolean') c.groupOptions.noPhotos = false;
+      if(typeof c.groupOptions.noFloorplan !== 'boolean') c.groupOptions.noFloorplan = false;
       FIELD_DEFS.forEach(def => {
         if(!c.items[def.key]) c.items[def.key] = defaultItem(def);
         const item = c.items[def.key];
@@ -2322,8 +2323,16 @@
       return c?.groupOptions?.noPhotos === true;
     }
 
+    function isNoFloorplanCase(c){
+      return c?.groupOptions?.noFloorplan === true;
+    }
+
+    function isLockedActionGroup(c, group){
+      return group === '物件照片' ? isNoPhotoCase(c) : group === '格局圖' ? isNoFloorplanCase(c) : false;
+    }
+
     function caseEffectiveStatus(c, def, item){
-      if(def?.group === '物件照片' && isNoPhotoCase(c)) return 2;
+      if(isLockedActionGroup(c, def?.group)) return 2;
       return effectiveStatus(def, item);
     }
 
@@ -4329,10 +4338,12 @@
       const appendGroupRow = group => {
         const g = document.createElement('tr');
         g.className = 'group-row';
-        const noPhotoButton = group === '物件照片'
-          ? `<button type="button" class="no-photo-toggle ${isNoPhotoCase(c) ? 'active' : ''}" aria-pressed="${isNoPhotoCase(c) ? 'true' : 'false'}">無照片</button>`
-          : '';
-        g.innerHTML = `<td colspan="5"><div class="group-row-content"><span>${escapeHtml(group)}</span>${noPhotoButton}</div></td>`;
+        const lockButton = group === '物件照片'
+          ? `<button type="button" class="group-lock-toggle ${isNoPhotoCase(c) ? 'active' : ''}" data-group-lock="noPhotos" aria-pressed="${isNoPhotoCase(c) ? 'true' : 'false'}">無照片</button>`
+          : group === '格局圖'
+            ? `<button type="button" class="group-lock-toggle ${isNoFloorplanCase(c) ? 'active' : ''}" data-group-lock="noFloorplan" aria-pressed="${isNoFloorplanCase(c) ? 'true' : 'false'}">無提供格局圖</button>`
+            : '';
+        g.innerHTML = `<td colspan="5"><div class="group-row-content"><span>${escapeHtml(group)}</span>${lockButton}</div></td>`;
         tbody.appendChild(g);
         lastGroup = group;
       };
@@ -4341,7 +4352,7 @@
         normalizeExclusiveItem(def, item);
         const s = caseEffectiveStatus(c, def, item);
         if(!rowMatchesFilter(s)){
-          if(def.group === '物件照片' && isNoPhotoCase(c) && lastGroup !== def.group) appendGroupRow(def.group);
+          if(isLockedActionGroup(c, def.group) && lastGroup !== def.group) appendGroupRow(def.group);
           return;
         }
 
@@ -4376,7 +4387,7 @@
             <td class="time-cell tiny">${escapeHtml(fmtTime(item.updatedAt))}</td>
           `;
         }
-        if(def.group === '物件照片' && isNoPhotoCase(c)){
+        if(isLockedActionGroup(c, def.group)){
           tr.classList.add('group-locked-row');
           tr.querySelectorAll('button,input,select,textarea').forEach(el => { el.disabled = true; });
         }
@@ -4473,10 +4484,12 @@
       const tbody = document.getElementById('modalActionsBody');
       const getDef = key => getCaseFieldDef(c,key);
 
-      tbody.querySelectorAll('.no-photo-toggle').forEach(btn => {
+      tbody.querySelectorAll('.group-lock-toggle').forEach(btn => {
         btn.onclick = () => {
           if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
-          c.groupOptions.noPhotos = !isNoPhotoCase(c);
+          const key = btn.dataset.groupLock;
+          if(!['noPhotos', 'noFloorplan'].includes(key)) return;
+          c.groupOptions[key] = !c.groupOptions[key];
           c.updatedAt = new Date().toISOString();
           autoSaveNow();
           renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
