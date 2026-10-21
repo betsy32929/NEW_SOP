@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V113_NEW本製作</title>
+  <title>V114_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -506,7 +506,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V113 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V114 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +525,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V113：「列印新進封面」與「列印彩色」新增「進案售出」選項。</div>
+        <div class="tiny" style="margin-bottom:10px;">V114：「內附文件」各項可切換選擇 X。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +938,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V113';
+    const APP_VERSION = 'V114';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -4275,7 +4275,7 @@
           (def.subitems || []).map(name => {
             const st = item.subitems?.[name] || '';
             const cls = st === 'V' ? 'v' : (st === 'X' || st === '無需' || st === '不用') ? 'no-need' : st === '缺' ? 'missing' : st === 'V第一類' ? 'first-category' : st === '大樓' ? 'high-rise' : '';
-            const mark = (st === 'X' || st === '無需') ? '不用' : (st || '□');
+            const mark = st === '無需' ? '不用' : (st || '□');
             return `<button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}"><span class="s">${mark}</span>${escapeHtml(name)}</button>`;
           }).join('')
         }${(def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
@@ -4633,8 +4633,9 @@
           const item = c.items[key];
           const curr = item.subitems[sub] || '';
           item.subitems[sub] = curr === '' ? 'V'
-            : curr === 'V' ? '不用'
-            : (curr === 'X' || curr === '無需' || curr === '不用') ? '缺'
+            : curr === 'V' ? 'X'
+            : curr === 'X' ? '不用'
+            : (curr === '無需' || curr === '不用') ? '缺'
             : curr === '缺' && sub === '權狀' ? 'V第一類'
             : curr === '缺' && sub === '地籍圖' ? '大樓'
             : '';
