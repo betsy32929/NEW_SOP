@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V114_NEW本製作</title>
+  <title>V115_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -506,7 +506,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V114 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V115 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +525,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V114：「內附文件」各項可切換選擇 X。</div>
+        <div class="tiny" style="margin-bottom:10px;">V115：物件本位置、銷售本PDF製作、封背新增「進案售出」。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +938,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V114';
+    const APP_VERSION = 'V115';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1035,8 +1035,8 @@
 
       makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
       makeNewFieldDef('companyArchive',{group:'後續',label:'內附文件',subitems:['新進封面','正-草稿','反-草稿','彩色','A4簽名','分區','地籍圖','建物成果圖','謄本','土增','產權','實價','周遭設施','現詢調','權狀','切結','授權書'],specialOptions:[]}), makeNewFieldDef('scanPropertyBook',{group:'後續'}), makeNewFieldDef('deedScan',{group:'後續'}), makeNewFieldDef('contractNaming',{group:'後續',label:'主約命名'}),
-      makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistant',specialOptions:[]}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5'],requireDateAndOption:true,dateToday:true}),
-      makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續'})
+      makeNewFieldDef('salesBookProduction',{group:'後續',label:'銷售本PDF製作',type:'assistantOrOption',specialOptions:['進案售出']}), makeNewFieldDef('bookShelfLocation',{group:'後續',label:'物件本位置',type:'dateOption',specialOptions:['架上','旁5','進案售出'],requireDateAndOption:true,dateToday:true}),
+      makeNewFieldDef('paperMainContract',{group:'後續'}), makeNewFieldDef('paperChangeContract',{group:'後續',type:'assistantOrOption',specialOptions:['無ED']}), makeNewFieldDef('backCover',{group:'後續',type:'assistantOrOption',specialOptions:['進案售出']})
     ];
     const BASE_FIELD_COUNT = FIELD_DEFS.length;
     let state = loadState();
@@ -2312,6 +2312,7 @@
       if(def.type === 'dateOption' && def.requireDateAndOption){
         const hasDate = String(item.extra?.date || '').trim() !== '';
         const hasOption = String(item.option || '').trim() !== '';
+        if(item.option === '進案售出') return Math.max(2,item.status || 0);
         if(hasDate && hasOption) return Math.max(2,item.status || 0);
         if(hasDate || hasOption) return 1;
         return 0;
@@ -2562,7 +2563,7 @@
       if(def.type === 'dateOption' && def.requireDateAndOption){
         const hasDate = String(item.extra?.date || '').trim() !== '';
         const hasOption = String(item.option || '').trim() !== '';
-        item.status = hasDate && hasOption ? Math.max(2,item.status || 0) : (hasDate || hasOption ? 1 : 0);
+        item.status = item.option === '進案售出' || hasDate && hasOption ? Math.max(2,item.status || 0) : (hasDate || hasOption ? 1 : 0);
         return;
       }
       const has = contentPresent(def, item);
