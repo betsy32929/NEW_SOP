@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V111_NEW本製作</title>
+  <title>V112_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -506,7 +506,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V111 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V112 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +525,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V111：標題下方的 ED 契變編號可點擊複製。</div>
+        <div class="tiny" style="margin-bottom:10px;">V112：格局圖、謄本、房管新增「進案售出」，可鎖定整區並視為完成。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +938,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V111';
+    const APP_VERSION = 'V112';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2121,6 +2121,9 @@
       if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
       if(typeof c.groupOptions.noPhotos !== 'boolean') c.groupOptions.noPhotos = false;
       if(typeof c.groupOptions.noFloorplan !== 'boolean') c.groupOptions.noFloorplan = false;
+      if(typeof c.groupOptions.entrySoldFloorplan !== 'boolean') c.groupOptions.entrySoldFloorplan = false;
+      if(typeof c.groupOptions.entrySoldTranscript !== 'boolean') c.groupOptions.entrySoldTranscript = false;
+      if(typeof c.groupOptions.entrySoldHousing !== 'boolean') c.groupOptions.entrySoldHousing = false;
       FIELD_DEFS.forEach(def => {
         if(!c.items[def.key]) c.items[def.key] = defaultItem(def);
         const item = c.items[def.key];
@@ -2327,8 +2330,19 @@
       return c?.groupOptions?.noFloorplan === true;
     }
 
+    function entrySoldGroupKey(group){
+      return group === '格局圖' ? 'entrySoldFloorplan' : group === '謄本' ? 'entrySoldTranscript' : group === '房管' ? 'entrySoldHousing' : '';
+    }
+
+    function isEntrySoldGroup(c, group){
+      const key = entrySoldGroupKey(group);
+      return key ? c?.groupOptions?.[key] === true : false;
+    }
+
     function isLockedActionGroup(c, group){
-      return group === '物件照片' ? isNoPhotoCase(c) : group === '格局圖' ? isNoFloorplanCase(c) : false;
+      if(group === '物件照片') return isNoPhotoCase(c);
+      if(group === '格局圖' && isNoFloorplanCase(c)) return true;
+      return isEntrySoldGroup(c, group);
     }
 
     function caseEffectiveStatus(c, def, item){
@@ -4341,12 +4355,12 @@
       const appendGroupRow = group => {
         const g = document.createElement('tr');
         g.className = 'group-row';
-        const lockButton = group === '物件照片'
-          ? `<button type="button" class="group-lock-toggle ${isNoPhotoCase(c) ? 'active' : ''}" data-group-lock="noPhotos" aria-pressed="${isNoPhotoCase(c) ? 'true' : 'false'}">無照片</button>`
-          : group === '格局圖'
-            ? `<button type="button" class="group-lock-toggle ${isNoFloorplanCase(c) ? 'active' : ''}" data-group-lock="noFloorplan" aria-pressed="${isNoFloorplanCase(c) ? 'true' : 'false'}">無提供格局圖</button>`
-            : '';
-        g.innerHTML = `<td colspan="5"><div class="group-row-content"><span>${escapeHtml(group)}</span>${lockButton}</div></td>`;
+        const lockButtons = [];
+        if(group === '物件照片') lockButtons.push(`<button type="button" class="group-lock-toggle ${isNoPhotoCase(c) ? 'active' : ''}" data-group-lock="noPhotos" aria-pressed="${isNoPhotoCase(c) ? 'true' : 'false'}">無照片</button>`);
+        if(group === '格局圖') lockButtons.push(`<button type="button" class="group-lock-toggle ${isNoFloorplanCase(c) ? 'active' : ''}" data-group-lock="noFloorplan" aria-pressed="${isNoFloorplanCase(c) ? 'true' : 'false'}">無提供格局圖</button>`);
+        const soldKey = entrySoldGroupKey(group);
+        if(soldKey) lockButtons.push(`<button type="button" class="group-lock-toggle ${isEntrySoldGroup(c, group) ? 'active' : ''}" data-group-lock="${soldKey}" aria-pressed="${isEntrySoldGroup(c, group) ? 'true' : 'false'}">進案售出</button>`);
+        g.innerHTML = `<td colspan="5"><div class="group-row-content"><span>${escapeHtml(group)}</span>${lockButtons.join('')}</div></td>`;
         tbody.appendChild(g);
         lastGroup = group;
       };
@@ -4491,8 +4505,10 @@
         btn.onclick = () => {
           if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
           const key = btn.dataset.groupLock;
-          if(!['noPhotos', 'noFloorplan'].includes(key)) return;
+          if(!['noPhotos', 'noFloorplan', 'entrySoldFloorplan', 'entrySoldTranscript', 'entrySoldHousing'].includes(key)) return;
           c.groupOptions[key] = !c.groupOptions[key];
+          if(key === 'noFloorplan' && c.groupOptions.noFloorplan) c.groupOptions.entrySoldFloorplan = false;
+          if(key === 'entrySoldFloorplan' && c.groupOptions.entrySoldFloorplan) c.groupOptions.noFloorplan = false;
           c.updatedAt = new Date().toISOString();
           autoSaveNow();
           renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
