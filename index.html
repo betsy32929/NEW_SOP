@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V112_NEW本製作</title>
+  <title>V113_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -506,7 +506,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V112 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V113 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +525,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V112：格局圖、謄本、房管新增「進案售出」，可鎖定整區並視為完成。</div>
+        <div class="tiny" style="margin-bottom:10px;">V113：「列印新進封面」與「列印彩色」新增「進案售出」選項。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +938,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V112';
+    const APP_VERSION = 'V113';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1030,7 +1030,7 @@
 
       makeNewFieldDef('notebookFilenameEdit',{group:'總表'}), makeNewFieldDef('addMasterList',{group:'總表'}),
       makeNewFieldDef('middlemanAmount',{group:'總表',type:'textRequiredOption',label:'中人金額',specialOptions:['總表備註','無'],requiredOption:'總表備註',noneOption:'無'}), makeNewFieldDef('dailyUpdateDisplay',{group:'總表'}),
-      makeNewFieldDef('newCover',{group:'總表',label:'列印新進封面'}), makeNewFieldDef('printColor',{group:'總表',label:'列印彩色'}),
+      makeNewFieldDef('newCover',{group:'總表',label:'列印新進封面',type:'assistantOrOption',specialOptions:['進案售出']}), makeNewFieldDef('printColor',{group:'總表',label:'列印彩色',type:'assistantOrOption',specialOptions:['進案售出']}),
       makeNewFieldDef('pptLayout',{group:'PPT',label:'格局圖存PPT資料夾'}), makeNewFieldDef('pptAnimation',{group:'PPT',label:'動畫存PPT資料夾'}),
 
       makeNewFieldDef('applyZone',{group:'後續',label:'分區申請日期',type:'dateOption',specialOptions:['房屋','土地標示','已附','無']}),
