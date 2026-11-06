@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V119_NEW本製作</title>
+  <title>V120_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -510,7 +510,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V119 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V120 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -529,7 +529,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V119：首頁統一列印封背後，自動選取「統一列印」。</div>
+        <div class="tiny" style="margin-bottom:10px;">V120：授權書第一次點選「不用」，下拉選項再依序顯示 V、正本、影本、缺、空白。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -942,7 +942,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V119';
+    const APP_VERSION = 'V120';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -4285,7 +4285,7 @@
             const mark = st === '無需' ? '不用' : (st || '□');
             const isOpen = openTriDropdown?.key === def.key && openTriDropdown?.sub === name;
             const choices = name === '授權書'
-              ? ['不用','正本','影本','缺','']
+              ? ['不用','V','正本','影本','缺','']
               : ['V','X','不用','缺',...(name === '權狀' ? ['V第一類'] : []),...(name === '地籍圖' ? ['大樓'] : []),''];
             const dropdown = isOpen ? `<div class="tri-dropdown">${choices.map(value => `<button type="button" class="modal-tri-option" data-key="${def.key}" data-sub="${escapeAttr(name)}" data-value="${escapeAttr(value)}">${escapeHtml(value || '空白')}</button>`).join('')}</div>` : '';
             return `<span class="tri-choice-wrap"><button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}" aria-expanded="${isOpen ? 'true' : 'false'}"><span class="s">${mark}</span>${escapeHtml(name)}</button>${dropdown}</span>`;
@@ -4649,7 +4649,7 @@
             renderModalActions(c);
             return;
           }
-          item.subitems[sub] = 'V';
+          item.subitems[sub] = sub === '授權書' ? '不用' : 'V';
           openTriDropdown = null;
           syncStatusWithContent(def, item);
           touch(item);
