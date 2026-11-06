@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V116_NEW本製作</title>
+  <title>V117_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -124,6 +124,10 @@
     .tri-btn.first-category .s{min-width:45px; font-size:10px; font-weight:900}
     .tri-btn.high-rise{background:#e0f2fe; color:#075985; border-color:#7dd3fc}
     .tri-btn.high-rise .s{min-width:32px; font-size:11px; font-weight:900}
+    .tri-choice-wrap{position:relative; display:inline-flex}
+    .tri-dropdown{position:absolute; z-index:30; left:0; top:calc(100% + 4px); display:flex; gap:4px; padding:6px; border:1px solid var(--line); border-radius:10px; background:#fff; box-shadow:0 8px 24px rgba(15,23,42,.18); white-space:nowrap}
+    .tri-dropdown button{padding:5px 8px; border-radius:8px; border:1px solid #cbd5e1; background:#f8fafc; color:#334155; font-size:12px; font-weight:800; box-shadow:none}
+    .tri-dropdown button:hover,.tri-dropdown button:focus-visible{background:#dbeafe; border-color:#93c5fd; outline:none}
     .split-2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
     .sync-panel{padding:14px 16px; background:linear-gradient(135deg,#d7f0ec 0,#eefcf9 50%,#ffffff 100%)}
     .sync-grid{display:grid; grid-template-columns:1.2fr 1.6fr auto auto auto; gap:8px; align-items:center}
@@ -506,7 +510,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V116 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V117 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -525,7 +529,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V116：授權書改為「空白→不用→正本→影本→缺→空白」。</div>
+        <div class="tiny" style="margin-bottom:10px;">V117：內附文件第一次點選 V，第二次開啟狀態下拉選單。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -938,7 +942,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V116';
+    const APP_VERSION = 'V117';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -1048,6 +1052,7 @@
     let saveTimer = null;
     let mainRefreshTimer = null;
     let modalStatusFilter = 'all';
+    let openTriDropdown = null;
     let caseReminderSelections = new Set();
     let syncClient = null;
     let syncConfig = loadSyncConfig();
@@ -4277,7 +4282,12 @@
             const st = item.subitems?.[name] || '';
             const cls = (st === 'V' || st === '正本' || st === '影本') ? 'v' : (st === 'X' || st === '無需' || st === '不用') ? 'no-need' : st === '缺' ? 'missing' : st === 'V第一類' ? 'first-category' : st === '大樓' ? 'high-rise' : '';
             const mark = st === '無需' ? '不用' : (st || '□');
-            return `<button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}"><span class="s">${mark}</span>${escapeHtml(name)}</button>`;
+            const isOpen = openTriDropdown?.key === def.key && openTriDropdown?.sub === name;
+            const choices = name === '授權書'
+              ? ['不用','正本','影本','缺','']
+              : ['V','X','不用','缺',...(name === '權狀' ? ['V第一類'] : []),...(name === '地籍圖' ? ['大樓'] : []),''];
+            const dropdown = isOpen ? `<div class="tri-dropdown">${choices.map(value => `<button type="button" class="modal-tri-option" data-key="${def.key}" data-sub="${escapeAttr(name)}" data-value="${escapeAttr(value)}">${escapeHtml(value || '空白')}</button>`).join('')}</div>` : '';
+            return `<span class="tri-choice-wrap"><button type="button" class="tri-btn ${cls} modal-tri-btn" data-key="${def.key}" data-sub="${escapeAttr(name)}" aria-expanded="${isOpen ? 'true' : 'false'}"><span class="s">${mark}</span>${escapeHtml(name)}</button>${dropdown}</span>`;
           }).join('')
         }${(def.specialOptions || []).map(opt => `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}">${escapeHtml(opt)}</button>`).join('')
         }</div>`;
@@ -4633,15 +4643,28 @@
           const def = getDef(key);
           const item = c.items[key];
           const curr = item.subitems[sub] || '';
-          item.subitems[sub] = sub === '授權書'
-            ? (curr === '' ? '不用' : curr === '不用' || curr === '無需' || curr === 'X' ? '正本' : curr === '正本' ? '影本' : curr === '影本' ? '缺' : '')
-            : curr === '' ? 'V'
-            : curr === 'V' ? 'X'
-            : curr === 'X' ? '不用'
-            : (curr === '無需' || curr === '不用') ? '缺'
-            : curr === '缺' && sub === '權狀' ? 'V第一類'
-            : curr === '缺' && sub === '地籍圖' ? '大樓'
-            : '';
+          if(curr !== ''){
+            openTriDropdown = openTriDropdown?.key === key && openTriDropdown?.sub === sub ? null : { key, sub };
+            renderModalActions(c);
+            return;
+          }
+          item.subitems[sub] = 'V';
+          openTriDropdown = null;
+          syncStatusWithContent(def, item);
+          touch(item);
+          autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
+        };
+      });
+
+      tbody.querySelectorAll('.modal-tri-option').forEach(btn => {
+        btn.onclick = e => {
+          const key = e.currentTarget.dataset.key;
+          const sub = e.currentTarget.dataset.sub;
+          const value = e.currentTarget.dataset.value || '';
+          const def = getDef(key);
+          const item = c.items[key];
+          item.subitems[sub] = value;
+          openTriDropdown = null;
           syncStatusWithContent(def, item);
           touch(item);
           autoSaveNow(); renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
@@ -5001,6 +5024,7 @@
       modalManualSavedSinceOpen = false;
       refreshCloseButtonState();
       modalStatusFilter = 'all';
+      openTriDropdown = null;
       caseReminderSelections = new Set(
         (Array.isArray(c?.caseReminderSelections) ? c.caseReminderSelections : [])
           .filter(item => getCaseReminderOptions().includes(item))
