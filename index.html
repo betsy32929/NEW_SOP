@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V120_NEW本製作</title>
+  <title>V121_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -191,6 +191,8 @@
     .modal-summary-copy{cursor:pointer; border-radius:8px; transition:color .15s, background .15s}
     .modal-summary-copy:hover,.modal-summary-copy:focus-visible{color:#1d4ed8; background:#eff6ff; outline:none; text-decoration:underline}
     .modal-main-contract-copy{display:inline; padding:0 3px; border:0; background:transparent; color:#1d4ed8; font:inherit; font-weight:900; box-shadow:none}
+    .action-copy-label{display:inline; padding:0; border:0; background:transparent; color:inherit; font:inherit; text-align:left; box-shadow:none; cursor:pointer}
+    .action-copy-label:hover,.action-copy-label:focus-visible{color:#1d4ed8; text-decoration:underline; outline:none}
     .modal-body{padding:16px 18px 18px; display:grid; gap:16px; background:linear-gradient(180deg,rgba(221,235,255,.62) 0,rgba(255,255,255,.94) 26%,#ffffff 100%)}
     .top-summary{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px}
     .summary-mini{border:1px solid var(--line); border-radius:16px; padding:12px; background:linear-gradient(180deg,#ffffff 0,#f4f8ff 100%)}
@@ -510,7 +512,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V120 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V121 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -529,7 +531,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V120：授權書第一次點選「不用」，下拉選項再依序顯示 V、正本、影本、缺、空白。</div>
+        <div class="tiny" style="margin-bottom:10px;">V121：點擊「銷售本PDF製作」可複製地區、地址與開發。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -942,7 +944,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V120';
+    const APP_VERSION = 'V121';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -4191,13 +4193,26 @@
       return ['contractNaming','changeContractNaming'].includes(def.key) ? '無' : '—';
     }
 
+    function salesBookPdfCopyText(c){
+      const raw = String(caseNameOf(c) || '').trim();
+      const parts = raw.split(/\s*[-－—]\s*/).map(part => part.trim()).filter(Boolean);
+      const district = parts[0] || '';
+      const address = parts.length >= 3 ? parts[parts.length - 2] : (parts[1] || '');
+      const developer = String(fieldText(c,'developer') || (parts.length >= 2 ? parts[parts.length - 1] : '')).trim();
+      const location = `${district}${address}`.trim() || raw;
+      return developer ? `${location}-${developer}` : location;
+    }
+
     function renderActionLabel(def,c){
       const ref = getPaperContractRef(def,c);
       const refHtml = ['paperMainContract','paperChangeContract','contractNaming','changeContractNaming'].includes(def.key)
         ? `<span class="contract-ref" role="button" tabindex="0" title="點一下複製" data-contract-ref="${escapeAttr(def.key)}">${escapeHtml(ref || contractRefFallback(def))}</span>`
         : '';
       const noteHtml = def.key === 'scanPropertyBook' ? '<span class="action-label-note">－存公司物件存檔</span>' : '';
-      return `<strong>${escapeHtml(def.label)}</strong>${noteHtml}${refHtml}`;
+      const labelHtml = def.key === 'salesBookProduction'
+        ? `<button type="button" class="action-copy-label sales-book-pdf-copy" title="點一下複製：地區＋地址－開發"><strong>${escapeHtml(def.label)}</strong></button>`
+        : `<strong>${escapeHtml(def.label)}</strong>`;
+      return `${labelHtml}${noteHtml}${refHtml}`;
     }
 
     function updateContractRefBadges(c){
@@ -4816,6 +4831,16 @@
           if(e.key !== 'Enter' && e.key !== ' ') return;
           e.preventDefault();
           copyRef();
+        };
+      });
+
+      tbody.querySelectorAll('.sales-book-pdf-copy').forEach(el => {
+        el.onclick = async () => {
+          const text = salesBookPdfCopyText(c);
+          if(!text || !await copyShortText(text)) return;
+          const original = el.textContent;
+          el.textContent = '已複製';
+          setTimeout(() => { if(el.isConnected) el.textContent = original; }, 900);
         };
       });
     }
