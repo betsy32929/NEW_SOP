@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V122_NEW本製作</title>
+  <title>V123_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -512,7 +512,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V122 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V123 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -531,7 +531,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V122：建物成果圖新增「調無資料」選項。</div>
+        <div class="tiny" style="margin-bottom:10px;">V123：格局圖標題新增「舊有」，可鎖定整區並視為完成。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -944,7 +944,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V122';
+    const APP_VERSION = 'V123';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -2128,6 +2128,7 @@
       if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
       if(typeof c.groupOptions.noPhotos !== 'boolean') c.groupOptions.noPhotos = false;
       if(typeof c.groupOptions.noFloorplan !== 'boolean') c.groupOptions.noFloorplan = false;
+      if(typeof c.groupOptions.oldFloorplan !== 'boolean') c.groupOptions.oldFloorplan = false;
       if(typeof c.groupOptions.entrySoldFloorplan !== 'boolean') c.groupOptions.entrySoldFloorplan = false;
       if(typeof c.groupOptions.entrySoldTranscript !== 'boolean') c.groupOptions.entrySoldTranscript = false;
       if(typeof c.groupOptions.entrySoldHousing !== 'boolean') c.groupOptions.entrySoldHousing = false;
@@ -2339,6 +2340,10 @@
       return c?.groupOptions?.noFloorplan === true;
     }
 
+    function isOldFloorplanCase(c){
+      return c?.groupOptions?.oldFloorplan === true;
+    }
+
     function entrySoldGroupKey(group){
       return group === '格局圖' ? 'entrySoldFloorplan' : group === '謄本' ? 'entrySoldTranscript' : group === '房管' ? 'entrySoldHousing' : '';
     }
@@ -2350,7 +2355,7 @@
 
     function isLockedActionGroup(c, group){
       if(group === '物件照片') return isNoPhotoCase(c);
-      if(group === '格局圖' && isNoFloorplanCase(c)) return true;
+      if(group === '格局圖' && (isNoFloorplanCase(c) || isOldFloorplanCase(c))) return true;
       return isEntrySoldGroup(c, group);
     }
 
@@ -4385,6 +4390,7 @@
         const lockButtons = [];
         if(group === '物件照片') lockButtons.push(`<button type="button" class="group-lock-toggle ${isNoPhotoCase(c) ? 'active' : ''}" data-group-lock="noPhotos" aria-pressed="${isNoPhotoCase(c) ? 'true' : 'false'}">無照片</button>`);
         if(group === '格局圖') lockButtons.push(`<button type="button" class="group-lock-toggle ${isNoFloorplanCase(c) ? 'active' : ''}" data-group-lock="noFloorplan" aria-pressed="${isNoFloorplanCase(c) ? 'true' : 'false'}">無提供格局圖</button>`);
+        if(group === '格局圖') lockButtons.push(`<button type="button" class="group-lock-toggle ${isOldFloorplanCase(c) ? 'active' : ''}" data-group-lock="oldFloorplan" aria-pressed="${isOldFloorplanCase(c) ? 'true' : 'false'}">舊有</button>`);
         const soldKey = entrySoldGroupKey(group);
         if(soldKey) lockButtons.push(`<button type="button" class="group-lock-toggle ${isEntrySoldGroup(c, group) ? 'active' : ''}" data-group-lock="${soldKey}" aria-pressed="${isEntrySoldGroup(c, group) ? 'true' : 'false'}">進案售出</button>`);
         g.innerHTML = `<td colspan="5"><div class="group-row-content"><span>${escapeHtml(group)}</span>${lockButtons.join('')}</div></td>`;
@@ -4532,10 +4538,11 @@
         btn.onclick = () => {
           if(!c.groupOptions || typeof c.groupOptions !== 'object') c.groupOptions = {};
           const key = btn.dataset.groupLock;
-          if(!['noPhotos', 'noFloorplan', 'entrySoldFloorplan', 'entrySoldTranscript', 'entrySoldHousing'].includes(key)) return;
+          if(!['noPhotos', 'noFloorplan', 'oldFloorplan', 'entrySoldFloorplan', 'entrySoldTranscript', 'entrySoldHousing'].includes(key)) return;
           c.groupOptions[key] = !c.groupOptions[key];
-          if(key === 'noFloorplan' && c.groupOptions.noFloorplan) c.groupOptions.entrySoldFloorplan = false;
-          if(key === 'entrySoldFloorplan' && c.groupOptions.entrySoldFloorplan) c.groupOptions.noFloorplan = false;
+          if(['noFloorplan','oldFloorplan','entrySoldFloorplan'].includes(key) && c.groupOptions[key]){
+            ['noFloorplan','oldFloorplan','entrySoldFloorplan'].forEach(otherKey => { if(otherKey !== key) c.groupOptions[otherKey] = false; });
+          }
           c.updatedAt = new Date().toISOString();
           autoSaveNow();
           renderStats(); renderPendingTable(); renderSummaryTable(); renderModalSummary(c); renderModalActions(c);
