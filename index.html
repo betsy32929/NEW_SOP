@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V126_NEW本製作</title>
+  <title>V127_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -512,7 +512,7 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V126 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V127 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
@@ -531,7 +531,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V126：上傳照片的「業務上傳」移至「麗卉」前方。</div>
+        <div class="tiny" style="margin-bottom:10px;">V127：契據上傳的「業務上傳」移至「麗卉」前方。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -944,7 +944,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V126';
+    const APP_VERSION = 'V127';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -4290,7 +4290,7 @@
         }${
           (def.specialOptions || []).filter(opt => !(
             def.key === 'goHousefun' && opt === '一般約'
-            || def.key === 'uploadPhotos' && opt === '業務上傳'
+            || ['uploadPhotos','deedUpload'].includes(def.key) && opt === '業務上傳'
           )).map(opt => {
             const disabled = def.key === 'changeContractNaming' && opt === '無ED' && hasActualChangeContractNo(c);
             return `<button type="button" class="chip-btn modal-option-btn ${item.option === opt ? 'active' : ''}" data-key="${def.key}" data-option="${escapeAttr(opt)}" ${disabled ? 'disabled title="已有契變編號，不能選無ED"' : ''}>${escapeHtml(opt)}</button>`;
@@ -4363,7 +4363,7 @@
           if(!optionAdded) buttons.unshift(`<button type="button" class="chip-btn modal-option-btn ${item.option === '一般約' ? 'active' : ''}" data-key="${def.key}" data-option="一般約">一般約</button>`);
           return `<div class="chips">${buttons.join('')}</div>`;
         }
-        if(def.key === 'uploadPhotos'){
+        if(['uploadPhotos','deedUpload'].includes(def.key)){
           const assistants = getAssistantChoicesForItem(item,def);
           const buttons = [];
           let optionAdded = false;
