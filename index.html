@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V127_NEW本製作</title>
+  <title>V128_NEW本製作</title>
   <style>
     :root{
       --bg:#dfe8f7; --card:#ffffff; --line:#b9c9e3; --text:#172033; --muted:#55627a;
@@ -32,6 +32,7 @@
     .soft{background:#eef2ff; color:#3730a3}
     .success{background:#16a34a;color:#fff}
     .back-cover-home-btn{background:#ffedd5;color:#9a3412;border:2px solid #fdba74;box-shadow:0 4px 10px rgba(251,146,60,.14)}
+    .wang-review-home-btn{background:#ede9fe;color:#6d28d9;border:2px solid #c4b5fd;box-shadow:0 4px 10px rgba(124,58,237,.12)}
     #exportExcelBtn{background:#dcfce7;color:#166534;border:2px solid #86efac}
     #exportJsonBtn{background:#ede9fe;color:#5b21b6;border:2px solid #c4b5fd}
     #importJsonBtn{background:#fce7f3;color:#9d174d;border:2px solid #f9a8d4}
@@ -229,6 +230,10 @@
     .case-reminder-modal{z-index:1100}.case-reminder-dialog{width:min(900px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:18px;border:2px solid #f59e0b;border-radius:22px;background:linear-gradient(135deg,#fff7ed 0%,#ffffff 100%);box-shadow:0 24px 65px rgba(124,45,18,.3)}
     .case-reminder-panel{display:grid;gap:12px}.case-reminder-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.case-reminder-title{font-size:22px;font-weight:1000;color:#9a3412}.case-reminder-case{padding:9px 11px;border-radius:12px;background:#fff;border:1px solid #fed7aa;color:#7c2d12;font-weight:900;line-height:1.6;overflow-wrap:anywhere}.case-reminder-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}.case-reminder-option{display:flex;align-items:flex-start;gap:8px;padding:9px 11px;border:1px solid #fdba74;border-radius:12px;background:#fff;font-weight:900;line-height:1.45;cursor:pointer}.case-reminder-option input{width:18px;height:18px;margin:1px 0 0;flex:0 0 auto;accent-color:#ea580c}.case-reminder-output{width:100%;min-height:145px;padding:12px 14px;border:2px solid #93c5fd;border-radius:14px;background:#fff;color:#172033;font:900 16px/1.7 "Microsoft JhengHei","PingFang TC",sans-serif;resize:vertical}.case-reminder-copy-status{font-size:13px;font-weight:900;color:#15803d}
     .back-cover-output{width:100%;min-height:320px;padding:14px 16px;border:2px solid #93c5fd;border-radius:14px;background:#fff;color:#172033;font:900 16px/1.8 "Microsoft JhengHei","PingFang TC",sans-serif;resize:vertical}
+    .wang-review-bulk-list{display:grid;gap:8px;max-height:55vh;overflow:auto;padding:4px}
+    .wang-review-bulk-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border:1px solid #c4b5fd;border-radius:13px;background:#fff;color:#312e81;font-weight:900;line-height:1.5;cursor:pointer}
+    .wang-review-bulk-item input{width:19px;height:19px;margin:2px 0 0;flex:0 0 auto;accent-color:#7c3aed}
+    .wang-review-bulk-item .meta{display:block;margin-top:2px;color:#64748b;font-size:12px;font-weight:800}
     @media(max-width:760px){.case-reminder-grid{grid-template-columns:1fr}}
     .confirm-dialog-card{width:min(420px,calc(100vw - 32px)); background:linear-gradient(180deg,#ffffff 0,#f8fbff 100%); border:1px solid #cbd5e1; border-radius:22px; box-shadow:0 24px 60px rgba(15,23,42,.32); padding:18px}
     .confirm-dialog-title{font-size:20px; font-weight:1000; color:#0f172a; margin-bottom:8px}
@@ -512,10 +517,11 @@
   <div class="wrap">
     <section class="card header">
       <div class="title-row" style="justify-content:space-between;">
-        <div style="font-size:26px; font-weight:900; line-height:1.2;">V127 NEW本製作</div>
+        <div style="font-size:26px; font-weight:900; line-height:1.2;">V128 NEW本製作</div>
         <div class="toolbar" style="justify-content:flex-end; gap:12px;">
           <button class="primary" id="newCaseBtn">＋ 新增物件</button>
           <button class="back-cover-home-btn" id="openBackCoverBtn">印封背</button>
+          <button class="wang-review-home-btn" id="openWangReviewBulkBtn">王總審核</button>
           <button class="soft" id="exportExcelBtn">匯出EXCEL</button>
           <button class="soft" id="exportJsonBtn">匯出JSON</button>
           <button class="soft" id="importJsonBtn">匯入JSON</button>
@@ -531,7 +537,7 @@
     <details class="card assist-panel">
       <summary>雲端同步設定（設定隱藏）</summary>
       <div class="assist-body">
-        <div class="tiny" style="margin-bottom:10px;">V127：契據上傳的「業務上傳」移至「麗卉」前方。</div>
+        <div class="tiny" style="margin-bottom:10px;">V128：首頁新增王總審核，可批次處理製作中尚未完成案件。</div>
         <div class="sync-grid">
           <input id="syncUrlInput" class="field-input" type="text" placeholder="Supabase Project URL">
           <input id="syncKeyInput" class="field-input" type="text" placeholder="Publishable / anon key">
@@ -790,6 +796,18 @@
     </div>
   </div>
 
+  <div id="wangReviewBulkModal" class="modal case-reminder-modal" role="dialog" aria-modal="true" aria-labelledby="wangReviewBulkTitle">
+    <div class="case-reminder-dialog">
+      <section class="case-reminder-panel">
+        <div class="case-reminder-head"><div class="case-reminder-title" id="wangReviewBulkTitle">王總審核</div><button type="button" class="modal-close-btn" id="closeWangReviewBulkBtn">關閉</button></div>
+        <div id="wangReviewBulkCount" class="case-reminder-case"></div>
+        <div class="toolbar"><button type="button" class="soft" id="selectAllWangReviewBtn">全選</button><button type="button" class="soft" id="clearAllWangReviewBtn">取消全選</button></div>
+        <div id="wangReviewBulkList" class="wang-review-bulk-list"></div>
+        <div class="toolbar"><button type="button" class="success" id="completeWangReviewBtn">統一設為完成</button><button type="button" class="soft" id="noneWangReviewBtn">統一設為無</button></div>
+      </section>
+    </div>
+  </div>
+
 
 
   <div id="actionConfirmModal" class="modal">
@@ -944,7 +962,7 @@
   </div>
 
   <script>
-    const APP_VERSION = 'V127';
+    const APP_VERSION = 'V128';
     const STORAGE_KEY = 'newbook_v14_sync_cache';
     const SYNC_CONFIG_KEY = 'newbook_v14_sync_config';
     const SYNC_APP_ID = 'newbook_v14'; // 保留原雲端資料表識別，避免換版後讀不到舊資料
@@ -4171,6 +4189,77 @@
       );
     }
 
+    function getPendingWangReviewCases(){
+      return activeCases().filter(c => {
+        const def = getCaseFieldDef(c,'wangReview');
+        const item = c?.items?.wangReview;
+        return def && item && !isCompleted(def,item,c);
+      });
+    }
+
+    function renderWangReviewBulkList(){
+      const rows = getPendingWangReviewCases();
+      const countEl = document.getElementById('wangReviewBulkCount');
+      const listEl = document.getElementById('wangReviewBulkList');
+      if(countEl) countEl.textContent = `製作中且王總審核尚未完成：共 ${rows.length} 件`;
+      if(listEl){
+        listEl.innerHTML = rows.length ? rows.map(c => `
+          <label class="wang-review-bulk-item">
+            <input type="checkbox" class="wang-review-bulk-checkbox" data-case-id="${escapeAttr(c.id)}" checked>
+            <span>${escapeHtml(caseNameOf(c))}<span class="meta">${escapeHtml(fieldText(c,'entryDate') || '未填進案日期')}｜${escapeHtml(fieldText(c,'developer') || '未填開發')}</span></span>
+          </label>
+        `).join('') : '<div class="empty">目前沒有尚未完成王總審核的製作中案件。</div>';
+      }
+      const disabled = rows.length === 0;
+      ['selectAllWangReviewBtn','clearAllWangReviewBtn','completeWangReviewBtn','noneWangReviewBtn'].forEach(id => {
+        const btn = document.getElementById(id);
+        if(btn) btn.disabled = disabled;
+      });
+    }
+
+    function showWangReviewBulk(){
+      renderWangReviewBulkList();
+      document.getElementById('wangReviewBulkModal')?.classList.add('show');
+    }
+
+    function hideWangReviewBulk(){
+      document.getElementById('wangReviewBulkModal')?.classList.remove('show');
+    }
+
+    function setAllWangReviewChecks(checked){
+      document.querySelectorAll('.wang-review-bulk-checkbox').forEach(input => { input.checked = checked; });
+    }
+
+    function applyWangReviewBulk(value){
+      const ids = [...document.querySelectorAll('.wang-review-bulk-checkbox:checked')].map(input => input.dataset.caseId).filter(Boolean);
+      if(!ids.length){
+        alert('請先勾選要操作的案件。');
+        return;
+      }
+      openActionConfirm(
+        `王總審核統一設為「${value}」？`,
+        `已勾選 ${ids.length} 件案件。\n\n點選「是」後，會將這些案件的王總審核統一設為「${value}」。`,
+        () => {
+          ids.forEach(id => {
+            const c = getCaseById(id);
+            if(!c) return;
+            const def = getCaseFieldDef(c,'wangReview');
+            const item = c?.items?.wangReview;
+            if(!def || !item) return;
+            if(def.type === 'optionOnly') item.value = value;
+            else item.option = value;
+            item.assistant = '';
+            item.status = 2;
+            touch(item);
+          });
+          autoSaveNow();
+          renderAll();
+          renderWangReviewBulkList();
+        },
+        `是，設為${value}`
+      );
+    }
+
     async function copyShortText(text){
       try{
         await navigator.clipboard.writeText(text);
@@ -5712,6 +5801,7 @@
 
     document.getElementById('newCaseBtn').onclick = addCase;
     document.getElementById('openBackCoverBtn').onclick = showBackCoverList;
+    document.getElementById('openWangReviewBulkBtn').onclick = showWangReviewBulk;
     const openRewardBtn = document.getElementById('openRewardBtn');
     if(openRewardBtn) openRewardBtn.onclick = openRewardModal;
     const openTeamStatsBtn = document.getElementById('openTeamStatsBtn');
@@ -5857,6 +5947,11 @@
     document.getElementById('closeBackCoverBtn').onclick = hideBackCoverList;
     document.getElementById('copyBackCoverBtn').onclick = copyBackCoverNames;
     document.getElementById('completeBackCoverBtn').onclick = completeAllBackCovers;
+    document.getElementById('closeWangReviewBulkBtn').onclick = hideWangReviewBulk;
+    document.getElementById('selectAllWangReviewBtn').onclick = () => setAllWangReviewChecks(true);
+    document.getElementById('clearAllWangReviewBtn').onclick = () => setAllWangReviewChecks(false);
+    document.getElementById('completeWangReviewBtn').onclick = () => applyWangReviewBulk('完成');
+    document.getElementById('noneWangReviewBtn').onclick = () => applyWangReviewBulk('無');
     const modalManualSaveBtn = document.getElementById('modalManualSaveBtn');
     if(modalManualSaveBtn) modalManualSaveBtn.onclick = manualSaveCurrentModal;
     document.getElementById('modalDeleteBtn').onclick = deleteCurrentCase;
